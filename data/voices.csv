@@ -1,0 +1,1112 @@
+voice_id,language,gender,name,preview_audio,support_pause,emotion_support,support_interactive_avatar
+1985984feded457b9d013b4f6551ac94,English,Male,Tarquin,https://static.heygen.ai/voice_preview/5R5EWwcXSiGMWub5LEB5VV.wav,False,True,True
+26b2064088674c80b1e5fc5ab1a068eb,English,female,Melissa,https://resource.heygen.ai/text_to_speech/XL7wxYFJLdmMXz7jAU9QPT.mp3,False,True,True
+26b2064088674c80b1e5fc5ab1a068ec,English,male,Rex,https://resource.heygen.ai/text_to_speech/bCo7SFtTvcJz6udLqHmUKf.mp3,False,True,True
+42d598350e7a4d339a3875eb1b0169fd,English,Male,Paul,https://static.heygen.ai/voice_preview/gDkZsW4hQZXCqFmUNQPVm4.wav,False,True,True
+45980606751346deaf6415a2ba6cdfde,English,female,Christine,https://static.heygen.ai/voice_preview/JgpYpGgEw7Wvaactogw8nM.wav,False,True,True
+c8e176c17f814004885fd590e03ff99f,English,female,Elizabeth,https://static.heygen.ai/voice_preview/nFpfJnrcHH8kBy4pGkLKT6.wav,False,True,True
+e23c82c61d934fa2b7fbda39a2247228,English,Male,Theo,https://static.heygen.ai/voice_preview/FZfjRRVjohs7CxXtyTkjoC.wav,False,True,True
+f772a099cbb7421eb0176240c611fc43,English,female,Ceecee,https://static.heygen.ai/voice_preview/aYdKCH4Ra2m3Tb9d2Fw9tX.wav,False,True,True
+001b5828d42b4f8b814ad7dbec3221e4,Bangla,Female,Aalia - Natural,https://resource.heygen.ai/text_to_speech/ZPmhEUtUitp6MhMRAsXMgb.mp3,False,False,False
+001cc6d54eae4ca2b5fb16ca8e8eb9bb,Spanish,Male,Elias - Natural,https://static.heygen.ai/voice_preview/JmCb3rgMZnCjCAA9aacnGj.wav,False,False,True
+00988b7d451d0722635ff7b2b9540a7b,Portuguese,Female,Brenda - Professional,https://static.heygen.ai/voice_preview/fec6396adb73461c9997b2c0d7759b7b.wav,False,False,True
+009f4cb8d98a4febb45f8c82a5399b15,Latvian,Male,Tomass - Natural,https://resource.heygen.ai/text_to_speech/ErdPy8BqpgovvqAeKLWXak.mp3,False,False,False
+00c8fd447ad7480ab1785825978a2215,Chinese,Female,Xiaoxuan - Serious,https://static.heygen.ai/voice_preview/909633f8d34e408a9aaa4e1b60586865.wav,False,False,True
+00ed77fac8b84ffcb2ab52739b9dccd3,Latvian,Male,Nils - Affinity,https://resource.heygen.ai/text_to_speech/iDY3ejyxh3DrQxT7BNXUUf.wav,False,False,True
+0130939032d74be594eadc8cc9d39415,Portuguese,Female,Fernanda - Natural,https://static.heygen.ai/voice_preview/6a5985f0ffd94106b8ecaa3a6c539cea.wav,False,False,True
+0214ac51f93e420f8711d568dcfbc50e,English,Female,Gail_car_openai,https://resource.heygen.ai/text_to_speech/B7mSeiBWP6WRAsadXMPjWm.mp3,False,False,False
+02a820805da74e6c9efc2d3c09ae9f43,English,male,Lucas5.5,https://resource.heygen.ai/text_to_speech/67PmpY5s8BrLgYofM7UiTi.mp3,False,False,False
+02bcf8702a424226a520b6229f318004,Portuguese,Male,Cristiano - Friendly,https://static.heygen.ai/voice_preview/70dc80de5385461a841d55d4d729fe81.wav,False,False,False
+02bec3b4cb514722a84e4e18d596fddf,Arabic,Female,Fatima - Professional,https://static.heygen.ai/voice_preview/930a245487fe42158c810ac76b8ddbab.wav,False,False,True
+04dea6aea06f496089394450583427c9,English,Female,LEA_Inside_sitting_with_mic_15s,https://resource.heygen.ai/text_to_speech/hqbYonxRNAnqVxR9h4oWC9.mp3,False,False,False
+04e95f5bcb8b4620a2c4ef45b8a4481a,Ukrainian,Female,Polina - Professional,https://static.heygen.ai/voice_preview/ntekV94yFpvv4RgBVPqW7c.wav,False,False,True
+05113f7c98bb424d86b6ef07266002eb,Arabic,Female,Amal - Natural,https://static.heygen.ai/voice_preview/01fd522c73ea44589985a8bc321047bd.wav,False,False,True
+06daa574b9824885a26eeb5916cbae36,Arabic,Female,Salma - Friendly,https://static.heygen.ai/voice_preview/b6e67b75ee0648a2844a58fc5dc6aa02.wav,False,False,True
+071d6bea6a7f455b82b6364dab9104a2,German,Male,Jan - Natural,https://static.heygen.ai/voice_preview/fa3728bed81a4d11b8ccef10506af5f4.wav,False,False,True
+081f165a0d88432b991830e8deeac2e3,Georgian,Female,Eka - Natural,https://resource.heygen.ai/text_to_speech/ahmQermSGhBoVpabxtns2V.wav,False,False,True
+0822c6351a75446f8f21ed4c3430ff9e,Malay,Female,Norazila - Natural,https://static.heygen.ai/voice_preview/eppfCMA366E7uomDSwo5GS.wav,False,False,False
+08284d3fc63a424fbe80cc1864ed2540,Spanish,Male,Dario - Natural,https://static.heygen.ai/voice_preview/3e9rdESHjEWSTRUA2j6bjr.wav,False,False,True
+088b81175b7b4dcabc7179a94467dd06,Estonian,Female,Anu - Natural,https://resource.heygen.ai/text_to_speech/y39LKWqoLomPNTxAiSTEQA.wav,False,False,True
+09465ad8e28d48f9affe795679e4be0e,Filipino,Male,Nathan,https://resource.heygen.ai/text_to_speech/A2Jmu3pT3n74MJhFA2fJ7K.mp3,False,False,False
+0ac81e725f4948dfa9638ceca216bcfa,English,male,Daran_outside_walking,https://resource.heygen.ai/text_to_speech/KbaxAZ77k3t5dWNBhj9NnD.mp3,False,False,False
+0add44a212634cee8eddc30067f0249f,Sinhala,female,Thilini - Natural,https://resource.heygen.ai/text_to_speech/ceuWHWCv9oYT8ZBym2rWYm.wav,False,False,True
+0b27aae7db574ebca04c89bf6bba2641,Catalan,Female,Alba - Natural,https://resource.heygen.ai/text_to_speech/5GqVGKMPhiK7YTHfHkoJYL.wav,False,False,True
+0bcc1565751048b8a272aa3aa0d236f1,English,male,BRANDON_CAR_with_mic,https://resource.heygen.ai/text_to_speech/ebnUy9H7bWwaUYUyWQWmPj.mp3,False,False,False
+0bde88bedf264a52befce6ae6d6c70be,Czech,Male,Honza - Professional,https://static.heygen.ai/voice_preview/093367236bf3412babde3d9fe0667497.wav,False,False,True
+0bfddc0290474a849a6626031d312ebf,Lithuanian,Male,Leonas - Natural,https://resource.heygen.ai/text_to_speech/HhpQ6nFH2Bt3HHXRUSKkBi.wav,False,False,True
+0c094361c73f4e34815cc24f32636950,English,male,0c094361c73f4e34815cc24f32636950,https://resource.heygen.ai/text_to_speech/Ag4qxaQzaNcKmuwfQChuc3.mp3,False,False,False
+0d2ae98609a54f09a2295c3245c9f20e,English,Female,Sophie_in_car_without_mic,https://resource.heygen.ai/text_to_speech/8Taod65FyMGp2i957pzymR.mp3,False,False,False
+0dad967237504db3a709950ed05cacb6,English,male,Lucas_outside_in_cafe_without_mic,https://resource.heygen.ai/text_to_speech/eUn95cCnhVryVAQHtkK4yb.mp3,False,False,False
+0e051caf8e0947a18870ee24bbbfce36,French,Female,Ariane - Natural,https://static.heygen.ai/voice_preview/3f7b2cd2e2dc468fb2160728462d17cd.wav,False,False,True
+0f04c50500bf417396ba2e846d7bd3d7,English,male,tim_sitting,https://resource.heygen.ai/text_to_speech/qxY3Uq75GBVbiWbKypuyxX.mp3,False,False,False
+0f059f9e54284391b48300f916cc6a01,French,Female,Celeste - Professional,https://static.heygen.ai/voice_preview/ebde256ffc2d4e14a0542bf4bd8719fa.wav,False,False,True
+0fd2f1a46fb14bd0a8018822f111ad92,Dutch,Male,Arnaud - Professional,https://static.heygen.ai/voice_preview/S3W9CEXxdgVYhDhDSVUpTL.wav,False,False,True
+107ec6a82944431ebb6dd0652ecb42d0,Japanese,Male,Keita - Newscaster,https://static.heygen.ai/voice_preview/da7b395e99ea41a0acda700727a8cc6d.wav,False,False,True
+1119d921713542f1a7e0f89035c6453a,Kiswahili,female,Rehema - Natural,https://resource.heygen.ai/text_to_speech/5EpTfj4wpiMyjRNb6uViXa.wav,False,False,True
+11815f082eea4e4ba3b3952ad05c0097,Arabic,Male,Jamal - Newscaster,https://static.heygen.ai/voice_preview/a20f914b0d6c448b81df16589f82fe2d.wav,False,False,True
+118e0e91a87a4e60a1353a438b3601ac,Chinese,Female,HiuMaan - Natural,https://static.heygen.ai/voice_preview/532bed404357485a9c4e6aaae734e750.wav,False,False,True
+11a14f71bed84ba7a62ae43153aa48c2,German,Female,Tanja - Serious,https://static.heygen.ai/voice_preview/edc9fa2428164c278cdb44afe572b111.wav,False,False,True
+1278e97c07734d60b0c2fee4d6cccbfe,German,Male,Gunter - Calm,https://static.heygen.ai/voice_preview/2e13f77976d940a5a5ae36265547082f.wav,False,False,True
+130c008c0e8e4454abcb086769b84638,Dutch,male,Ernie -  Friendly,https://static.heygen.ai/voice_preview/6NChw5zoAFiRe8nAk2VH6Z.wav,False,False,False
+131a436c47064f708210df6628ef8f32,English,Female,Amber - Friendly,https://static.heygen.ai/voice_preview/5HHGT48B6g6aSg2buYcBvw.wav,False,False,True
+143784cc55cb44e080dc86a16ed8fb14,Hebrew,female,Ruth - Calm,https://resource.heygen.ai/text_to_speech/zZyvLURSdQsrPSxrBYVpuh.mp3,False,False,False
+15ea92317dfe4abc858b08be62bd8e93,Portuguese,Male,Ricardo - Calm,https://static.heygen.ai/voice_preview/47d1469c5c434e6ab153fe69904687ac.wav,False,False,False
+164126a02bc04b1685ea69030fbcfc1e,Malay,Female,Intan - Natural,https://static.heygen.ai/voice_preview/hjEaP5TaoEfCxWaKu6b9j9.wav,False,False,False
+164a2f29f0104dc896aa2e8c2584cf5f,Indonesian,Female,Citra - Warm,https://static.heygen.ai/voice_preview/PVXz2vRF3sDQcqjpP7FzPS.wav,False,False,False
+16ac5c3dc8b14834b52347286c9b350d,Thai,Female,Somsak - Gently,https://resource.heygen.ai/text_to_speech/SwHZhj9NrJq4HdhTC96bN7.mp3,False,False,False
+16bbafee7735447296185046b04a05d2,Kannada,Male,Gagan - Natural,https://resource.heygen.ai/text_to_speech/jFsh8wfLhqLM4BXQFdD8Rm.wav,False,False,True
+1753e5984bca4125a3e727d5d5e07ee2,English,Female,Lea_outside_walking,https://resource.heygen.ai/text_to_speech/FFHPhwFgT5Er4rGpXM4BJf.mp3,False,False,False
+178f3d2599b04697b65b6cf03c377a1e,Tamil,Male,Valluvar - Natural,https://static.heygen.ai/voice_preview/EeRJjYausrCjTyCnTTn3hb.wav,False,False,True
+1803df59c37443789d2e4f71c82859a0,English,Female,Lea_inside,https://resource.heygen.ai/text_to_speech/msSd5uEFY5Px5qxyhHTyjV.mp3,False,False,False
+18d006d24dd84e438ae7ec886045c281,Vietnamese,Female,Nhung - Gently,https://resource.heygen.ai/text_to_speech/ew6DRo8i2QE6BnXEhUWHQ3.mp3,False,False,False
+1956ee743a61677602bbef9cfc48ebb9,Portuguese,Male,Fabio - Newscaster,https://static.heygen.ai/voice_preview/d098ea6b02fe40d0b859f72583892ac1.wav,False,False,True
+19e93c4e7713495894a42b80fcff866c,Romanian,Female,Alina - Natural,https://static.heygen.ai/voice_preview/ddF5y3GpfzhfmpcKeUN4uZ.wav,False,False,True
+1a32e06dde934e69ba2a98a71675dc16,Spanish,Male,Alonso - Professional,https://static.heygen.ai/voice_preview/224558e689bd4d8ba9b7de1205527448.wav,False,False,True
+1a966c7d97c349e19c6d9e74f2f2ea47,Dutch,Female,Dena - Natural,https://static.heygen.ai/voice_preview/nNSpZoZraHC54P9FUJmkAC.wav,False,False,True
+1ae3be1e24894ccabdb4d8139399f721,English,Male,Tony - Professional,https://static.heygen.ai/voice_preview/LQUcrBcVHDMCSP5cX93CVd.wav,False,False,True
+1b41a20629554233bea22e0118e86f0d,Croatian,Female,Gabrijela - Calm,https://static.heygen.ai/voice_preview/8DUrw3S6YHTrYBKWnzusqN.wav,False,False,True
+1bd001e7e50f421d891986aad5158bc8,English,Female,Sara - Cheerful,https://static.heygen.ai/voice_preview/func8CFnfVLKF2VzGDCDCR.wav,False,False,True
+1cf54d7f9039462aae36b33728b09e3d,Swedish,Female,Astrid - Friendly,https://static.heygen.ai/voice_preview/HpV9ZhWJLBAzD4ZtWBmDo7.wav,False,False,False
+1d8e477dd21b40c1ab6726e50329a765,Norwegian,Female,Iselin - Natural,https://resource.heygen.ai/text_to_speech/bGGdyDrt7qKgfmWFEMNUnG.wav,False,False,True
+1e51f4123ee24c958781c8d66178ad08,Arabic,Male,Omar - Calm,https://static.heygen.ai/voice_preview/723dda62843b49bf9376b3a2ea609cee.wav,False,False,True
+1ef3312fdf2347f8a7f3e9bcbf26144f,Urdu,Female,Gul - Natural,https://resource.heygen.ai/text_to_speech/kUMWFP7i8gvVkCSUKJ8Nt8.wav,False,False,True
+1fe966a9dfa14b16ab4d146fabe868b5,English,Female,Ana - Cheerful,https://static.heygen.ai/voice_preview/T4MYTkhp7F5SA9HRXHzL9A.wav,False,False,True
+2020d72b69454fe2a094ee8ce987f048,English,Female,KRISI_in_car_without_mic,https://resource.heygen.ai/text_to_speech/EhHZ53wFcCGYrpDa3ENnkd.mp3,False,False,False
+20eab658d6c240c58554553593197ed9,Finnish,Female,Selma - Natural,https://static.heygen.ai/voice_preview/YSQJikCifzGLik8xegVDxD.wav,False,False,True
+20fbb2cf29f3450c904a3779758ccaf6,Arabic,Male,Saleh - Professional,https://static.heygen.ai/voice_preview/47db78d3eff14adeaefe718b7c1a0b2f.wav,False,False,True
+2134698646ea49e290d444596d3806cd,German,Male,Jonas - Friendly,https://static.heygen.ai/voice_preview/424d178de7394689ad37c943e794f01c.wav,False,False,True
+21d9632a2fc842308ad9b5c5b5014e3a,German,Female,Amala - Warm,https://static.heygen.ai/voice_preview/4c72e33446264a0ab956989639651049.wav,False,False,True
+2259b11ddd664c4f84e98f59819f4cc5,Bangla,Male,Pradeep - Newscaster,https://resource.heygen.ai/text_to_speech/zkPBaz8WCiuxkwgMuWqZJH.wav,False,False,True
+239530900b9c409ebb6d25ec73266094,Hebrew,female,Sarah - Natural,https://resource.heygen.ai/text_to_speech/cDMukFUjCm4AdznRU8HXdC.mp3,False,False,False
+255f8e3f207d4cf58632f0ee48ea75ef,French,Female,Yvette - Warm,https://static.heygen.ai/voice_preview/a300600fb4e240c081d76b7acadf5884.wav,False,False,True
+25ef3e4d1a4846a58a5f4c3b1a7f70a8,Chinese,Female,Xiaoyan - Newscaster,https://static.heygen.ai/voice_preview/bbb68c7a2d794b27b9936b985658600c.wav,False,False,True
+2673f7664f5d4d369bc28dad9c99bb85,English,male,tim_cafe_outside,https://resource.heygen.ai/text_to_speech/HBf9WDaar3z6FQ3HymY4ki.mp3,False,False,False
+267604df751e4934b041a9eea2dafd3f,Thai,Male,Niwat - Natural,https://resource.heygen.ai/text_to_speech/d3zhvvwxHh4hZhdJV5KG9P.wav,False,False,True
+269792ff849b43b7b1488a6783a58563,Indonesian,Male,Slamet - Natural,https://static.heygen.ai/voice_preview/AjNHU6oajDPDpmdTuhXA6E.wav,False,False,False
+26b2064088674c80b1e5fc5ab1a068ea,English,male,Onyx,https://static.heygen.ai/voice_preview/LhDPL2h3sDVsLbFXrkDpFn.wav,False,False,False
+285900cdfd1641e0b163e97a96973212,English,Female,Monica - Calm,https://static.heygen.ai/voice_preview/A28mKDAgwgmKD8KdG68rkZ.wav,False,False,True
+289430c137354573a3ab773c91f05094,Japanese,Female,Himari - Natural,https://static.heygen.ai/voice_preview/43ed4fbde9d34f7f8c89a28ee211e9ac.wav,False,False,True
+28f7220adbc144eeba42d70e1e969b29,Spanish,Female,Dalia - Friendly,https://static.heygen.ai/voice_preview/6c218dc0bc8243fa825acbc37e6a6300.wav,False,False,True
+28fdf16dfbb246bda4cd36ddf9feb3da,English,male,tim_laying,https://resource.heygen.ai/text_to_speech/6PepxQgZsCfL89SSseYqpg.mp3,False,False,False
+290fbbc65583416c9bffa47ce05914fd,Filipino,Female,Blessica - Natural,https://resource.heygen.ai/text_to_speech/zKHars5JdDhye9w4ymp9uk.wav,False,False,True
+2b0243115175488fbd6b42940c1d1dad,Arabic,Male,Fahed - Calm,https://static.heygen.ai/voice_preview/714282e4e3d04798b082c55243f377ba.wav,False,False,True
+2b9762b9199b41c7b473936248ad4a06,Spanish,Male,Arnau - Natural,https://static.heygen.ai/voice_preview/F7fZNmXwQm9ZQ9C2FjgiCa.wav,False,False,True
+2c56cc1229214db587034c56a69df99a,Ukrainian,Male,Ostap - Professional,https://static.heygen.ai/voice_preview/fFNZUitfpmJhiamt3724Eo.wav,False,False,True
+2d5b0e6cf36f460aa7fc47e3eee4ba54,English,Female,Sonia - Warm,https://static.heygen.ai/voice_preview/nZzCSavZkP37XSyc5CrzS7.wav,False,False,True
+2f686fff829b47128078fa093ff33f7d,Malay,Male,Aiman - Natural,https://static.heygen.ai/voice_preview/Q347gpeNJbiZuetTDMcCmT.wav,False,False,False
+2f72ee82b83d4b00af16c4771d611752,English,Female,Jenny - Professional,https://static.heygen.ai/voice_preview/XTyya7QKzhwvwDrVQLTvoQ.wav,False,False,True
+2f84d49c51a741f3a5be283b0fc4f94c,Spanish,Female,Valentina - Natural,https://static.heygen.ai/voice_preview/EQGZ99dT3kzrPutENe6GCH.wav,False,False,True
+2f90470a903f47059d4306267eef65e5,Nepali,Female,Hemkala - Natural,https://resource.heygen.ai/text_to_speech/dY9FsmcLqDyACqu2NCTMxV.wav,False,False,True
+30d0ff3bedfe4641a1c27062f8028229,Catalan,Female,Claudia - Natural,https://resource.heygen.ai/text_to_speech/8fwdPEdxd2ykbLHR7TcNTk.mp3,False,False,False
+317a44d6bd2249999896f0ec961f1560,German,Female,Gisela - Natural,https://static.heygen.ai/voice_preview/bcc5d657d71a478898df8608d29d421e.wav,False,False,True
+31ca37770fab4dd39f27a3dca368c984,Hungarian,Female,Noemi - Natural,https://resource.heygen.ai/text_to_speech/8fjtGFMgXRovsESKFsvX7B.wav,False,False,True
+32254053e5de43d18ec1e6095fbc6a16,Spanish,Female,Sofia - Calm,https://static.heygen.ai/voice_preview/4hJnpBj2pKDFJWXhakrNWz.wav,False,False,False
+331f1cc78737475b946079cb3d2f5ffc,Vietnamese,Female,Storm - Kindly,https://resource.heygen.ai/text_to_speech/U3oZb6QVujV5p3sz9aHbQH.mp3,False,False,False
+340db80b009349c3a0aa1ab21abb3a14,Urdu,Male,Asad - Natural,https://resource.heygen.ai/text_to_speech/qbUiGnDHZsZRhcQNERRLGG.wav,False,False,True
+35f6b6ac010849d38cfc99dc25e0e4b3,Chinese,Male,WanLung -  Natural,https://static.heygen.ai/voice_preview/945d8ff1f30a45748aee607dd7ddf927.wav,False,False,True
+36664759e6d141d78fe3244b8c3acc71,Spanish,Female,Mia - Professional,https://static.heygen.ai/voice_preview/3vs7RXHTyuD4YSDt63CYtR.wav,False,False,False
+3729e0d85cec4e2f925b9e23913ac4f9,Catalan,Female,Arlet  - Natural,https://resource.heygen.ai/text_to_speech/FQDyt8dBXBVqyjRwvqcucM.mp3,False,False,False
+37945e6f3b6744f4b379a3d3340ed422,Dutch,Female,Harriet - Natural,https://static.heygen.ai/voice_preview/FCoMqr49XxDbJ45Rnb2yRe.wav,False,False,False
+37f7ef47d2b6498e8781e168979b10df,Spanish,Male,Tomas - Natural,https://static.heygen.ai/voice_preview/264c67b5de514049812d19bca886c5dd.wav,False,False,True
+3833c2257836497e8d68c6a8578af579,English,male,Daran_inside_booth,https://resource.heygen.ai/text_to_speech/LroAB5AVeikaoNoKkyAouV.mp3,False,False,False
+392eb53b771c4051951494c0e7fb36c9,Swedish,Female,Rita - Natural,https://static.heygen.ai/voice_preview/hCqrWb2FBxTYFcp9A4NvRe.wav,False,False,False
+3b1633a466c44379bf8b5a2884727588,Chinese,Male,YunJhe - Natural,https://static.heygen.ai/voice_preview/7b043826fb284b5c98efda305fb3e184.wav,False,False,True
+3b386ea3ffec4455a704367c52cea586,English,Female,Sophie_in_car_with_mic,https://resource.heygen.ai/text_to_speech/3KK5sgeeuxEkvxhS6Uh4tF.mp3,False,False,False
+3c7e974c1f504a8cad52e5fa839defc4,English,male,tim_cafe,https://resource.heygen.ai/text_to_speech/og3GaPsvpXcKCFxDtxg67j.mp3,False,False,False
+3e17ba521ba94ceab92838352644aba1,German,Male,Kasper - Newscaster,https://static.heygen.ai/voice_preview/2a411531e0a5410f824f2e9f9fb02fac.wav,False,False,True
+3f126ed4b7204c2c9d3c8df84aa60346,German,male,Leon,https://static.heygen.ai/voice_preview/Dp7AAkZYWre2fg2FWJ2nQD.wav,False,False,False
+3f224b0cb92d45328e5ccd93d3c2314e,English,Female,Emily - Natural,https://static.heygen.ai/voice_preview/ZA54eZdstL8XeZssreg9XT.wav,False,False,True
+3fbd2cac3ddd4c109e17296e324845ec,English,Male,Delbert - Cheerful,https://static.heygen.ai/voice_preview/CMr49SZRNaARsvmJ3tGDsN.wav,False,False,True
+4158cf2ef85d4ccc856aacb1c47dbb0c,Chinese,Female,HsiaoChen - Friendly,https://static.heygen.ai/voice_preview/31b29b46e73649e8adec765755cea863.wav,False,False,True
+422dbf6b037648b69f663cd33b47007b,Chinese,Male,Yunye - Calm,https://static.heygen.ai/voice_preview/500dbe5f9d604d6c82ed21df5d2c49a8.wav,False,False,True
+4286c03d11f44af093e379fc7e2cafa6,Vietnamese,Female,Chau - Natural,https://resource.heygen.ai/text_to_speech/3JwsqfGcV3TvoziGzfqM9K.mp3,False,False,False
+433c48a6c8944d89b3b76d2ddcc7176a,English,male,Echo,https://static.heygen.ai/voice_preview/xkaesJVAguCoZhH59A2u5S.wav,False,False,False
+4353849104994cef800af14be98f35a8,Malay,Female,Yasmin - Natural,https://static.heygen.ai/voice_preview/HfhwqGVaqKy47bqem3w7ZP.wav,False,False,True
+43eb6d3dc5294a119aa17ab1d60444d1,Japanese,Female,Sakura - Cheerful,https://static.heygen.ai/voice_preview/357ea409333949c8888088a0cff1551a.wav,False,False,True
+44efc076bc8d4349931245c7748250c8,Persian,Female,Dilara,https://resource.heygen.ai/text_to_speech/5YLtostVc2594VKaKM2mS7.wav,False,False,True
+456082e138624424bcace650c5e83306,Hindi,Female,Hemlata - Natural,https://static.heygen.ai/voice_preview/d320f2f8ca9346ea80710dcd62990c23.wav,False,False,False
+456e13f3ff1345d3b7ab0435ce024dc7,English,Female,Isabella - Cheerful,https://static.heygen.ai/voice_preview/KhiBp6E75AmiqR2F9Ssmj7.wav,False,False,True
+485f386643a7425d8b8e1f27637c6ccb,Catalan,Female,Joana - Natural,https://resource.heygen.ai/text_to_speech/cSLdGiqcXCoWDHDrQE8bTa.wav,False,False,True
+4967f2fdcbd9473bb54c8db56e43e61a,Arabic,Female,Reem - Friendly,https://static.heygen.ai/voice_preview/882bfe8403724a3585efd7d566e435a6.wav,False,False,True
+49b1349a70724374bdb18f8462c4fafb,English,male,tim_car,https://resource.heygen.ai/text_to_speech/eaLk6vNP8eVjGEt27jZiPW.mp3,False,False,False
+49e3e441c5874cbab3a9e8086b927e8b,Spanish,Female,Salome - Natural,https://static.heygen.ai/voice_preview/9ca021b82b1a4987bdcdefb525539a1d.wav,False,False,True
+4b9b8a0176ae40b09a8ae1eaa26c509b,Dutch,male,Ernestine -  Natural,https://static.heygen.ai/voice_preview/kWJou6YDCV4M73XqKmtxjQ.wav,False,False,False
+4bd875d510f5461a9e228e1cbde2d545,Portuguese,Female,Camila - Friendly,https://static.heygen.ai/voice_preview/a0fbec40f1844a78801f5577b2730fb0.wav,False,False,False
+4d77dce8ebef4244813b40ce2cd3f999,Gujarati,Female,Dhwani - Natural,https://resource.heygen.ai/text_to_speech/C8uNfgttBBnzxU22mgaJkD.wav,False,False,True
+4db64fcc025a418dbf6f46cd94dcc404,English,male,lucas_cafe,https://resource.heygen.ai/text_to_speech/2vYwxdcTu4BeKuUiyE59pD.mp3,False,False,False
+4e36239454b2414d85c9dbaa18bcf228,English,Male,Mitchell - Natural,https://static.heygen.ai/voice_preview/cYt7FDjZng3rszpVXewS9U.wav,False,False,True
+4e5f51f94b7642ed9b065e506dc1c296,German,Female,Maja - Newscaster,https://static.heygen.ai/voice_preview/a2280ce094aa4bc7be6d8bc108271aff.wav,False,False,True
+4ebba0f2f4944d2aa75d21552764c638,Hebrew,female,Avigail - Calm,https://resource.heygen.ai/text_to_speech/hjcSt8bTiAKBgpbBAq9ham.mp3,False,False,False
+4efd43386dc844c29d532cb5d5690f86,Norwegian,Male,Finn - Natural,https://resource.heygen.ai/text_to_speech/Dhjhi6sourj9yuCGa8zdhG.wav,False,False,True
+508da0af14044417a916cba1d00f632a,Persian,Male,Farid,https://resource.heygen.ai/text_to_speech/nYWRcxXeKRk24GPYirrgV3.wav,False,False,True
+50c32e9b096e46218707499b8e7abcf0,Spanish,Female,Maria - Serious,https://static.heygen.ai/voice_preview/Kwi6mxi89bTQxJYbQWhkHP.wav,False,False,False
+50f8370a02fe45099636687d0d21750d,French,Female,Eloise - Natural,https://static.heygen.ai/voice_preview/50f8370a02fe45099636687d0d21750d.wav,False,False,True
+51ce3a14b89947bcb6c13d5e5062331a,French,Male,Antoine - Natural,https://static.heygen.ai/voice_preview/276db23bd9804f549a94f13f1059e724.wav,False,False,True
+5204c60a86e441c5b34bfd5eb856b2f9,Hebrew,male,Aharon - Calm,https://resource.heygen.ai/text_to_speech/5bMbRamCqSUhMMimmZRYsT.mp3,False,False,False
+527d87101417484e979a14e038f01b49,Arabic,Female,Noura - Natural,https://static.heygen.ai/voice_preview/65391dadd20a4e2890865b062aa542c3.wav,False,False,True
+548bb01a597d4a77b8d170736604b690,Hebrew,male,Isaac - Natural,https://resource.heygen.ai/text_to_speech/EL8qfAmzZMKiaYTf45yMLZ.mp3,False,False,False
+5531756441d34f408e7e60821f2e52a6,French,Female,Denise - Friendly,https://static.heygen.ai/voice_preview/bfb737ce9a614f909665717363762c4d.wav,False,False,True
+5646809bd96e40e9b374ba1d734ceb69,Slovak,Male,Lukas - Natural,https://static.heygen.ai/voice_preview/f1166fbd68b34cfbb5a68d1f5653630c.wav,False,False,True
+56d64381f02649839e3d4b07276a7fb1,English,Female,kim_car1_openai,https://resource.heygen.ai/text_to_speech/kyuruMewzD5CaLAo9VV6Nn.mp3,False,False,False
+583838e570fe4e00b646082785c12260,Latvian,Female,Everita - Gently,https://resource.heygen.ai/text_to_speech/jW87pPK5crw8UPTADX5L6K.wav,False,False,True
+588304e6ada44ce8b56edd087aa333e6,Indonesian,Female,Ratna - Warm,https://static.heygen.ai/voice_preview/9prM2eNqdsUTZ2ysC9jZXy.wav,False,False,False
+58e519e106414e13a308be0b98e221ab,Spanish,Female,Irene - Natural,https://static.heygen.ai/voice_preview/oXd685KxYjCydFUJhMY9jG.wav,False,False,True
+592b25f402ff41a295aeb3440f114179,Swedish,Female,Sofie - Natural,https://static.heygen.ai/voice_preview/neR5E32gY6E6oWxSV3mXLg.wav,False,False,True
+5a3cff20eddd491ca1196ffd1a868fdb,English,male,DARAN_INSIDE_2_with_mic,https://resource.heygen.ai/text_to_speech/w5bNBpz3ijrLxwBZ5aCueF.mp3,False,False,False
+5c0956259f3d4c659573a3a3898699ef,French,Male,Yves - Newscaster,https://static.heygen.ai/voice_preview/5b17d0a01f6f45dab6cc7f3dd27decdd.wav,False,False,True
+5d3e04e2972b4019b68d18d336800615,Danish,Male,Mads - Natural,https://static.heygen.ai/voice_preview/rhfHirLMn4d3zfVPwaHAvX.wav,False,False,False
+5d61b4c7e1894f4c9fc045be54528ead,Spanish,Female,Lucia - Friendly,https://static.heygen.ai/voice_preview/NnXhEBd7PwViBzeUPBGZzG.wav,False,False,False
+5dddee02307b4f49a17c123c120a60ca,English,Male,Luke - Professional,https://static.heygen.ai/voice_preview/ZSJ6hYck7uD4RFDbTqbtvE.wav,False,False,True
+5e323be21853489591cc589f90e24010,Georgian,Male,Giorgi - Natural,https://resource.heygen.ai/text_to_speech/UKTzv9RWAkFJERPWfrVSHd.wav,False,False,True
+611235e8461c4071b308cbb697a44e5c,Arabic,Female,Mouna - Newscaster,https://static.heygen.ai/voice_preview/a0ae4f7d37404d3daa14905975499225.wav,False,False,True
+6156f8f798604e3f8c73ba2931cfb104,Spanish,Female,Paloma - Natural,https://static.heygen.ai/voice_preview/72084f84f7414fdfae1c769a68915711.wav,False,False,True
+62134c975a9e46bfb4d4832cd9876bde,English,Female,Lea_in_car_without_mic,https://resource.heygen.ai/text_to_speech/832rQc5sLHZDNVpMmwUY44.mp3,False,False,False
+628161fd1c79432d853b610e84dbc7a4,English,Female,Bella - Friendly,https://static.heygen.ai/voice_preview/C9zRUcRZ4R56R4pGjytysb.wav,False,False,True
+63608103877d43a0b3c61e240b8f86c3,German,male,Fabian,https://static.heygen.ai/voice_preview/zpPQGgV4kE2fhxoprPFmCC.wav,False,False,False
+64cc0b129ac34e04a521cb4627126923,French,Female,Sylvie - Professional,https://static.heygen.ai/voice_preview/40797bf6107f47c88aac07636e4633f9.wav,False,False,True
+656eec70383742548d6c990b0b84f94e,Arabic,Male,Ismael - Serious,https://static.heygen.ai/voice_preview/1bb8caaef1864b38bbc6250f269989b4.wav,False,False,True
+65d83b8269684645878e9155edf9b439,Spanish,Female,Marta - Natural,https://static.heygen.ai/voice_preview/ZJr598DruryrinouXCwGd2.wav,False,False,True
+65f5dc8c030e4f129636b8df94c3b8bc,Dutch,Male,Maarten - Natural,https://static.heygen.ai/voice_preview/XybqkdXt7G6DNGmsKHtJkV.wav,False,False,True
+66a21dedf2c842b8a516cdb264360e0e,English,Female,Neerja - Newscaster,https://static.heygen.ai/voice_preview/RcDW6eTi2rGrVyFJZYdr2G.wav,False,False,True
+6861d3de6a904aeeb20feb8d4238cfd4,Vietnamese,Male,Minh - Natural,https://resource.heygen.ai/text_to_speech/G3noiNeCXTV8WVoxPzAQCG.mp3,False,False,False
+69a92c0623a1422788455eab539f7c8d,Chinese,Female,Xiaomeng - Warm,https://static.heygen.ai/voice_preview/85569aad47124980abadc7f6f7279c72.wav,False,False,True
+6bb77a617ce54cce9de83044b53ba1a3,Catalan,Male,Enric - Natural,https://resource.heygen.ai/text_to_speech/pjQFFLeiwUb9okZggrwvAb.wav,False,False,True
+6bd512a0c73c494186bfac36ccbe5072,Swedish,Male,Von - Friendly,https://static.heygen.ai/voice_preview/QnbZkswuuPa6iPcZUghWrc.wav,False,False,False
+6cd01cfff3354e16a6f4247cf30123ff,English,Female,Luna - Natural,https://static.heygen.ai/voice_preview/F3smMjYU6mWaa3tXLkUHpE.wav,False,False,True
+6d091fbb994c439eb9d249ba8b0e62da,English,Male,Jahmai - Friendly,https://static.heygen.ai/voice_preview/Jw83S9aTUdzR2XdBvzLGYc.wav,False,False,False
+6d9035df407946859876104ac8b0c0a0,Malay,Male,Norain - Natural,https://static.heygen.ai/voice_preview/KdsoPk4cDtHuHBh3YZMVWD.wav,False,False,False
+6e7404e25c4b4385b04b0e2704c861c8,English,Female,Michelle - Natural,https://static.heygen.ai/voice_preview/djxEBTVHKLgXsJpb6ZrBVn.wav,False,False,True
+6fc81c412a6d46a688cfb4dd659c1ab6,Chinese,Female,HsiaoYu - Natural,https://static.heygen.ai/voice_preview/5f500db50b6a40ec97d33381f9fbdb32.wav,False,False,True
+7001a39135544c608cd53e6b575faa5c,Urdu,Male,Salman - Natural,https://resource.heygen.ai/text_to_speech/qtmpsYPpqDDryANT9q2vxZ.wav,False,False,True
+703900c5c9a5463495df05826f3fce63,Slovak,Female,Viktoria - Natural,https://static.heygen.ai/voice_preview/dec6d16fbfcc408a9b53ef55fff50a77.wav,False,False,True
+71b0aa6499f6458e8b040818a017db1f,English,female,Nova,https://static.heygen.ai/voice_preview/AqsTSjEq9nzYoAo2DLkDCQ.wav,False,False,False
+71ff4fd31a844a8a9cfe2073c80c104d,Arabic,Male,Shakir - Professional,https://static.heygen.ai/voice_preview/481c5292001a487f85855573f9373459.wav,False,False,True
+727e9d6d492e456b9f27708fa8018744,English,Female,Clara - Professional,https://static.heygen.ai/voice_preview/DzWM42iH66Jr8bBVNJDmJx.wav,False,False,True
+72dab46d28d8422bb4386f0d1d9cf9ba,Bangla,Female,Nabanita - Natural,https://resource.heygen.ai/text_to_speech/xJhKg7maU8J4gB8GYGQePF.wav,False,False,True
+734dd71b350e47d6a025bc172227cb49,Indonesian,Male,Adi - Natural,https://static.heygen.ai/voice_preview/7kcosBUK5VmzCDNhsmRdcE.wav,False,False,False
+73c0b6a2e29d4d38aca41454bf58c955,English,Female,Cerise - Cheerful,https://static.heygen.ai/voice_preview/KotgDpZPtr63SDnTfgdYxb.wav,False,False,False
+750533f27c5649979110086898518280,Italian,Female,Gabriella - Natural,https://static.heygen.ai/voice_preview/8e87f871f8d142a6be9c9e3bfc609e16.wav,False,False,True
+754416db5cb24547a17919b436b7303a,Swedish,Female,Elin - Warm,https://static.heygen.ai/voice_preview/ksLY6CETRQbM8Gi289ytvu.wav,False,False,False
+760ec5388f364b9698a077339a982866,Czech,Female,Vlasta - Natural,https://static.heygen.ai/voice_preview/d9462966184e41629a73bfe1a0397a39.wav,False,False,True
+76955c80188a4c149df169b5dc9e1a3a,English,Female,Emma - Newscaster,https://static.heygen.ai/voice_preview/c3NuQJ7QnFRXFq8Kn4quwk.wav,False,False,True
+787d136ca6b44868955e01bd3d3047aa,Chinese,Female,Xiaoshuang - Cheerful,https://static.heygen.ai/voice_preview/18d4934428fb4eabbffcf908108d6b59.wav,False,False,True
+7885c6f49ee94be1b642002f6f383543,English,Female,Lea_inside_sitting,https://resource.heygen.ai/text_to_speech/xsp4nT3i6QNfVaSMTxrCdU.mp3,False,False,False
+79e0798a45d340d9adb4979cfcc42363,Malay,Male,Razif - Natural,https://static.heygen.ai/voice_preview/kgp8bNRu3aQyTZ8PqyQgCn.wav,False,False,False
+79f84ce83ec34e75b600deec4c5c9de6,Spanish,Male,Lorenzo - Natural,https://static.heygen.ai/voice_preview/79f84ce83ec34e75b600deec4c5c9de6.wav,False,False,True
+7a68d053ed6946a097f0b8ec25026631,Hebrew,female,Miriam - Natural,https://resource.heygen.ai/text_to_speech/6qbx3vBBX9ZAkqCFEr5ZGZ.mp3,False,False,False
+7addb1d6eaba435da3bbd4abcb26407a,German,Male,Klaus - Natural,https://static.heygen.ai/voice_preview/e5c08f9036cb4227a64381e21d08f93e.wav,False,False,True
+7ae0c7601c36404a90b9dc569e9b70d5,English,Female,7ae0c7601c36404a90b9dc569e9b70d5,https://resource.heygen.ai/text_to_speech/TkGYboQGnt8BkUKUC3bynH.mp3,False,False,False
+7c2e216ee89a488b9796f16067baa189,Chinese,Female,Qiujing - Warm,https://static.heygen.ai/voice_preview/e0e5de9e62bb47e59edc59ee85967167.wav,False,False,True
+7c458b57f4074792a5f4b992a722c39c,Portuguese,Female,Maria - Natural,https://static.heygen.ai/voice_preview/b74827dfd74c4822bdba87ca58ec8b90.wav,False,False,True
+7c6a15c7caf8415fb2102faafd7e2259,English,Male,Prabhat - Natural,https://static.heygen.ai/voice_preview/hJHsYuEL5nVUtoLMgyTuMH.wav,False,False,True
+7d31c29ab58446328000491f4dfbb223,Spanish,Female,Lorena - Natural,https://static.heygen.ai/voice_preview/GhPNWR5Lv9JBD4KTrrwymD.wav,False,False,True
+7d7d4ebc1c164e71a0542ecab97fdb43,Kannada,Female,Sapna - Natural,https://resource.heygen.ai/text_to_speech/6vsumvfuJjnwAGRKd3neRa.wav,False,False,True
+7dde95cac3cf4d888f8e27db7b44ee75,Spanish,Male,Hugo - Newscaster,https://static.heygen.ai/voice_preview/MrHAdzF5RhHXQFYUxFv5qE.wav,False,False,False
+7e56728c6b9a4469b3d1367a3464f2ad,Spanish,Male,Gonzalo - Natural,https://static.heygen.ai/voice_preview/89969d2fd37f496fb808158ffb1ed12d.wav,False,False,True
+7f4a40d6b6da4276b6d79a114ab857da,English,male,Daran_outside_sitting_2,https://resource.heygen.ai/text_to_speech/jeZC8tWRu67FUiEcaLxbog.mp3,False,False,False
+80f371302eaa4404870daa41dc62423c,French,Female,Coralie - Natural,https://static.heygen.ai/voice_preview/313f84bacccb49a094a0919f3db30874.wav,False,False,True
+8118ba92923a4f7e89f935fae00e2265,Spanish,Female,Sofia - Cheerful,https://static.heygen.ai/voice_preview/e09d5129884e4517b4e1e7e4a2abc2c8.wav,False,False,True
+814e0b1c99e9474896b17ec7c2b2a371,English,Male,Wayne - Natural,https://static.heygen.ai/voice_preview/9abCuQ4Zf2MyUoYbjTQx3r.wav,False,False,True
+81bb7c1a521442f6b812b2294a29acc1,Russian,Male,Dmitry - Professional,https://resource.heygen.ai/text_to_speech/Drjv5bytLSdhFG4BnXqyuP.wav,False,False,True
+8273e0a033074b5bb98d7ce3ab727bd9,English,female,Shimmer,https://static.heygen.ai/voice_preview/KQHoUJkzPMmBVZNdZqA9Fe.wav,False,False,False
+84a32476cea2462e85acff7c4ce9fa07,Chinese,Female,HiuGaai - Natural,https://static.heygen.ai/voice_preview/4f2dd759a1494b66b905d733c4514cdf.wav,False,False,True
+84b5101e8be141c7be6b20d8bcf4f26a,German,Female,Ingrid - Natural,https://static.heygen.ai/voice_preview/e78d131964c04141882640c19fd70e44.wav,False,False,True
+86dc763a021a4a05a62d9e102601a605,English,male,LUCAS_INSIDE_STANDING_with_mic,https://resource.heygen.ai/text_to_speech/3X27uvwry9UGwJ5AsrfgjH.mp3,False,False,False
+8706bfaaa37444fb8b239c38256afc0d,Malay,Male,Osman - Natural,https://static.heygen.ai/voice_preview/88g9NydAM4iUv6kAfGLDJN.wav,False,False,True
+87504627ab46419b8b9a59bbdaed285e,Lithuanian,Female,Ona - Natural,https://resource.heygen.ai/text_to_speech/yHhLyBiR3Vf5tDYZkjTnYo.wav,False,False,True
+88ac5af05d3442d5a04408d4b0aa8697,Danish,Female,Naja - Natural,https://static.heygen.ai/voice_preview/ZrrjpW69yATL7KVBevMZCV.wav,False,False,False
+892c8175ca97448e9e73bc8c7494f6e4,English,Female,KRISI_Office_sitting_without_mic,https://resource.heygen.ai/text_to_speech/uHewj9UJQ9B4k8UVtt6dFD.mp3,False,False,False
+8a0a2d7958ba4c85a19802f73e7bec63,Hebrew,Female,Hila - Natural,https://resource.heygen.ai/text_to_speech/gX6jjzpsEnP9436MgY9KzM.wav,False,False,True
+8a44173a27984487b3fa86e56004218c,Chinese,Female,Xiaowen - Cheerful,https://static.heygen.ai/voice_preview/ba7d19e8ba0b413fb4ed4a5a56b2c162.wav,False,False,True
+8aa99a72f5094b2c8270a6fdadfe71b0,English,Male,Wille - Natural,https://static.heygen.ai/voice_preview/GAfaMVfT8xRTB7EaiZLvXg.wav,False,False,True
+8aaaed31d9d6407f950d67715c19bcf4,French,Male,Alain - Professional,https://static.heygen.ai/voice_preview/810f2fcdb27c431ab2d0ee1ef0e263da.wav,False,False,True
+8b06642340ad474e8d32b040928fe459,Telugu,Female,Shruti,https://resource.heygen.ai/text_to_speech/29Q2ypNTdbBcF89nMLCzcC.wav,False,False,True
+8b92884579014f8e8147836bbd0c13ca,English,male,Fable,https://static.heygen.ai/voice_preview/3ii9BykcfMVv2kTCZUm9mf.wav,False,False,False
+8bc71625549d425d9a38b4e4a296ba32,Greek,Male,Nestoras - Natural,https://static.heygen.ai/voice_preview/3035ffb28750449d9c6279dd510539ac.wav,False,False,True
+8c47d9e75bdc4f1ba81bfbe32d891085,Indonesian,Male,Ardi - Natural,https://static.heygen.ai/voice_preview/5cb6d2f1b4214b5a8daa02b6c6578fe5.wav,False,False,True
+8c97b2b19ca445a18be9a12d89c744fe,English,male,Brandon_Outside_Lookdown,https://resource.heygen.ai/text_to_speech/GA3dw2GkNZ2ar3QoPmWbw6.mp3,False,False,False
+8cfa1b47288a45d08ef20b98fdea965f,Arabic,Female,Amany - Warm,https://static.heygen.ai/voice_preview/908cdc9b9d1b424a8a1ca6bc45c60965.wav,False,False,True
+8d1bd258a2de4e558135955a396e8e97,Vietnamese,Male,Dung - Excited,https://resource.heygen.ai/text_to_speech/uFkZtUtRok6GsnpXhdJXJc.mp3,False,False,False
+8d445c4dfc304cfbadf956185eae1a6a,English,Female,kim_gym_openai,https://resource.heygen.ai/text_to_speech/QkrmBuYGiLwZrF9YPkVFAh.mp3,False,False,False
+8ec0b580ba5e4f8cbcee85c25c09ed37,Swedish,Female,Tilda - Natural,https://static.heygen.ai/voice_preview/UXMhhjcCoihfmcfJJgBDda.wav,False,False,False
+8f0944e10aad4e989bce8f76807b6f36,English,male,lucas_car,https://resource.heygen.ai/text_to_speech/45SJU2d62kD2j5XKGz5xxQ.mp3,False,False,False
+8f389c2237194f80b50fe7632dcc17b8,English,Female,Lea_in_car,https://resource.heygen.ai/text_to_speech/7ewwzNo5rjXvqS8pC4AS2H.mp3,False,False,False
+8f7912805e3847fc91aff30ca8c7a06d,English,Female,0514,https://resource.heygen.ai/text_to_speech/qcXBjhxhhMzCKusWuN8ZVD.mp3,False,False,False
+8f7e90bed52a4b6d8d5c212da18afee4,Arabic,Male,Hamdan - Natural,https://static.heygen.ai/voice_preview/52f31bc14f0a4e0996f8ba648bc9ad48.wav,False,False,True
+8fd8502aa4854f8ab80d16c481d2a1f8,French,Male,Gerard - Professional,https://static.heygen.ai/voice_preview/dcf0d63dd83145dfb15b9a363198cdef.wav,False,False,True
+8fda1f6f290c4351aec8e10b050d9cf7,German,Female,Louisa - Natural,https://static.heygen.ai/voice_preview/5709b6e4483847079b4ec10d4290042a.wav,False,False,True
+905f0333daf749e4ace78c09f42ca972,German,Male,Ralf - Professional,https://static.heygen.ai/voice_preview/ebb68bc4f7fe4f389805349fbd07ed9c.wav,False,False,True
+90fc4e27e9e349f196767c0ada520abd,French,Male,Jerome - Professional,https://static.heygen.ai/voice_preview/a9bbf9885fc8475687414ad7950298f8.wav,False,False,True
+928d97a03a2844b2be94a997ab8161d2,Chinese,Female,Xiaomo - Friendly,https://static.heygen.ai/voice_preview/d32167af86c54bd39c5bd48c117db92d.wav,False,False,True
+92e5d07ba8384bf9ae0a329f2386a4b6,Arabic,Female,Iman - Professional,https://static.heygen.ai/voice_preview/aa2875bdcda248eebe454058bfe7d630.wav,False,False,True
+93129ad473ea49dd8dd69da0f4fa8fd6,Italian,male,Benigno - Natural,https://static.heygen.ai/voice_preview/bCMypM6ZLCTaGdCpjDbdVa.wav,False,False,True
+932643d355ed4a3d837370a3068bbd1b,English,Female,Josie - Cheerful,https://static.heygen.ai/voice_preview/9SGYr6Xk7SUB8CMzR9rkHF.wav,False,False,True
+951dd5d45e2143cf9360eed82d90a698,Kiswahili,male,Daudi - Natural,https://resource.heygen.ai/text_to_speech/sG7KLMYc8msQyUEeHVjp4R.wav,False,False,True
+957336970bc64d479d551fea07e56784,Hindi,Male,Madhur - Natural,https://static.heygen.ai/voice_preview/20d3b6c692db483a92e3788a87e9e231.wav,False,False,True
+95ff21a188db4b3e9cf9db3c60a2184c,Dutch,Male,Gerard -  Natural,https://static.heygen.ai/voice_preview/aE4Ur9RsoqZ4FHBYQRr5fe.wav,False,False,False
+961546a1be64458caa1386ff63dd5d5f,Chinese,Male,Yunyang - Professional,https://static.heygen.ai/voice_preview/13620ce882be490da448e90dee2cea74.wav,False,False,True
+9799f1ba6acd4b2b993fe813a18f9a91,Hindi,Female,Swara - Friendly,https://static.heygen.ai/voice_preview/e4bc76818ccf4591b1ca4321de23130e.wav,False,False,True
+98423e603a47491fa46822cc6e703717,French,Female,Brigitte - Natural,https://static.heygen.ai/voice_preview/03562d02f005494f98f347813f1ebf85.wav,False,False,True
+98b855ef6768468bbcc95f1c5c5c27c0,Hungarian,Male,Tamas - Natural,https://resource.heygen.ai/text_to_speech/jWoisxqkPaXCvasyvfWgMH.wav,False,False,True
+99af85f185034537b4d67b646063b816,Spanish,Female,Julia - Warm,https://static.heygen.ai/voice_preview/EZQiezPf8GDfFrKM4uyq3J.wav,False,False,False
+9a164f9f9a76457387a3dc4be173fd1e,Finnish,Female,Noora - Natural,https://static.heygen.ai/voice_preview/MDztH5zqiFubiD2Au4Eq55.wav,False,False,True
+9a247a37f3c04e6aa934171998b9659c,Vietnamese,Female,Hoai - Natural,https://resource.heygen.ai/text_to_speech/G4qe5L78ZmYuA635b5QX37.wav,False,False,True
+9a73e358ebf44097b8d3b6bc5fa57454,Portuguese,Male,Duarte - Natural,https://static.heygen.ai/voice_preview/99d89c99f7b04654b6f9cd2c72b29c66.wav,False,False,True
+9af7667dcc3145b790a5fb1ac226dfe3,English,Female,LEA_INSIDE_DESK_less_than_3Minute_without_mic,https://resource.heygen.ai/text_to_speech/sWDNeCxzUyy8YPDfSUUMu3.mp3,False,False,False
+9c48d8265ed442d2a485415c8ddc3757,English,Female,kim_car2,https://resource.heygen.ai/text_to_speech/9Zdh98YgWwmSSsnFSr2m9V.mp3,False,False,False
+9d50356dea1440bd8af1dcc0f618e161,Telugu,Male,Mohan,https://resource.heygen.ai/text_to_speech/XpyDpmbVM4wnBmys5Q2NMW.wav,False,False,True
+9d81087c3f9a45df8c22ab91cf46ca89,Korean,Male,InJoon - Natural,https://static.heygen.ai/voice_preview/5fc1cc4036e142cb947c2ddea9007498.wav,False,False,True
+9db0ca21b07f41b4b81c3961859a68f2,Arabic,Male,Hamed - Natural,https://static.heygen.ai/voice_preview/a141bbbd9eb448ceaf844f8bb0127ca6.wav,False,False,True
+9f836a90051d4fb69a8ad2065eedeed6,Chinese,Female,Xiaocheng - Natural,https://static.heygen.ai/voice_preview/35191e70d9a44ac8b40e8812f94ddb18.wav,False,False,True
+9ff7fd2dd9114c3bae005e62aa485e52,English,male,Daran_outside_sitting,https://resource.heygen.ai/text_to_speech/7E62giDuJiAWSdmBeNcvin.mp3,False,False,False
+a04d81d19afd436db611060682276331,English,Male,Rudi - Friendly,https://static.heygen.ai/voice_preview/4TV6LHHA5q6MArEWJN2etH.wav,False,False,False
+a0723adbea2f493d816dfeeea38f4a8c,Arabic,Female,Rana - Natural,https://static.heygen.ai/voice_preview/27e54cdd8c8c432b8c35a1057da7ac0e.wav,False,False,True
+a09397967a114798a4305336b33ca9f7,English,Female,SOPHIE_Gym_walking2_without_mic,https://resource.heygen.ai/text_to_speech/jdKkSCjfdxmECiubwj4J95.mp3,False,False,False
+a0fc963ef6aa420c988a3292b78b9b58,Nepali,Male,Sagar - Natural,https://resource.heygen.ai/text_to_speech/HR6NnSEVz98DdG5VwHdjKP.wav,False,False,True
+a5231543ed2b4e62899067faf2f783f1,Bulgarian,Female,Kalina - Professional,https://static.heygen.ai/voice_preview/2017a7173dc5493c860bfc8a378c956a.wav,False,False,True
+a53be0a403ce4ae586f002ba0c125b2c,Portuguese,Male,Paulo - Natural,https://static.heygen.ai/voice_preview/226e2c7b85b2489e8dd15750dfa7e7a1.wav,False,False,False
+a5a955ae3b754bb482e86bc09932ebf5,English,male,Daran_outside_sitting_2_with_mic,https://resource.heygen.ai/text_to_speech/FNbX45bDwNR535WTfDPjpJ.mp3,False,False,False
+a6f3eea9f3764d36a279ae810d1353c6,English,Male,Tracy - Cheerful,https://static.heygen.ai/voice_preview/VRz9yRAwKEaeafHP6Vfzu7.wav,False,False,True
+a72281fc65c542559bbc63d9ec5c866f,Arabic,Male,Ali - Newscaster,https://static.heygen.ai/voice_preview/db8aa10aeb34419a97bf2dd6c5076a4b.wav,False,False,True
+a78e0a4dbbe247d0a704b91175e6d987,Spanish,Female,Laia - Friendly,https://static.heygen.ai/voice_preview/PeyGSV89Txz6KZLFMgXYjT.wav,False,False,True
+a9e940179c1d4a1d91e6c7c3b0fea788,French,Male,Jean - Friendly,https://static.heygen.ai/voice_preview/3f539950e41c476fa19722d5e5106688.wav,False,False,True
+a9fc40f6fcd5400a83d95911610d6807,Marathi,Female,Aarohi - Natural,https://resource.heygen.ai/text_to_speech/Fr476wy3irXZHVM4NkV2hS.wav,False,False,True
+aa73aedf00974150944a4bb19225f66e,Chinese,Female,Xiaorui -  Cheerful,https://static.heygen.ai/voice_preview/711a3f402ec54fb6a5620c9b49b01c3a.wav,False,False,True
+ac175cecdde2488fb0c80468cda79c50,Arabic,Male,Bassel - Friendly,https://static.heygen.ai/voice_preview/45d19dc2351c42c4ab2b122185b858bb.wav,False,False,True
+acebd7b6419a44a388b9d1620614b29f,English,Female,Gail_inside,https://resource.heygen.ai/text_to_speech/nSYSm8euJqGceAxZpR49gb.mp3,False,False,False
+ad5d215f61d94f91ac774478fd754cf9,Swedish,Male,Roland - Natural,https://static.heygen.ai/voice_preview/PDidnDJB6CHQcD6av9M4CF.wav,False,False,False
+adafb5227fd5470ebdd77da3a572b81a,English,male,DARAN_Outisde_walking_with_mic_15s,https://resource.heygen.ai/text_to_speech/aAsp5o9p8XrJ7afdKxxmkQ.mp3,False,False,False
+adc699478776486997dcf2f7b1534a89,Estonian,Male,Kert - Natural,https://resource.heygen.ai/text_to_speech/XfgYuMUstY8mg99AYvVqRb.wav,False,False,True
+ae3563ff1460469e89f661ffb3f1260b,Hindi,Male,Bhavin - Newscaster,https://static.heygen.ai/voice_preview/7224e9c56b234898a758421c138475b2.wav,False,False,False
+ae37066233744336b68220e0de5bdf59,English,male,LUKAS_in_car_without_mic,https://resource.heygen.ai/text_to_speech/dSVCYxasPEcuVqCAaFLcGg.mp3,False,False,False
+af63f654e4234682bfb7d34b08007466,Spanish,Female,Elena - Natural,https://static.heygen.ai/voice_preview/6d47a68eebbb448da7afddc6a1830e7d.wav,False,False,True
+b03dcfbc8fb9468ea83cca16aca0ef28,English,Female,LEA_in_car_with_mic,https://resource.heygen.ai/text_to_speech/3obDUi6MvHBqicRexi7Faj.mp3,False,False,False
+b2ddcef2b1594794aa7f3a436d8cf8f2,English,Male,Keanan - Natural,https://static.heygen.ai/voice_preview/5hFXAVXkxRNHBdhvJTJJKe.wav,False,False,False
+b3003591331b4a3ab859bf630bf28713,Marathi,Male,Manohar - Natural,https://resource.heygen.ai/text_to_speech/m6koPsQ9bzQcN754sqqWjL.wav,False,False,True
+b32ea9471bb74ee688b75dde1e2ae6d7,French,Male,Henri - Natural,https://static.heygen.ai/voice_preview/217ccdfe1b9c4507b08f22b1c471190e.wav,False,False,True
+b46125eedb894e358d86210c5e11c041,Bulgarian,Male,Borislav - Professional,https://static.heygen.ai/voice_preview/391e43e0d2a147728fb047ee56347a31.wav,False,False,True
+b4cfec94204242bda16ca146558b7218,Sinhala,male,Sameera - Natural,https://resource.heygen.ai/text_to_speech/bgLdfwNKrUapq36UoiQeoi.wav,False,False,True
+b5052d61c5964bceaa3ff25d7b1b9e8a,German,Male,Bernd - Natural,https://static.heygen.ai/voice_preview/2dd5016033444b53a8a2307ab131d47a.wav,False,False,True
+b5a82118bee1487c930f3593b44244e0,English,Female,KRISI_Outside_walking_without_mic,https://resource.heygen.ai/text_to_speech/CSrwjVXVRkKrgMa8rTYAL9.mp3,False,False,False
+b64f2f29a2074cb7a3c0071ad3ad41bd,Gujarati,Male,Niranjan - Natural,https://resource.heygen.ai/text_to_speech/fwv9kAWWvTM9T46KMJLV4i.wav,False,False,True
+b8b6f5b6e57c40df91811e385b2725b3,English,Male,Connor - Natural,https://static.heygen.ai/voice_preview/faRVtvJziRGQEJd5PK6fiK.wav,False,False,True
+b8fb879d52454ebeb1a9579797db6bd4,Arabic,Female,Laila - Friendly,https://static.heygen.ai/voice_preview/7bb84d039af7405a83bed750db78d037.wav,False,False,True
+b9953cd27740417c950f2f0db34243ad,French,Male,Claude - Friendly,https://static.heygen.ai/voice_preview/306681b3e572434798cd6a7e68324473.wav,False,False,True
+ba3b2274201d4f18b8b6888ad991bffe,Polish,Female,Zofia - Natural,https://static.heygen.ai/voice_preview/d975d1831b994ab29c689800dd43b18a.wav,False,False,True
+ba61b3b0a56d463dbff10eeccd3a899a,French,Female,Josephine - Calm,https://static.heygen.ai/voice_preview/d3d5d36675c04e97a9baf4b178dd1d76.wav,False,False,True
+ba9dee2892da476b9f01c7cc659879b5,Swedish,Female,Alicia - Natural,https://static.heygen.ai/voice_preview/4iyfze9R9hx9XicM9nsBeo.wav,False,False,False
+ba9f801aa02248baad238de6b37d99ba,English,male,Daran_outside_sitting_with_mic,https://resource.heygen.ai/text_to_speech/JV9bJLjcVPUVAWiQ39ijzb.mp3,False,False,False
+bb50022458624d89acd48368c3119ac2,German,Male,Killian - Professional,https://static.heygen.ai/voice_preview/1b60bd820a224a4780297163df2753c6.wav,False,False,True
+bc22af81440d4212acf315103d7faf82,Hindi,Female,Aditi - Calm,https://static.heygen.ai/voice_preview/c8641047a84040df9e98fb3c84923f6c.wav,False,False,False
+bc69c9589d6747028dc5ec4aec2b43c3,Russian,Female,Dariya - Professional,https://resource.heygen.ai/text_to_speech/AUtGdWPWxeDAwTT2ViMR4h.wav,False,False,True
+bc8681a3605d4830813dfaf2316d265b,English,Female,kim_sit_openai,https://resource.heygen.ai/text_to_speech/VzHh3wGtZuoAVEfmycDJ2P.mp3,False,False,False
+bd0b9af178ed4327a5b43666c4e975b4,English,Female,Gail_outside,https://resource.heygen.ai/text_to_speech/DwKWUaydnKowuaQPG6YfR3.mp3,False,False,False
+beaa640abaa24c32bea33b280d2f5ea3,English,Male,Johan - Friendly,https://static.heygen.ai/voice_preview/fkxNCfdkoKfopBpTtvQqAp.wav,False,False,True
+bef4755ca1f442359c2fe6420690c8f7,Korean,Female,SunHi - Natural,https://static.heygen.ai/voice_preview/304a4edf4b724362902bd811b96b6443.wav,False,False,True
+bfc6d0242de24106a104339f0618b68d,English,male,Alloy,https://static.heygen.ai/voice_preview/GdJHgYtVrKCHJdLGWn8v7o.wav,False,False,False
+c089f9832fd04922b34b3d2f3661d113,English,Male,Brandon - Warm,https://static.heygen.ai/voice_preview/maqA9fw7siQAcv2WafDz4F.wav,False,False,True
+c15a2314cbc446b7b6637f44234d6836,English,Female,Leah - Natural,https://static.heygen.ai/voice_preview/i5bRcieHP5gHNkcQkDSzpE.wav,False,False,True
+c218750e46864dba9c45b9e40fe91aef,English,Female,Natasha - Professional,https://static.heygen.ai/voice_preview/WXnjbGWv8ApsQncudqKfW7.wav,False,False,True
+c2958d67f1e74403a0038e3445d93d50,English,Female,Sherry - Friendly,https://static.heygen.ai/voice_preview/RGqs3H9eLfHkc3HduJXxTY.wav,False,False,True
+c29c6fdb6abe4146be2daa7929f03e41,English,Female,Abbi - Natural,https://static.heygen.ai/voice_preview/UcamNKnVKBJiTKVSuCGuTp.wav,False,False,True
+c2ace75f65fd433f987337950e812335,English,Female, Molly - Newscaster,https://static.heygen.ai/voice_preview/jEKUAyUKmX8iG4NXrCmQRC.wav,False,False,True
+c4be407b9d94405a9eb403190d77c851,English,Female,LEA_Outside_walking2_with_mic,https://resource.heygen.ai/text_to_speech/UeAQq9G7Emt3MirTwPkXR3.mp3,False,False,False
+c516bd553fd2402e9b1696b5e5bde910,Chinese,Female,Xiaohan - Peaceful,https://static.heygen.ai/voice_preview/8083eb25c12345c99bb90bd3d7fd88e2.wav,False,False,True
+c683b544f2b34bbfb81313e81852dd38,Norwegian,Female,Pernille - Natural,https://resource.heygen.ai/text_to_speech/pwKL8eNUqU3wA72GNBbsRQ.wav,False,False,True
+c6e724b7b74b4b21ae8611d2d9647efe,English,male,DARAN_INSIDE_with_mic,https://resource.heygen.ai/text_to_speech/iq4dpZzS47aJrbqGDe8QeR.mp3,False,False,False
+c6fb81520dcd42e0a02be231046a8639,Vietnamese,Male,NamMinh - Natural,https://resource.heygen.ai/text_to_speech/gc64zbREaYP5MtWjYwvoY.wav,False,False,True
+c7b89c2854214a2f9709534a873a57ea,Finnish,Male,Harri - Natural,https://static.heygen.ai/voice_preview/j6kh7pnUmir9h8RZU7aotA.wav,False,False,True
+c84b984bc6394112ab95bb75e2c871e1,Japanese,Male,Takumi - Warm,https://static.heygen.ai/voice_preview/5651d31a546e4976ad27427fdadf1651.wav,False,False,False
+c8a9c5997593b413e48e22cd9a4d6525,Portuguese,Female,Elza - Warm,https://static.heygen.ai/voice_preview/83572cdb6b24475a82d6bcf832615d38.wav,False,False,True
+c9d7dad727f5433281a2fd0e8ecbb9bd,Arabic,Female,Maryam - Natural,https://static.heygen.ai/voice_preview/4eef28034bdf4a2e9961c8f53dc2d85d.wav,False,False,True
+cbb56828d798491e9f601a5415415e25,Spanish,Female,Larissa - Friendly,https://static.heygen.ai/voice_preview/Jg5MDxyd6pjrPhvPLepFdh.wav,False,False,True
+cc29d03937d14240acf109c827a9a51a,English,Female,Aria - Newscaster,https://static.heygen.ai/voice_preview/5vzP2xA79TcGpndVngHBbA.wav,False,False,True
+ccb30e87c6b34ca8941f88352c71612d,English,Male,Noah - Serious,https://static.heygen.ai/voice_preview/UDzn8mZ5eKbXrQQojCVMud.wav,False,False,True
+cd658f1164c1489093607163fc83ba62,Thai,Female,Premwadee - Natural,https://resource.heygen.ai/text_to_speech/AfRgvAYeTJ8QuGPCfKQGDd.wav,False,False,True
+cdd9ca1e09e34867a23d0cf77deb52ea,Hebrew,male,Isaiah - Serious,https://resource.heygen.ai/text_to_speech/eKopqa4baZHxpgD6D63sy9.mp3,False,False,False
+ced64f6c3e56455692a04e6106db9dde,French,Male,Fabrice - Friendly,https://static.heygen.ai/voice_preview/af486fe2ca8747538656025e556fac50.wav,False,False,True
+ceebaab47af040a49edcbd27dc8f7dbe,Filipino,Female,Luningnig,https://resource.heygen.ai/text_to_speech/htZTETbhCoDCsCYKDUmnw6.mp3,False,False,False
+cfdb383951144f56a5198869636ccd17,Portuguese,Male,Antonio - Natural,https://static.heygen.ai/voice_preview/82871b89da0d42f0bc9c64681f00ae48.wav,False,False,True
+d0ba3a24e9fc49b1ae528a0dca5bf141,Bangla,Male,Abhijit - Natural,https://resource.heygen.ai/text_to_speech/9jQ4aSpHwQrSKpAAuui9nD.mp3,False,False,False
+d0c68b40ab8a45f8aa551404d780cce8,English,Female,Lea_on_balcony,https://resource.heygen.ai/text_to_speech/iGVJzMk3mkBV2oB2z9fMUL.mp3,False,False,False
+d0d5c7aad38d4ec1a12f2ebd3233e097,English,male,d0d5c7aad38d4ec1a12f2ebd3233e097,https://resource.heygen.ai/text_to_speech/W6Jwdhzp7nmp9qYs5wePaN.mp3,False,False,False
+d252ca05aabc4ed587098201f42e6172,Spanish,Female,Abril - Natural,https://static.heygen.ai/voice_preview/T3DNmvM7x8VVuY9S64B5YU.wav,False,False,True
+d277a73d00ec427ba820cb7904618c56,Turkish,male,Mustafa,https://static.heygen.ai/voice_preview/pcE7icXREqUtwK4RRWA3XC.wav,False,False,False
+d2d4788928f443f5b8d6c60f201030cd,Dutch,Female,Hanna -  Natural,https://static.heygen.ai/voice_preview/czaXYBZNro2An5BvAddGEa.wav,False,False,False
+d2ec95840fa84bc38fcb4bf04cd12f9e,Arabic,Male,Moaz - Professional,https://static.heygen.ai/voice_preview/1672ce3d29b94d39bb60c6756a61ee9d.wav,False,False,True
+d336d17c60fe488bb7f7c16301e1d1d5,French,Male,Maurice - Professional,https://static.heygen.ai/voice_preview/ffe9abccec3b4b02a86684a97ee187dc.wav,False,False,True
+d4374e1ee455465cac7600f318a84624,Arabic,Male,Laith - Warm,https://static.heygen.ai/voice_preview/0ce94b0dc6fb4e6b82c4064e405a7852.wav,False,False,True
+d47ae8f1b293429f9e1513ce85d482e4,German,Female,Klarissa - Professional,https://static.heygen.ai/voice_preview/abf1df2570c944b9ab5d1ecc8aa8c763.wav,False,False,True
+d5fdcfda99cd44dba12a4ea0076a7271,Italian,female,Pierina - Natural,https://static.heygen.ai/voice_preview/oGWBgMc6H2RntkhkkjmAhG.wav,False,False,True
+d61a2c54f4b4401d87777a218b2d2ae4,Turkish,female,Fatma,https://static.heygen.ai/voice_preview/HVNsr9iNsYJQBNzrbQdgXc.wav,False,False,False
+d62a0ce960434056b25c058bc4fa2509,Spanish,Male,Jorge - Professional,https://static.heygen.ai/voice_preview/3dcdbcc214864ffb830b2795dc3a25e9.wav,False,False,True
+d7bbcdd6964c47bdaae26decade4a933,English,Male,Christopher - Calm,https://static.heygen.ai/voice_preview/Pn2tXVGjpwyHpWTsKFj87X.wav,False,False,True
+da239df5428c67c12c3271d2a0d3b66c,Portuguese,Male,Humberto - Professional,https://static.heygen.ai/voice_preview/cfff49b2ad534ec0bcff4fac6584c588.wav,False,False,True
+dbcfe683e60a4bed9b8957d1f5d6de98,Italian,Male,Diego - Natural,https://static.heygen.ai/voice_preview/bdc08e6dbb004af4bf395d2dd0ad8645.wav,False,False,True
+dbe43f2b612d4ffab71925ebf53a0b4f,Spanish,Female,Catalina - Warm,https://static.heygen.ai/voice_preview/81d8ecf79e604a96a63c8619b8290d60.wav,False,False,True
+dbf999472fe147be9de01004103c21ea,Portuguese,Female,Adriana - Natural,https://static.heygen.ai/voice_preview/56f9ef0f038c4bc28a21ffc254bec715.wav,False,False,False
+dcf69bbbab5b41f2b75b9f86316c06c5,Hindi,Female,Aruna - Natural,https://static.heygen.ai/voice_preview/b1303134695d4d0e8d6308ac7d22bd3e.wav,False,False,False
+dd47dadb46f4b930cc760d8f3ad44fd9,Turkish,Female,Emel,https://static.heygen.ai/voice_preview/008e01d2a6a94cfca6a4cca5951a7320.wav,False,False,True
+de6ad44022104ac0872392d1139e9364,Chinese,Female,Xiaoxin - Professional,https://static.heygen.ai/voice_preview/6a435813c0dd43a4af272ff8fffcc959.wav,False,False,True
+df1b0eaaf0cb4229b238ec530828ea83,Urdu,Female,Uzma - Natural,https://resource.heygen.ai/text_to_speech/myqPkFjsztfyCdTNanH3LT.wav,False,False,True
+dfaf1a62e9bc4616985f2bfab5a3f656,Arabic,Male,Hedi - Friendly,https://static.heygen.ai/voice_preview/a050da8d411744029d4b04a1840b25ee.wav,False,False,True
+dfff8709ee4d4eeba79dd7f35dd61813,English,Female,Lea5fast,https://resource.heygen.ai/text_to_speech/qtNDKg5rw4fd4CZ9w8KQoB.mp3,False,False,False
+e052b69dbb6c4930a46b14960ee11dce,Hebrew,male,Aryeh - Natural,https://resource.heygen.ai/text_to_speech/a4Dvpi2rZjskrw3iB72LYf.mp3,False,False,False
+e17b99e1b86e47e8b7f4cae0f806aa78,English,Male,Liam - Professional,https://static.heygen.ai/voice_preview/8sg49P4MFQnpDvpRkaR6M9.wav,False,False,True
+e203c4c715894385b81187f2f26ac6f9,Arabic,Female,Sana - Professional,https://static.heygen.ai/voice_preview/89057be683794a5f8e5e135465922534.wav,False,False,True
+e2258039f0de4e7bbe577e9499429a26,English,male,Brandon_outside_in_cafe_without_mic,https://resource.heygen.ai/text_to_speech/dLnSdRUWEugiVDJhdh2xM3.mp3,False,False,False
+e280fba0eada0e3127e2c2a58e1206cb,Turkish,Male,Ahmet,https://static.heygen.ai/voice_preview/9f00961fddfb4d729a83f2aca7637a67.wav,False,False,True
+e28101b169c54f2fafd9035cb0226a89,Turkish,male,Murat,https://static.heygen.ai/voice_preview/vc2cthvzyZ2Ms99ixgty2N.wav,False,False,False
+e2b70c60a32a4a0aa97da7eaa20c8b7e,Spanish,Male,Marcelo - Warm,https://static.heygen.ai/voice_preview/6yYtgCCvAoyU8CskNNhXYc.wav,False,False,True
+e3e89b7996b94daebf8a1d6904a1bd11,English,Male,Wilder - Natural,https://static.heygen.ai/voice_preview/UjH2pdBnSE2N2MV4ebFgQe.wav,False,False,False
+e4878ce9b703461695bf793c0df0d2b1,Indonesian,Female,Gadis - Natural,https://static.heygen.ai/voice_preview/c396e01cbd894c4e997e9a96773f7e0d.wav,False,False,True
+e4dcfd51f07d4b93a0468a48a782b50e,Portuguese,Female,Francisca - Cheerful,https://static.heygen.ai/voice_preview/15ae85373431429b862e57029c3c7bf4.wav,False,False,True
+e529c8c45a8347fc870adb030ffab172,Malay,Male,Amir - Natural,https://static.heygen.ai/voice_preview/P3C2CYa4AwimBqzzobw3Ay.wav,False,False,False
+e6f941fd57e64b3ba000c53263d6ba28,Dutch,Female,Colette - Newscaster,https://static.heygen.ai/voice_preview/8WRR8WkEhViGVLAVrtwAMW.wav,False,False,True
+e705f31fa48846a2b1bea49387c2c7cf,Greek,Female,Athina - Natural,https://static.heygen.ai/voice_preview/19e4574154514c65ad2e647ed949fc78.wav,False,False,True
+e756772fbb9b49828a9f24c8a905c58a,Polish,Female,Agnieszka - Professional,https://static.heygen.ai/voice_preview/e30356ac8e974425a205dbb22c4ff57e.wav,False,False,True
+e9472c5d7bda495d8813fb6bc757eaa3,English,Female,Marieke - Natural,https://static.heygen.ai/voice_preview/mVX39uo7mwzwMUxszXddPb.wav,False,False,False
+e9a57ec649c8e7db9d8104529374b2c3,Portuguese,Male,Donato - Natural,https://static.heygen.ai/voice_preview/e6357e680feb469fbb989596e572ef4e.wav,False,False,True
+eb835549ef234630a868dee8a99e09c1,English,male,BRANDON_Cafe_with_mic,https://resource.heygen.ai/text_to_speech/M6qktdSnjfGC2CJneykJRd.mp3,False,False,False
+ebb3e19fb57744fbb32285fe2010d36d,Danish,Male,Jeppe - Natural,https://static.heygen.ai/voice_preview/R7vYzdDa9GQoefxNsgRtKG.wav,False,False,True
+ec218e50cc9c4991894676a31e4804c5,Romanian,Male,Emil - Natural,https://static.heygen.ai/voice_preview/emBBNYQB7xhLjpgp5L4F9q.wav,False,False,True
+ec4aa6ac882147ffb679176d49f3e41f,English,Male,Eric - Newscaster,https://static.heygen.ai/voice_preview/QyfEredcYX3MKGkBGudZ9H.wav,False,False,True
+ec971490059245d3953fd895ee37ab09,Spanish,Female,Vera - Friendly,https://static.heygen.ai/voice_preview/LqxYEhqSg75meLYWG22j4d.wav,False,False,True
+edcaaa625dac4c5088e9e7aeba977621,English,Female,SOPHIE_INSIDE_SITTING_without_mic,https://resource.heygen.ai/text_to_speech/yZBaDKXY6whDnzikSm3Y3d.mp3,False,False,False
+edf40d9a721c4d1f8458c9f8794f1a4d,English,Female,Lea_in_car_2,https://resource.heygen.ai/text_to_speech/NV4tM5hApagtKiTCTU2JnP.mp3,False,False,False
+ee537ab51bcc475290741093bba4c426,German,Female,Leni - Friendly,https://static.heygen.ai/voice_preview/c9720a439da5474480764fb729791afb.wav,False,False,True
+eecd293e7eac4153808ed65dd1cb4daa,Portuguese,Female,Raquel - Warm,https://static.heygen.ai/voice_preview/c96b4c07e6414d3cb99b41fba9f659ff.wav,False,False,True
+ef5765a5c2ee49e58f7dd942e67fb6f2,Hindi,Male,Jaidev - Professional,https://static.heygen.ai/voice_preview/f76b718088c54b22bb8da12dbcb78a0f.wav,False,False,False
+f084205207c9474e8413b4bbf1a0c170,English,male,lucas_inside,https://resource.heygen.ai/text_to_speech/YzmvM9kgyyJv2akNBUzW8B.mp3,False,False,False
+f10a2b62e6ec43fa9eb7078b03e2ba0d,Arabic,Female,Zariyah - Professional,https://static.heygen.ai/voice_preview/86ab2c6c3d4d4e0f8d2f0f844460597e.wav,False,False,True
+f1b1d67bd09441589c0bb30f0c0549c9,Spanish,Female,Paola - Cheerful,https://static.heygen.ai/voice_preview/ALJsFyHFoDg6HopopwdyjS.wav,False,False,True
+f2846fb5c4c04ca494b721c3fc2526d3,Thai,Female,Achara - Friendly,https://resource.heygen.ai/text_to_speech/YS8eBxpyGx4jibdf6PpruH.wav,False,False,True
+f2d44cfdd1dc4846ae54a01d9db9d9fe,Polish,Male,Marek - Natural,https://static.heygen.ai/voice_preview/e92a6b9ce02243d98cc826179b95c5c6.wav,False,False,True
+f37bfc7d0be8494c8fa103a4a47eed33,Tamil,Female,Pallavi - Natural,https://static.heygen.ai/voice_preview/sYBhrd5KJFYqy8cShU6VUW.wav,False,False,True
+f3abd8faf9f540efb5101c1fa1bc3a35,Croatian,Male,Srecko-Natural,https://static.heygen.ai/voice_preview/msLHmcmT5tCoQgWHAM4mFh.wav,False,False,True
+f578e0a57c0b4b46a510bcfdca45a26c,Arabic,Female,Amina - Newscaster,https://static.heygen.ai/voice_preview/936fae57e54d47e58ee1ca0d6efd6e0b.wav,False,False,True
+f5a3cb4edbfc4d37b5614ce118be7bc8,English,Male,Ryan - Professional,https://static.heygen.ai/voice_preview/CsXU4XY7SgPPQmo6ZEtnjN.wav,False,False,True
+f7658a75545d4b70b04d8784c07bd038,English,Male,Lucas - Natural,https://static.heygen.ai/voice_preview/9ex83FXgouLw6NVytasyH7.wav,False,False,True
+f8d7dd6a1bea4907a41b3fa30a66530e,Swedish,Male,Mattias - Natural,https://static.heygen.ai/voice_preview/2PV8YHrZmCSicJHZUVXCwo.wav,False,False,True
+f9e6786404354cffbec42f650e9458c6,Swedish,Male,Hugo - Friendly,https://static.heygen.ai/voice_preview/LXpVFuD3MkDKYRpQ8nCnbC.wav,False,False,False
+fa4de0d162464cdf9311f73e83a556d7,Swedish,Male,Marcus - Natural,https://static.heygen.ai/voice_preview/BvAUkFVWyJPVoCNBaQ39LD.wav,False,False,False
+fa643232596a4786a26834b36df59808,Arabic,Male,Taim - Natural,https://static.heygen.ai/voice_preview/791a92c271244f909bd7ad89098b2176.wav,False,False,True
+face330a542b4357aa0611779c64c12f,Spanish,Male,Mateo - Warm,https://static.heygen.ai/voice_preview/4KssrtgEUBeMKn7PuZkqvy.wav,False,False,False
+fb3dcd1398534927a2308c3d7ee10c5b,Hebrew,Male,Avril - Natural,https://resource.heygen.ai/text_to_speech/jRD36FrtLeKaecSdBfmEb.wav,False,False,True
+fb6ff83d7319492394ab3af233cca8e3,Italian,Female,Elsa - Cheerful,https://static.heygen.ai/voice_preview/dddad5772a66418885cf01b12333466f.wav,False,False,True
+fb879a3cd2c040c8a730775b935263a1,German,Female,Elke - Warm,https://static.heygen.ai/voice_preview/cbaff86c906343938144258813bea682.wav,False,False,True
+fba666391539492285f14ccf016b63bd,Danish,Female,Christel - Natural,https://static.heygen.ai/voice_preview/YXrv38tGmfPFyQjGWgzB3W.wav,False,False,True
+fd26a72bd7724dbea95e4ad5db3a78bc,Filipino,Male,Angelo - Natural,https://resource.heygen.ai/text_to_speech/5drmSLRDHHt3VVZEhvZ5NU.wav,False,False,True
+fd6bf3b9c3254137aefbe36972c39349,English,Female,Jane - Serious,https://static.heygen.ai/voice_preview/iuocs4hoQUGTHJoLnzYYyf.wav,False,False,True
+fdc76477bc3a49ed9868c8da29535fe3,English,male,Daran_in_car,https://resource.heygen.ai/text_to_speech/z3hVTCK9Lp3sgPzB3aZRwH.mp3,False,False,False
+fe13d29d488d4002a9a90dc1537fd544,Spanish,Female,Elvira - Natural,https://static.heygen.ai/voice_preview/82563a4fa769487ea359f7ee26b506c5.wav,False,False,True
+fe5b9effb624445ba3913007dd68c77f,English,male,Daran_inside_sitting,https://resource.heygen.ai/text_to_speech/VaNQGEiGRCzMJoqAVHecAC.mp3,False,False,False
+feca19f2a24943b3898e8b87f1696edf,French,Female,Charline - Natural,https://static.heygen.ai/voice_preview/e4f2120a63f344b39fca996f5ca00943.wav,False,False,True
+fef785686844404baff0391a67c84c1d,Spanish,Female,Estrella - Natural,https://static.heygen.ai/voice_preview/KxdYCK6JvCHpe3ySCTUicZ.wav,False,False,True
+ff465a8dab0d42c78f874a135b11d47d,English,Male,Davis - Professional,https://static.heygen.ai/voice_preview/MJy76NRegZK6zmnSzSn7qb.wav,False,False,True
+ff5719e3a6314ecea47badcbb1c0ffaa,Portuguese,Female,Ines - Friendly,https://static.heygen.ai/voice_preview/7369fb86158d411380ba510e22de9b55.wav,False,False,False
+ffb5979428d642abaa9cae60110824e3,Spanish,Male,Alvaro - Natural,https://static.heygen.ai/voice_preview/fa873604b3344a77896b904c37735c5e.wav,False,False,True
+ffdbe4de35d34391830da243f2b82e13,Chinese,Male,Yunxi - Friendly,https://static.heygen.ai/voice_preview/db9a5f4a5a1f4cd7a39c5a675e051a51.wav,False,False,True
+0009aabefe3a4553bc581d837b6268cb,English,male,Walter Sinclair,https://resource.heygen.ai/text_to_speech/99L5UXvyBUTeFCswwBSppg.mp3,False,False,False
+0011dfc1f6f544f1b8a6988489d6bf47,English,male,Jack Sterling,https://resource.heygen.ai/text_to_speech/pnohtSB7LYKuNtSMHW2t9b.mp3,False,False,False
+003a49db4fb34c008076cc86239345c9,English,male,Earnest Edward,https://resource.heygen.ai/text_to_speech/DSrd6myiRN2SQUB8D2nSr6.mp3,False,False,False
+01d674cfd32b4728a3fddd21b7e7d543,English,male,Senthil,https://resource.heygen.ai/text_to_speech/4wRmRbxoFRdn42rH2HrBWn.mp3,False,False,False
+02385fcb56d84a7c9fbeea6a878b4b00,English,male,Charles Montgomery,https://resource.heygen.ai/text_to_speech/yGdnHswi6RPLCJPQejp7ST.mp3,False,False,False
+024bdf73411946c4ac4672df51056cf1,English,female,Sensual Sapphira,https://resource.heygen.ai/text_to_speech/LqrfT4dL8pQzJyxGW7K9i5.mp3,False,False,False
+02880d1c6fd94b7799d91135581ed810,English,Female,Blanka - Lifelike,https://resource.heygen.ai/text_to_speech/QLXLQA76pMBmHTNbrt5Nu8.mp3,False,False,False
+035ec8f52ec247cdbed5f3bf9f7991ef,English,female,Peaceful Paige,https://resource.heygen.ai/text_to_speech/P4ZQQEx9ZJ8RsTLhWxsVfX.mp3,False,False,False
+03fcf8ecb0a94b6b94e9007edb7c35f8,English,male,Reassuring Rupert,https://resource.heygen.ai/text_to_speech/HArXLY8AJgX8a2YcFT7pMf.mp3,False,False,False
+042152a30cc44838a617b4b754b55917,English,male,Expressive Evan,https://resource.heygen.ai/text_to_speech/LqqLYiwDG4DSrBW8hXpBiG.mp3,False,False,False
+0516c2d857eb425c94e90b068241914e,English,male,Dynamic Derek,https://resource.heygen.ai/text_to_speech/5Ndoofyqi5CxMTRSaUeKW6.mp3,False,False,False
+051a4794b02d4438a99258edfbdf7be6,English,male,Augustus,https://resource.heygen.ai/text_to_speech/dexqmv42CFeLgXEhu4KWYc.mp3,False,False,False
+06e81a5d7c8b41818d3f0b38f7cf15a1,Indonesian,male,Breezy Bagus,https://resource.heygen.ai/text_to_speech/WU2bkpo3ebsovvD5uSR8cB.mp3,False,False,False
+074ec91a4d9945e29b478c3d1215b45f,French,male,Étienne Dubois,https://resource.heygen.ai/text_to_speech/fd2S2wku4KKkjB5WDKb4vm.mp3,False,False,False
+07530cc9a6a846f2b17f404070f50893,English,neutral,Robo-Rex,https://resource.heygen.ai/text_to_speech/HnKSTV5DCziMFUPr4MDDth.mp3,False,False,False
+077ab11b14f04ce0b49b5f6e5cc20979,English,Male,Paul - Natural,https://static.heygen.ai/voice_preview/k6dKrFe85PisZ3FMLeppUM.mp3,False,False,False
+07d2ba65847541feb97abc9b60181555,English,male,Smooth Dev,https://resource.heygen.ai/text_to_speech/SVR8yzetKpYKjvV36DLkVW.mp3,False,False,False
+080ae8ef6a0c48b98486a48be132fdd0,English,female,Husky Hazel,https://resource.heygen.ai/text_to_speech/YKHUhgFzjRv6G3sEuGtZqE.mp3,False,False,False
+080d9383c0314056aef392892e009806,English,unknown,Daran inside booth,https://static.heygen.ai/voice_preview/ef3c5118e9b84875b1de93b258ceac7f.mp3,False,False,False
+084760b4922a44599575c770070ec2d7,English,female,Peppy Stella,https://resource.heygen.ai/text_to_speech/FzPvkRntsBMY7KpxY6bDEU.mp3,False,False,False
+086b225655694cd9ae60e712469ce474,English,male,Arthur - Natural,https://static.heygen.ai/voice_preview/au9cu3oknHoCTr3YtVjKAf.mp3,False,False,False
+088da045d8114ca39add4a75df8ed9a0,English,male,Alistair Blackwood,https://resource.heygen.ai/text_to_speech/LSYjoLQWfDLDybW9TV4jbJ.mp3,False,False,False
+09a3fec399484100accdeac9d81c6bd8,English,female,Lizzie,https://resource.heygen.ai/text_to_speech/muXU96PvFvEpZzgVFvb75V.mp3,False,False,False
+0a82bb7441ca46eb8ec3f20b88249ebe,English,Female,Ida - Lifelike,https://resource.heygen.ai/text_to_speech/ZTXhgCKeBkhiwA4CPpYNFT.mp3,False,False,False
+0adc547b76a5401c856274c379904eb7,Hindi,male,Luminous Laksh,https://resource.heygen.ai/text_to_speech/36NHtcr6PpLDMhHYthrZ5A.mp3,False,False,False
+0afad27750c44acfaf0b1fa2381182bb,English,Female,Ophelia - Lifelike,https://resource.heygen.ai/text_to_speech/ER9NxCbjSVgqXrVCGrHK7T.mp3,False,False,False
+0b464b2f4e2249a4b5a05e60eaf41e7e,Hindi,female,Riya Mehta,https://resource.heygen.ai/text_to_speech/mLoyvLYfGjmG9UTqED9TMn.mp3,False,False,False
+0b47b5a637e944f9bfd49913999b344b,English,male,Ben Hart,https://resource.heygen.ai/text_to_speech/f6itwkrqMR9yoVVBJEQTRM.mp3,False,False,False
+0b621cd5bbb74f90857d1addc4aeb0b5,Hindi,female,Anushka Priya,https://resource.heygen.ai/text_to_speech/QxHmHW79JrVbowdobftMx4.mp3,False,False,False
+0ba782bdd9894daf9dd1f95e45e3e321,Japanese,male,Yamato,https://resource.heygen.ai/text_to_speech/yx7NSMALQCTh5wCNcnmFqi.mp3,False,False,False
+0be18589507d46419c8fd8aab496683e,English,male,Vocal Victor,https://resource.heygen.ai/text_to_speech/9eYevPv9XAJQUjprcZM4eC.mp3,False,False,False
+0c2151d538844c70a8b096de533f2828,English,male,"Relaxed Reece
+",https://resource.heygen.ai/text_to_speech/VVtxGT8csd9Sxbf3oiCE2S.mp3,False,False,False
+0c6c4da15c7a4719bc3b60dc21c2104e,English,male,Mellow Adam,https://resource.heygen.ai/text_to_speech/UZcXgiWgfsyn5D6jKFBqQC.mp3,False,False,False
+0c988767e0244bb980b40e6ec61103f6,English,Female,Milena - Lifelike,https://resource.heygen.ai/text_to_speech/7G9ngqkPRcnXPMDd4Pamda.mp3,False,False,False
+0d23c5b2f6004e909802a2e8bfcd52c2,Portuguese,female,Ana Carvalho,https://resource.heygen.ai/text_to_speech/qGgtRKZsqWK8zWmt3bBH4L.mp3,False,False,False
+0d4d97379a6746baa5dfc692b37774d4,English,male,Barrister Bennett,https://resource.heygen.ai/text_to_speech/Z2CS4XMdr3BF3k3HRtzuJZ.mp3,False,False,False
+0d7dc8e448c14541bd13db360d278a83,English,male,Silas Hawthorne,https://resource.heygen.ai/text_to_speech/RH38swNREFbB6xUSxUhzLY.mp3,False,False,False
+0da51c9263c64f249a7a8059b42388dc,English,female,Nancy Blake,https://resource.heygen.ai/text_to_speech/W5qT4XB3DN698JpmLavNvk.mp3,False,False,False
+0eb85e6e8710473b82f7e88609ba3053,German,male,Steadfast Stefan,https://resource.heygen.ai/text_to_speech/GHXSSrXwvbyLgUUBPaHHsB.mp3,False,False,False
+0ebe70d83b2349529e56492c002c9572,English,Male,Antoni - Friendly,https://static.heygen.ai/voice_preview/TwupgZ2az5RiTnmAifPmmS.mp3,False,False,False
+0f6610678bfa4a1eb827d128662dca11,English,male,Charming Charles,https://resource.heygen.ai/text_to_speech/SHuXPStZssWB3RsCYAycnM.mp3,False,False,False
+1062976ea8bf42f4adc27c7e868b8fde,Spanish,male,Vibrant Victor,https://resource.heygen.ai/text_to_speech/vaZPX7WQZ9bKnZqpEeAuNA.mp3,False,False,False
+10863794b2454eaa8781f377939d6f14,English,male,Gerardo - Lifelike,https://resource.heygen.ai/text_to_speech/WAGCCD6RvJffdcehxqWj9b.mp3,False,False,False
+11312a8b152f4449a0494cdaac7d8ed1,English,Female,Kavya - Lifelike,https://resource.heygen.ai/text_to_speech/SFR9TcX56fr7vmAJF6CsB.mp3,False,False,False
+1156e00bc07f47cd94facef758b51f25,English,female,Delicate Daisy,https://resource.heygen.ai/text_to_speech/UHUqtTQZo74sQThhWjcuHB.mp3,False,False,False
+118949676b0a46629d1ad52981c3ef84,German,male,Deep Dieter,https://resource.heygen.ai/text_to_speech/tGfvZxaiWSPZYatMkgB2pF.mp3,False,False,False
+123ff78821c543a7a32a50570919590b,English,male,Reginald Hawke,https://resource.heygen.ai/text_to_speech/XKUiPCDs2qm2T8KBAqLZpV.mp3,False,False,False
+126998ffe2ea4bbfa8014f558b836745,Portuguese,female,Elegant Elisa,https://resource.heygen.ai/text_to_speech/5fxwxVZbpP2AHBUPQB4uTQ.mp3,False,False,False
+1335bb2f851a41848306f22787267439,English,male,Fresh Finn,https://resource.heygen.ai/text_to_speech/G7QZLnZSkHShYBzLXqMnwn.mp3,False,False,False
+134fb6d6515441e2b58b2157f44d5420,English,male,Grandpa Joe,https://resource.heygen.ai/text_to_speech/DZVnRuLZNjabKSqWYuLZyf.mp3,False,False,False
+13be37a20b2448b7ad9db1a8669e5569,English,male,Mellow Michael,https://resource.heygen.ai/text_to_speech/9KcFxCNBSKgWdncp7MhEy7.mp3,False,False,False
+1519fd8fe5d440a2b58770a6762511de,English,male,Serene Simon,https://resource.heygen.ai/text_to_speech/M8ZSNwpLXJCHBu88P6dkjj.mp3,False,False,False
+15869019e19743ba856c5ae9d6a3d7cf,English,male,Harmonious Henry,https://resource.heygen.ai/text_to_speech/6cTGvGeKoB6qLsgymtkr4K.mp3,False,False,False
+15bd057749e24626b06ea471c2c35b43,English,female,Meadow Lark,https://resource.heygen.ai/text_to_speech/NoGk7FhJhJCD3SCUubSWQ6.mp3,False,False,False
+15c34793e92442388fc489bbcd58992b,English,female,Evelyn Harper,https://resource.heygen.ai/text_to_speech/XSoaXhDj3fq9PRr4uqmQWJ.mp3,False,False,False
+1614798cf29e4a67924c19842ef508d4,German,male,Reserved Rainer,https://resource.heygen.ai/text_to_speech/3RpoDaK8ECZ9tsJ6URcGSN.mp3,False,False,False
+1735bcc2f02f421c9ddd910dcb16da79,English,male,Soothing Sage,https://resource.heygen.ai/text_to_speech/kDkQ6ypG24FyCLYCj2aGhV.mp3,False,False,False
+1740a5f178364db39a3ce2388bd52e43,English,male,Tommy Reed,https://resource.heygen.ai/text_to_speech/6ws632Njjrv4NiyfR9qPqT.mp3,False,False,False
+17be5f785d2b4ba78f9fdc4bdf37aa7a,English,male,Noah Lewis,https://resource.heygen.ai/text_to_speech/zJawXYN2r5QjNXmvjAUYmB.mp3,False,False,False
+1840d6dd209541d18ce8fdafbdbf8ed8,English,Male,Sam - Natural,https://static.heygen.ai/voice_preview/cGGnM8FCWYJBqCEgbEfM59.mp3,False,False,False
+184c9014f94142ae949363089aaf53dd,English,male,Affable Aaron,https://resource.heygen.ai/text_to_speech/5UmCdHXYy6jM6bwwJncfnn.mp3,False,False,False
+18afa718c6c84c5a9312e922dfe3e6da,English,female,Calm Eva,https://resource.heygen.ai/text_to_speech/xf5wKwEEDa3yKT49FNb3R4.mp3,False,False,False
+1937b05864a747a7b77c23cb0920a9cc,English,male,Dynamic Dylan,https://resource.heygen.ai/text_to_speech/5rKe92Qums3E9wNuXtZQW8.mp3,False,False,False
+1954007b99864212b751f13271c381b3,English,male,Norman,https://resource.heygen.ai/text_to_speech/v2GEwfXeGvvDh2EupEKj3G.mp3,False,False,False
+19b194577a624ab19c9e148b4ab55cd3,English,male,Serene Sam,https://resource.heygen.ai/text_to_speech/H2KTbqJ8khuEKCHHuZwfqX.mp3,False,False,False
+1aa48c70e154472c9d6fa5af8b602b1d,English,male,Fernando - Lifelike,https://resource.heygen.ai/text_to_speech/Tbz48jeFyWjNRmSioRH628.mp3,False,False,False
+1b4dd4370bca4e169d4097d723c344f9,English,female,Dynamic Daisy,https://resource.heygen.ai/text_to_speech/LdasFyGMbSsj6AXFAQ9uaA.mp3,False,False,False
+1b9311d82b854fa28a1be91c635b38d6,English,male,Timid Tommy,https://resource.heygen.ai/text_to_speech/As9NGXtYZbZm9suZ8dgnm5.mp3,False,False,False
+1bd41839492f4f22b97f1a6678aded7b,Hindi,female,Aahana Verma,https://resource.heygen.ai/text_to_speech/n2jH6YS36dhfu75SfsqF6V.mp3,False,False,False
+1bd8ba4005004e6abfa46fad9ace1091,English,male,Diran - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=kfPUow8BG5K7zZgHZqGGVf.mp3,False,False,False
+1c5dc9a8f8cf4de0932f91d75f43a15d,French,male,Young Olivier,https://resource.heygen.ai/text_to_speech/EJAnkjEJLKWBw3DNW2Xk7j.mp3,False,False,False
+1c7aea10aab1475ebc72553c1fa9da51,English,Female,Blanka - Outdoor,https://resource.heygen.ai/text_to_speech/u7wKvLRGcWfs553d7mdDsQ.mp3,False,False,False
+1d2daf68f8934b28a496c836a172a980,English,female,Calm Clara,https://resource.heygen.ai/text_to_speech/JbFpnfZGuHZY6Bcy7bhRfZ.mp3,False,False,False
+1d78e3550f7e4aee885016a682f9e650,English,male,Gregory,https://resource.heygen.ai/text_to_speech/WbdKQ2sabyaVquaRUcB9M7.mp3,False,False,False
+1e184135ffe94c2c92b25aead0b6e559,English,male,Evan Knight,https://resource.heygen.ai/text_to_speech/W96Pi9hFRp2ZXu9UVAzhXQ.mp3,False,False,False
+1eb233973a454f9f852ed1296874c13a,English,female,Bubbly Bella,https://resource.heygen.ai/text_to_speech/Tcmub4X39Fs7eW8BF7CTAV.mp3,False,False,False
+1edf8ae6571d46c8b7e719eaa91f93c6,Spanish,female,Mellow María,https://resource.heygen.ai/text_to_speech/dT2WFnPqpJtStJbhbMcqtQ.mp3,False,False,False
+1f522326777245f484288eedf725a58a,Turkish,male,Burak Can,https://resource.heygen.ai/text_to_speech/zQqX5QBXfTNu8gWeMjwxDY.mp3,False,False,False
+1f5b6e19c70941f48dccfd1306983282,English,male,Bold Ben,https://resource.heygen.ai/text_to_speech/mtxALR2otDfg5jHCAoFg9L.mp3,False,False,False
+1f85c642d6c94d3da8a456ddef64e39c,Hindi,male,Wise Vikram,https://resource.heygen.ai/text_to_speech/tNefUq6tNohyZAVUmNshm4.mp3,False,False,False
+1f8bf1bba5e648d2ba0305408b5517cf,English,male,Sunny ,https://resource.heygen.ai/text_to_speech/iM6CXvHhvsh3ve5Wq6WReD.mp3,False,False,False
+1fa1193cf1d74f27ba58531c07ef9862,Indonesian,male,Quiet Dewa,https://resource.heygen.ai/text_to_speech/bpc6UtAAKXTCsFM8WKHxKk.mp3,False,False,False
+20097ae8a4564231bd7d16fad5ea5d68,English,female,Lush Lily,https://resource.heygen.ai/text_to_speech/hWTeRuYe8RRBufrWa9MUSH.mp3,False,False,False
+2057df31d66748ed93fb42afc4003925,English,unknown,Lea Inside — beige top,https://static.heygen.ai/voice_preview/a9700f8b1dec438eb1813f89608ac023.mp3,False,False,False
+21454737ca584945ae544e2cffb9186e,English,male,Zesty Zeke,https://resource.heygen.ai/text_to_speech/C4MACSaoJfGd7RuzmPeJEA.mp3,False,False,False
+219a23d690fc48c7b3a24ea4a0ac651a,English,male,Vince - Lifelike,https://resource.heygen.ai/text_to_speech/7EvFgxiAbKi2DNbihq6HdD.mp3,False,False,False
+21df844e22254508baceef8e9f236746,English,male,Vivacious Vince,https://resource.heygen.ai/text_to_speech/VcqdqeMZam6TS8TwqRr5ad.mp3,False,False,False
+2200cbba40b748218a91441bef2b5247,English,unknown,Kim gym walking,https://static.heygen.ai/voice_preview/31a8d09f8e0a424f9640d3b1f9e49e9a.mp3,False,False,False
+227b46b4162d4bc2b2c43de34e87fe5b,English,male,Travis Cole,https://resource.heygen.ai/text_to_speech/fp5mahWaeD8FDfb5keQVTh.mp3,False,False,False
+22ccc1e87ec74539b6969fff336bdbfe,Afrikaans,male,Thabo Mthembu,https://resource.heygen.ai/text_to_speech/TFeBYYcxw39ykeiTFoUsBX.mp3,False,False,False
+22f835c528f74085ab6fee25f455b0c5,English,male,Epic Eli,https://resource.heygen.ai/text_to_speech/zbsRVnM4oePrzKdNPaem8P.mp3,False,False,False
+232e3bb29f3b45d695f873503af7068c,English,Female,Scarlett - Professional,https://static.heygen.ai/voice_preview/gp5RLjAtsywQ3XdU4khisX.mp3,False,False,False
+2347d5abd10f4a0c85a5b13eb24c6c39,German,female,Greta Stein,https://resource.heygen.ai/text_to_speech/VF3Cdca7gLfCNBnykhtXbH.mp3,False,False,False
+2361506e9cae4fda9dc5b1fa72718f20,English,male,Engaging Evan,https://resource.heygen.ai/text_to_speech/CEALKiosoPgjsnL7iS3oQB.mp3,False,False,False
+23bee2c833a64437985bd1901713d0f0,English,male,Gentle Gabe,https://resource.heygen.ai/text_to_speech/Bi4B3a6suK5G26BzZaenEb.mp3,False,False,False
+23e526605d744f66b85a7eb5116db028,English,male,Ethan - Professional,https://static.heygen.ai/voice_preview/bFtUTV3c3Hiew3NbXnmQYN.mp3,False,False,False
+245f2c0c9662499e83dc47cfca355708,English,female,Wise Wendy,https://resource.heygen.ai/text_to_speech/DqAdrKpfNKMYTCHovbCABG.mp3,False,False,False
+2483607b55fd41b5af64e362ceedf90e,English,female,Millennial Molly,https://resource.heygen.ai/text_to_speech/LG82V6cxfFtv55zMf86oEn.mp3,False,False,False
+24d7bea6d62143cc8fa0178a9c1ec5b7,English,male,Regal Roger,https://resource.heygen.ai/text_to_speech/cBeB26HhD6gvRoxum5bWAk.mp3,False,False,False
+24f17f42c557477faa14c21920ad0713,English,male,Baraka Mwangi,https://resource.heygen.ai/text_to_speech/iP35Lh2dLiaDPgehcMdfPH.mp3,False,False,False
+2517409b4f3b4838b420d14645a067b5,Spanish,male,Subtle Sebastián,https://resource.heygen.ai/text_to_speech/c9FjNuJmh5WtGKF7GBmezS.mp3,False,False,False
+258c353e75ab4990a5b81fd3233f6a19,French,male,François,https://resource.heygen.ai/text_to_speech/veoNGjCV6hT5ozCzy5i2pG.mp3,False,False,False
+25a40947b46942c1a8e5bd329074bba2,English,male,Energetic Mikey,https://resource.heygen.ai/text_to_speech/4kzDQVY53XhvJBXCwHE3wD.mp3,False,False,False
+25a6a67280574d3da78e97b1935ebfc7,French,male,Émile Noir,https://resource.heygen.ai/text_to_speech/rSTuXqT5zguKbRHDXmtjs8.mp3,False,False,False
+25ecd686af554bfd8007b6a95210f776,English,Male,Adam - Natural,https://static.heygen.ai/voice_preview/nXc2bvzC9srTpkvCtyATPn.mp3,False,False,False
+26b1ed2a6dd8439abb8e788b762f0d77,English,Female,Jodi - Cheerful,https://static.heygen.ai/voice_preview/MVjZYiF7jZFwN2EZG96HqM.mp3,False,False,False
+2730df66e1474d79b879ddf66fc5d090,English,female,Karen,https://resource.heygen.ai/text_to_speech/M3hm77ifyH2qTgTiDFARHX.mp3,False,False,False
+277739fad1dd49479db8b29252fdd515,Spanish,male,Zesty Zorro,https://resource.heygen.ai/text_to_speech/XYsHKhQXgwX2bcGeqKcXiG.mp3,False,False,False
+2793c471d34a4bae8f5f4e47789dd7d7,English,male,Berat - Lifelike,https://resource.heygen.ai/text_to_speech/9znVy2zTpkoNTzT6kVA5wS.mp3,False,False,False
+28b2355d58af463680b01a76f0994400,Spanish,male,Mateo Plácido,https://resource.heygen.ai/text_to_speech/YvFk5Rc8LsLPkSWNHJab6F.mp3,False,False,False
+28e08dc6bcb04e0eae9ac51ba2f8b3fe,English,male,Pragmatic Peter,https://resource.heygen.ai/text_to_speech/EHx78GhXpb6fa8uak6NSrZ.mp3,False,False,False
+29874ab8894047e98b5bfb601c2605a0,English,male,Deepened Dave,https://resource.heygen.ai/text_to_speech/9mwPUSYg2TW6rMoo6pSBJF.mp3,False,False,False
+2992d98466df4dc7950873117368baf6,English,male,Intense Isaac,https://resource.heygen.ai/text_to_speech/PRCvsjatjdAe6CYcEZVztR.mp3,False,False,False
+29a15e4c65c84f4ca12b0bde8825666e,Hindi,male,Solemn Sachin,https://resource.heygen.ai/text_to_speech/rHCz2NDYdzFet8XCt7ARaP.mp3,False,False,False
+29b9705acbcc4dfa9365358d35674e7d,English,female,Vivian Hartley,https://resource.heygen.ai/text_to_speech/tFwt75mC2YDdo3EVdPhrP8.mp3,False,False,False
+29d36a2c7ebf417f84176fc7fc4a8a1f,Spanish,male,Rafael Cruz,https://resource.heygen.ai/text_to_speech/J5RmXWicwuKnv56LWr2ewU.mp3,False,False,False
+29e5af5f7dd14b8e81fd87c777c8144b,English,unknown,Tim in car,https://static.heygen.ai/voice_preview/58bb0e7bf5e347c5a20358d7f424fe35.mp3,False,False,False
+2ab913d44bba497faf3ba16f8ef37328,English,Female,Martina - Lifelike,https://resource.heygen.ai/text_to_speech/zdN6KNfrYtfftmsgiZqq37.mp3,False,False,False
+2abc10c1bf8d4e02b01b309e00061053,English,female,Margaret Thatcher,https://resource.heygen.ai/text_to_speech/tWWujRwwAYaTfFMtJAjp6K.mp3,False,False,False
+2b0124724e144eedba61ecb590d6c266,English,female,Luna Bright,https://resource.heygen.ai/text_to_speech/VYcrHsMAUygK7mk38RCCT3.mp3,False,False,False
+2b0587b1089b4544ae41b155e3d21118,English,male,Rasmus - Lifelike,https://resource.heygen.ai/text_to_speech/e4V6X68DS7XF9bpdPnfKBj.mp3,False,False,False
+2bd11c9d1cb34b50a05ea17d68dad159,English,female,Composed Carla,https://resource.heygen.ai/text_to_speech/mSJU23mShbCDXeAJGMHRXM.mp3,False,False,False
+2be6c075eb7c4110aea72f193af9d0a9,English,male,Refined Rupert,https://resource.heygen.ai/text_to_speech/SY2x6zeLQiQqxrvQXS5LT9.mp3,False,False,False
+2bed55932a5f41d4991a487f8164d7cf,English,male,Sebastian,https://resource.heygen.ai/text_to_speech/KkC6XTLLKadgRhoDcUKWLa.mp3,False,False,False
+2d3cef03a4904e97a30d5f9dcf1dd16d,English,Female,Tuba - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=pjGMsCy8z3EiZNAHca6VVE.mp3,False,False,False
+2de26f323b9f479fb5aa1d0761f2d9a6,English,female,Daisy,https://resource.heygen.ai/text_to_speech/wxKfxSfPxU4SMD8Egmry2T.mp3,False,False,False
+2e28aa8470ae43678435e405d3effd50,English,female,Radiant Riley,https://resource.heygen.ai/text_to_speech/SzuCdbcwe8HSdFzG4XxDD9.mp3,False,False,False
+2e39bb61a11e46d29bdb14da1bf8c3cd,English,male,Sporty Shane,https://resource.heygen.ai/text_to_speech/x8aoZA46oH2jDbCscP66Lh.mp3,False,False,False
+2e3c04160c5e4aa482de96a33e4e663a,English,male,Roman - Outdoor,https://resource.heygen.ai/text_to_speech/pBmagxhsKExFXhc7fU6pEK.mp3,False,False,False
+2e42b8fee8f640e59893e2d22fbc3537,Spanish,male,Casual Fernando,https://resource.heygen.ai/text_to_speech/PxWkyNfBEMJ3aBN85s7Kdm.mp3,False,False,False
+2e76fcd443244db2abcb944b55e8bb8a,English,female,Evangeline Wilder,https://resource.heygen.ai/text_to_speech/pPmmfYZLLtPJ4MVWRdkk8V.mp3,False,False,False
+2eb11e9e00744084b8d5922084f44874,English,male,Husky Harold,https://resource.heygen.ai/text_to_speech/Q8jvCduduv4RgaApUZGPA6.mp3,False,False,False
+2f2c8d914bc54098a4fdcfd7fe8acaf8,English,female,Relaxed Rachel,https://resource.heygen.ai/text_to_speech/4ASHGHhaQJW4Ut6Pj6XRQ3.mp3,False,False,False
+2f42008afd834b279bd19d4caad5d76e,English,male,Rugged Ron,https://resource.heygen.ai/text_to_speech/wymLZL58J6yeqG4wmuv2UJ.mp3,False,False,False
+2f448ec9e69b48b0a117bd1334d7e5ad,Spanish,male,Carlos Claro,https://resource.heygen.ai/text_to_speech/9UwzJeagA2AZhE6oyFdagV.mp3,False,False,False
+2f6fe38a418a453f88e859232bc0af27,English,male,Gruff Greg,https://resource.heygen.ai/text_to_speech/MJbgM4o2XJdNjFoyVRDyvk.mp3,False,False,False
+2fa733b2c0d741f8812fd77eccba6af0,English,female,Playful Priti,https://resource.heygen.ai/text_to_speech/YV28g68mf7jtRqZcF8B9xB.mp3,False,False,False
+2fbc15932f1e46b8b20f6e9fdf4f032f,English,male,Griffin Steele,https://resource.heygen.ai/text_to_speech/dj7jo6wvaUR5ejEbV7NatF.mp3,False,False,False
+2ff5435025214485be9aef81984bd245,Portuguese,male,Sophisticated Sergio,https://resource.heygen.ai/text_to_speech/HgPVYbSULyfiwYjzwD7Sfa.mp3,False,False,False
+307a322fa20a42c686eb6e1b700b2823,English,male,Noah Bennett,https://resource.heygen.ai/text_to_speech/JVjWoQLshPSZjZDXYvMdMa.mp3,False,False,False
+31886f97fbee424d948e15abb6f467cc,English,female,Sassy Sadie,https://resource.heygen.ai/text_to_speech/jGtYaiQq2RUELK3WGS5wgL.mp3,False,False,False
+31adb5a5372049579b8755f33193b320,Hindi,male,Storyteller Satya,https://resource.heygen.ai/text_to_speech/bhDxGeZnTgZpBq8BUX3TuC.mp3,False,False,False
+31e2fd6e7c924bc9be987ac4cfaac5e8,English,male,Warm William,https://resource.heygen.ai/text_to_speech/CXbTN7gtyVK9pymBi2Ct7S.mp3,False,False,False
+3240f8ee6b06414cb9bab4f9615445af,Hindi,female,Bollywood Priyanka,https://resource.heygen.ai/text_to_speech/7SzF83zP4FYCkznRNEEfL4.mp3,False,False,False
+324e8aa727ea4662b86ae5008c185090,English,male,Chill Brian,https://resource.heygen.ai/text_to_speech/WpSDQvmLGXEqXZVZQiVeg6.mp3,False,False,False
+32bf8a1c8e75419a89862421770655f9,English,male,Energetic Eli,https://resource.heygen.ai/text_to_speech/6cuXgXoMJcVBV3xDrCsRy6.mp3,False,False,False
+3314e5c0c903481c91fb50413fefd155,English,female,Joy,https://resource.heygen.ai/text_to_speech/HZNGxznkMgJqutviuZqVvJ.mp3,False,False,False
+3374660c07f24a80952b3d202320b792,English,male,Noble Nigel,https://resource.heygen.ai/text_to_speech/2zpEsf2ChadhntA4VPqWJi.mp3,False,False,False
+3378f939865a4431bb9c892e431f3e56,English,male,Educator Matt ,https://resource.heygen.ai/text_to_speech/q3CYPZERgabjb54zVYWrvJ.mp3,False,False,False
+338724abc7b7439787aefd17fb33d076,English,female,Chloe Rivers,https://resource.heygen.ai/text_to_speech/WqpcL5PWYyVcqaggtwGoZE.mp3,False,False,False
+35659e86ce244d8389d525a9648d9c4a,English,male,Carter Lee,https://resource.heygen.ai/text_to_speech/AgsapwUXksaKsHNGAfrowk.mp3,False,False,False
+35b75145af9041b298c720f23375f578,English,Female,Gala - Lifelike,https://resource.heygen.ai/text_to_speech/8GwtYLBn87Q565JAyrxJeU.mp3,False,False,False
+35b9a86b99b24bf6b87bed851abd19da,English,Female,Sabine - Lifelike,https://resource.heygen.ai/text_to_speech/58ap8t4i5zQzdTWsLpGo5Y.mp3,False,False,False
+368fd56a854a41938b9c9947ede221b7,English,male,Gentleman George,https://resource.heygen.ai/text_to_speech/qLrVtLyQaUh2WAKxXGX7yZ.mp3,False,False,False
+36969ead9c664bd68c88642b23d53cc2,Polish,male,Tomasz,https://resource.heygen.ai/text_to_speech/apAwLwvW5brUQZNyaXiKTc.mp3,False,False,False
+36b768a4416b47f4ac228b393cae3de3,English,female,Elegant Eloise,https://resource.heygen.ai/text_to_speech/5dVq7G56wsMfy4zjcoxW7Y.mp3,False,False,False
+36ce5364e245444a8d9c23ec5b652be0,English,male,Theatrical Thomas,https://resource.heygen.ai/text_to_speech/WrnyDhM6yd35RuoHKTXHkk.mp3,False,False,False
+36cedb45725645e798038be947faefb7,Javanese,male,Rafi Wijaya,https://resource.heygen.ai/text_to_speech/Tn9BQtSUFx5uJHYSu4uwrD.mp3,False,False,False
+37e542d0037f44638395fe1468bf80c6,English,male,Energetic Edmund,https://resource.heygen.ai/text_to_speech/cyJroYJ545GFBWEtK8NXc6.mp3,False,False,False
+387ec7c290324b55a6bb6ab654f016ef,English,Female,Aubrey - Lifelike,https://resource.heygen.ai/text_to_speech/aqmbBZB39RezQywGPCpdG8.mp3,False,False,False
+3894820d45e54936ab4ca6377f1b2917,English,female,"Grace Parker
+",https://resource.heygen.ai/text_to_speech/SD25ernm5a25zQvQQ59gvf.mp3,False,False,False
+38c51cb2778d41ad84d192e3b936c997,Hindi,male,Gyaandeep Sharma,https://resource.heygen.ai/text_to_speech/QuYN3hgJbGRNoPDDyPgGrC.mp3,False,False,False
+39935f162c9d433f8cfc4d4854543ab4,English,male,Solemn Scott,https://resource.heygen.ai/text_to_speech/m95i58wTq9P8F2XCQVCnfi.mp3,False,False,False
+39ab95794a6d4014b9cddbfdac551482,English,male,Legendary Lawrence,https://resource.heygen.ai/text_to_speech/XFDJFbnHPi2qGEJNgYvjd9.mp3,False,False,False
+39f19a850ff1417cb943e341c6148395,English,female,Lily,https://resource.heygen.ai/text_to_speech/W62FdyvwdYvYtRpn79HAF6.mp3,False,False,False
+3a2ee81c9e6d4edd88011818017d4267,English,female,Animated Amy,https://resource.heygen.ai/text_to_speech/qCuHhgdzMpm2RBBTb4zbqm.mp3,False,False,False
+3a37f81e6fbe4e699b5e809cadcba185,English,male,Noah - Lifelike,https://resource.heygen.ai/text_to_speech/VjHy4fRMcmY68TnTB4czbZ.mp3,False,False,False
+3a50a58bf6ac4707a34d1f51dbe9fb36,English,male,Lester-Natural,https://static.heygen.ai/voice_preview/Sk3qbPC75xTKTbha8RtFTA.mp3,False,False,False
+3a87612e2cd14705a3b419f959e8120b,English,male,Douglas-Professional,https://static.heygen.ai/voice_preview/gHt2VDM4GPdkqWnG2jzzsY.mp3,False,False,False
+3a991e0f1c824228bba932cdf8b0768e,Spanish,female,Lucía Sabia,https://resource.heygen.ai/text_to_speech/zEueJe7guUpBvAYfqcF2pe.mp3,False,False,False
+3af4c414a0244de4bf5130f5734e6a4a,English,female,Breezy Vibes,https://resource.heygen.ai/text_to_speech/zN4FUTRkJxj2A5UYjUXzBf.mp3,False,False,False
+3b2a59d6edb54e79a40b29726a12d1c3,Portuguese,male,Calm Carlos,https://resource.heygen.ai/text_to_speech/GgYMC4u6kqhazVTJuJJFjB.mp3,False,False,False
+3bc47330d6684161a3b5ebf29ec25738,French,male,Resonant René,https://resource.heygen.ai/text_to_speech/wWJHLTiutZAoPYcgAepQRR.mp3,False,False,False
+3bd24f23ab42468ba0861784c70736a4,English,female,Harmonious Hannah,https://resource.heygen.ai/text_to_speech/AT9Yrz7M6yWnXN6APKZKyU.mp3,False,False,False
+3c58c4bafaa140beb0bc4dbd40a13348,English,male,Vernon - Lifelike,https://resource.heygen.ai/text_to_speech/X8doto9qJDacz3EbPYqiVk.mp3,False,False,False
+3c6181c9f9d44e748fe0ce4ec1217ec6,English,male,Raspy Rupert,https://resource.heygen.ai/text_to_speech/UvtY3GXxtFRFTiqz5P2ytj.mp3,False,False,False
+3c8cb6e8914349f88993f4f9194efb8d,Spanish,male,Social Santiago,https://resource.heygen.ai/text_to_speech/4LTCGV45HrdZK4tKpAquT4.mp3,False,False,False
+3da4bc5a1aaa4380abd7d3aa59febd24,English,Female,Amelia - Lifelike,https://resource.heygen.ai/text_to_speech/9bw3hiFxScjqU59jZqbTZL.mp3,False,False,False
+3daec88b3c1a49b7a5e10a211426fc81,Spanish,male,Fernando Sanz,https://resource.heygen.ai/text_to_speech/wVtJV6zKomzpjMTiNhVygT.mp3,False,False,False
+3df9f559da8d4f888bc497f62a7078d2,English,Female,Claire - Cheerful,https://static.heygen.ai/voice_preview/ENvqqe6JcDXUHWPZvE8E4.mp3,False,False,False
+3e1e9f70a4524c999f1d007821876fdd,English,male,Echoing Eric,https://resource.heygen.ai/text_to_speech/ACHQdPF2fNAKFZUZ39XBjM.mp3,False,False,False
+3e3193831b9e4e39afabb803696868d4,English,female,Adventure Alex,https://resource.heygen.ai/text_to_speech/zWfot4CSuQb3xVCpaxrUS6.mp3,False,False,False
+3e45c07c4ade4b0080d2f13ac4c9d44f,English,male,James Hawthorne,https://resource.heygen.ai/text_to_speech/EnmKgVjpYBqWpEdupA2VrY.mp3,False,False,False
+3e45ce43d1b849439a08e7b74cb7ec19,English,unknown,Tim outside at cafe,https://static.heygen.ai/voice_preview/a4b1a8ec4bf94dddbbacee7d6bc40960.mp3,False,False,False
+3edfe2d30ab840289b7adaa9d710b67e,English,male,Quiet Quinn,https://resource.heygen.ai/text_to_speech/9WT7ttj7EZRftATk5tRfsS.mp3,False,False,False
+3fac0e13ef4d42c0a30bc20e524ae43d,Spanish,female,Carmen Velázquez,https://resource.heygen.ai/text_to_speech/TQHJQc8BKWFNR9mjNjzZoN.mp3,False,False,False
+3fd38e89f23141c98832b9b67b0f7b19,Hindi,male,Calm Siddharth,https://resource.heygen.ai/text_to_speech/kjJtZoirPRpixerJgHJfAD.mp3,False,False,False
+40224e2878074d728fda8bf94cd6b57d,Hindi,male,Naveen,https://resource.heygen.ai/text_to_speech/qTzfXPofbtqn9SvQd8hKR4.mp3,False,False,False
+42cd97e31c1846b68a8ff02c508c3611,English,male,Logan Hayes,https://resource.heygen.ai/text_to_speech/rvEwcvJwhbjFRjomNVajeP.mp3,False,False,False
+42edcab67e1c4224a0a22d8640e3c233,English,male,Husky Harold,https://resource.heygen.ai/text_to_speech/P8TywCsof4yXKEiMhC8jeS.mp3,False,False,False
+4306095a0093474b8e7d8659bec642d1,English,male,Casual Carlos,https://resource.heygen.ai/text_to_speech/xMu7NQ7cNztbNnatU2SH24.mp3,False,False,False
+4381b1afc96e4bfb9f0b9cfc28132c75,English,male,James Holloway,https://resource.heygen.ai/text_to_speech/gChh7Zk6GCZbxA826F4vmf.mp3,False,False,False
+4398ced268aa4707a5b6222819f05a6f,English,male,Caleb-Cheerful,https://static.heygen.ai/voice_preview/vxLRnPCPixRPaNQz8vB2qd.mp3,False,False,False
+445a8c7de9e74ed2a0dd02d5885ac589,English,female,Nancy - Natural,https://static.heygen.ai/voice_preview/QTdrd669nuRE3cQEY56iZF.mp3,False,False,False
+4483fbd3b17d449ab4c116e13cbfa53c,Hindi,male,Vivid Vijay,https://resource.heygen.ai/text_to_speech/PXgVb8yAH2RHbTaLRVtxog.mp3,False,False,False
+45535f795f41425fa45e58ad66687d4d,German,male,Quiet Dieter,https://resource.heygen.ai/text_to_speech/dWyBepWcJwTJaNVY8wFQZM.mp3,False,False,False
+4602bb091e1e4f37af08302a68180814,Hindi,female,Vibrant Vani,https://resource.heygen.ai/text_to_speech/TiSYbFnJgt7qSiMSymcfph.mp3,False,False,False
+4621efe09dea43a38a2e1e6682b0b768,Spanish,female,Sunny Sofia,https://resource.heygen.ai/text_to_speech/YDTwUZwwab8S4mvGciJKAi.mp3,False,False,False
+466986b2ee27456bbf9757b7ed72c177,English,male,Amit,https://resource.heygen.ai/text_to_speech/kYvpHaQUQTUQUo5HgHkze3.mp3,False,False,False
+46b3e26aa2ef45cd92324049f93d6b56,Hindi,male,Assertive Arjun,https://resource.heygen.ai/text_to_speech/Jp6Qg5c3aBCDu5rrJZR44X.mp3,False,False,False
+4829d1907f1e48f3b7a7a1d0594abd7d,French,female,Harper,https://resource.heygen.ai/text_to_speech/3vXT64Qy8w4SLxuQupCrLm.mp3,False,False,False
+488e985a7bd249968612390c4e89f06c,English,Male,Bruce - Natural,https://static.heygen.ai/voice_preview/8VvvHAfbLyDP3ZhYix4wVW.mp3,False,False,False
+489bb1c4b3d14470aacbb76d55a9761a,English,male,Ethan Cole,https://resource.heygen.ai/text_to_speech/7fyck9bbMa6XNgA4qd2tJA.mp3,False,False,False
+49340a0250a442a8888cbb5a474d2a8b,English,male,Elder Ambrose,https://resource.heygen.ai/text_to_speech/yfEhBLAvNUDUsrPJpQeHv4.mp3,False,False,False
+49480595abe041dbaba136be8a913ad9,Spanish,male,Husky Héctor,https://resource.heygen.ai/text_to_speech/Kc2tTufPLpWo39qy2etqWP.mp3,False,False,False
+49d27aa2b1834207a75ceb9bee6a90da,German,male,Bedtime Bjorn,https://resource.heygen.ai/text_to_speech/zpeJertzvFnYeRUAky3pMf.mp3,False,False,False
+49e8c6c5bd6a452d9dbe9bb1894e2e73,German,male,Otto Müller,https://resource.heygen.ai/text_to_speech/4gZAMHijHY4LuWhN4wRakX.mp3,False,False,False
+4a2b49d18aad4275a05009c2236adeb1,English,male,Emanuel - Lifelike,https://resource.heygen.ai/text_to_speech/h5o57u7VVQpRYUfteAEc28.mp3,False,False,False
+4af1c417143243c38d52e09df9d8d7b1,English,male,Empathetic Eli,https://resource.heygen.ai/text_to_speech/R2kqRdR7HXQsBQwpdYqivM.mp3,False,False,False
+4b49e50e44c84e99b0f960da7d434e95,English,Female,Hada - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=5e6k5gyntyJJqUfXyZEBaY.mp3,False,False,False
+4b9a8cd6db7d4fdd8bd066e69942a08f,English,male,Arthur,https://resource.heygen.ai/text_to_speech/dCFTLRm4KsYHZaia4CArBJ.mp3,False,False,False
+4bc7940bbb4c4227adb46bb28a019bff,English,female,Peppy Priya,https://resource.heygen.ai/text_to_speech/cYcXD4kvNudmaznitWLczE.mp3,False,False,False
+4c297bc410ec4f6cb00d6a6d3b725529,English,male,Elegant Eli,https://resource.heygen.ai/text_to_speech/bgBf3PEunxLnMFkEAqvfcL.mp3,False,False,False
+4cbf6e7ac9964f17a110abe218a5d2c9,English,male,Breezy Bob,https://resource.heygen.ai/text_to_speech/UeM5PDoAuaGnYYqipjQVUk.mp3,False,False,False
+4d05ea8a1cad43ae93d3726836342814,English,Female,Mireia - Outdoor,https://resource.heygen.ai/text_to_speech/6tetXCtBbYVhcpEUrYBCuB.mp3,False,False,False
+4d13a8d2a1b146818cf958a951ef6782,English,unknown,Lea Centered — blue top,https://static.heygen.ai/voice_preview/70d7a76428004cb69c99000d232506f3.mp3,False,False,False
+4d20444ae2a540bca5ce7adb967c4583,English,female,Dynamic Daisy,https://resource.heygen.ai/text_to_speech/5TNq4qHmdxLFCrwtDfXUt6.mp3,False,False,False
+4d7fe569a30a42c0b213d788aa0dd411,English,female,Eleanor Grey,https://resource.heygen.ai/text_to_speech/SKvjSZDqSvwwweQgTJVQhK.mp3,False,False,False
+4d886acdc51c4417813707820777d96b,English,female,Vibrant Violet,https://resource.heygen.ai/text_to_speech/6L8nHPYVi8R2YYViZ56WAm.mp3,False,False,False
+4d8abacb30eb41d498f924236ff7e270,Indonesian,male,Sage Surya,https://resource.heygen.ai/text_to_speech/z9y5Mqon4MTNRf39HdAFAn.mp3,False,False,False
+4d98f60e150446cfaf93105d0b74f863,English,male,Zane Brooks,https://resource.heygen.ai/text_to_speech/5VfLtbWW9sFdb3aastZth6.mp3,False,False,False
+4ea2133290904d918d0d5649b3bb7d76,Portuguese,male,Duarte,https://resource.heygen.ai/text_to_speech/BTU6wqR7RAiA9rMee5N5T6.mp3,False,False,False
+4ecb08e33f7f4259bd544aaeae2fd946,English,male,Sajan,https://resource.heygen.ai/text_to_speech/DHbHM9A7NyNX4UWJuLt557.mp3,False,False,False
+4ee9f5b8f4b349c5abd326ef25b1931e,English,male,Daniel Reed,https://resource.heygen.ai/text_to_speech/N7iYe4enjdwN7Ho8hxzeiF.mp3,False,False,False
+4f299b8e7d0b43518cfdca9159b5ae9c,English,male,Baron Deep,https://resource.heygen.ai/text_to_speech/VVt27Hj6UsRktHwxYD2yMa.mp3,False,False,False
+4f5abac07d11415183ef026db66e3a9b,English,Female,Judita - Lifelike,https://resource.heygen.ai/text_to_speech/MQS9nhggXadTthNQopazX6.mp3,False,False,False
+4fff5fe279b94bcb80074ccfe30d2ef8,Hindi,male,Refined Anil,https://resource.heygen.ai/text_to_speech/enw29SjsBsythJ3gD7KcTW.mp3,False,False,False
+501ed4601adf4fb9a34340a8ffa105c5,English,male,Leszek - Lifelike,https://resource.heygen.ai/text_to_speech/aXbtUXraVEfW7spM8W4JmK.mp3,False,False,False
+50368b28cc7b40a7a2afbdf36501c4eb,English,unknown,Gail in car,https://static.heygen.ai/voice_preview/09db1b0ae7084263be2ce6af906d57d9.mp3,False,False,False
+511ffd086a904ef593b608032004112c,English,Female,Georgia - Lifelike,https://resource.heygen.ai/text_to_speech/LNqtdebJFUui4XHREV85gV.mp3,False,False,False
+5123363487cb418ca601242052d7a1a4,English,unknown,Lea inside sitting,https://static.heygen.ai/voice_preview/d98e14b5c7a045f7ae8939a4884567c0.mp3,False,False,False
+513ba949e21b4a48aff12c3e6f34d447,English,Female,Amy - Outdoor,https://resource.heygen.ai/text_to_speech/q4WARaoU7jHSxniDezJ378.mp3,False,False,False
+52b62505407d4f369b9924c2afcdfe72,English,male,Roy - Natural,https://resource.heygen.ai/text_to_speech/locale=en-GBmodel=id=WHjTg4j6AU6sL7it9pTubX.mp3,False,False,False
+52eba7ad20d1495b8821b6d94681db1c,English,male,Sturdy Simon,https://resource.heygen.ai/text_to_speech/kkffL8v2tvMHen3MxCENxK.mp3,False,False,False
+53f6f08dd7b34e4891e2bfd962c6faeb,English,male,Gravelly Grant,https://resource.heygen.ai/text_to_speech/VaZoAAfGzahBQCeZMRAREH.mp3,False,False,False
+53f8d7dbf7f14a59aa2db2f8aa1725d3,English,unknown,Lea outside walking,https://static.heygen.ai/voice_preview/d58e483b8216435dab595f7d5248f2a4.mp3,False,False,False
+5403a745860347beb7d342e07eef33fb,English,male,Conrad - Lifelike,https://resource.heygen.ai/text_to_speech/Trmf54HvMfcSqoZTP5R8F7.mp3,False,False,False
+541bcb19bb0745ef8f82c3286d079d98,English,female,Luminous Lara,https://resource.heygen.ai/text_to_speech/HShHtfoohWbsULNLjorBaD.mp3,False,False,False
+543ac3d42fcf41dfb6fc673e5e3da825,English,male,Armando - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=bHgyRSuzhwyKUkBCgE4XDL.mp3,False,False,False
+5463219c270f42f28bcd41a26fc3a627,English,female,Monica Harris,https://resource.heygen.ai/text_to_speech/VPyzWb8epq2STXkW7dFRr6.mp3,False,False,False
+54a3995cacda4b2b8198de75327fcefa,English,male,Joel - Outdoor,https://resource.heygen.ai/text_to_speech/FmA5qJL9wVmz2dWyVPqJie.mp3,False,False,False
+54ee1b13aa684a48bc6804f04b8f97b4,English,female,College Girl Lexi,https://resource.heygen.ai/text_to_speech/Kj4Qxrkbv9ugbmNMVyojK6.mp3,False,False,False
+568a789bf01a462aa3b73f455cb53847,English,male,Quinn,https://resource.heygen.ai/text_to_speech/6gwrVs2WXyUymCaZrbzGtC.mp3,False,False,False
+56df45cd319c4fa2b1ff15d5c08dd47f,English,female,Mellow Mandy,https://resource.heygen.ai/text_to_speech/hHNAPZPqnusTNgr37TedYh.mp3,False,False,False
+5727576917464633899d22d70ffdb70b,English,male,Teodor - Lifelike,https://resource.heygen.ai/text_to_speech/nbzXAJg8t4HRVZnm5QYQm4.mp3,False,False,False
+5756fcfbe12b4faca665e551955a76d2,English,male,Ethan West,https://resource.heygen.ai/text_to_speech/baWgYpJ42qoTThRiZyKqbK.mp3,False,False,False
+575a8643634944a28761fcd34331d3fa,English,male,Dennis - Cheerful,https://static.heygen.ai/voice_preview/YpfMSycEaGKLyWZffnKsc7.mp3,False,False,False
+57bf5a0a86ee44e68fa252f69d350322,English,male,Holden,https://resource.heygen.ai/text_to_speech/3uv5sfE5nBsPaDWSjeFvvN.mp3,False,False,False
+57c4e98c78394481b62af7f5d5535c4b,English,male,Joel - Lifelike,https://resource.heygen.ai/text_to_speech/RGsFbGMVGZr9BtJLXQyYA6.mp3,False,False,False
+581b91bd1bf54ab78b4f56dda6fab4aa,English,Female,Aubrey - Outdoor,https://resource.heygen.ai/text_to_speech/2QYjADwH9jBSVJANFSy6CE.mp3,False,False,False
+584ceafcde744beb88317e86f532353e,Portuguese,male,Epic Eduardo,https://resource.heygen.ai/text_to_speech/9zMKmFDijEKZGA3TrsFZRi.mp3,False,False,False
+58ff0edde9cb405c97f7cd7bd1bb960a,English,male,Fortress Finn,https://resource.heygen.ai/text_to_speech/LmanwDuEE3AmC5TA4BnGUg.mp3,False,False,False
+59f5e249236042d58d877a85bfe43e1d,English,male,Victor,https://resource.heygen.ai/text_to_speech/pMLVTcwPa73mEFSdR6tKZ3.mp3,False,False,False
+5a09177ef53140db864193c7e1cc464d,Hindi,male,Dynamic Dev,https://resource.heygen.ai/text_to_speech/R8RkN387WyRsCrvumgoPYF.mp3,False,False,False
+5a2a99af8147409a8e1ffef779805656,Hindi,male,Raja Ram,https://resource.heygen.ai/text_to_speech/zmmyQKcHARLWH8yAVt3LE9.mp3,False,False,False
+5a752cd10a4549628a56e8f4396d41cc,English,female,"Breezy Beatrice
+",https://resource.heygen.ai/text_to_speech/ebQsKYM329UvhybYeKLH6Q.mp3,False,False,False
+5b6c68b825874ff2b3b8cefbffe0731b,English,female,Aria James,https://resource.heygen.ai/text_to_speech/ZQ3stETNAfNBzpzdQqbR8D.mp3,False,False,False
+5bc2783d1d1b45f0973a1ce8e269c35d,German,male,Vibrant Viktor,https://resource.heygen.ai/text_to_speech/iK8QgX8gpu9wPKDgV2pzLD.mp3,False,False,False
+5bda37f6c5aa4de6ad3e21e73d1f4884,English,male,Blunt Ben,https://resource.heygen.ai/text_to_speech/JHSmM26GFA7qA8KjHyhMQC.mp3,False,False,False
+5c654f1a647f434a98530a489a9174fa,Spanish,male,Señor Fernando,https://resource.heygen.ai/text_to_speech/DqTTQuDitMVnhjv4xFFTUD.mp3,False,False,False
+5c7a1e3f79f94aeda0e0e83f5096a515,English,female,Confident Claire,https://resource.heygen.ai/text_to_speech/DzKcXThcfCyiwA9u7zn5ra.mp3,False,False,False
+5c837919d188407cac1ea65a8889e496,English,male,Silas - Lifelike,https://resource.heygen.ai/text_to_speech/vHhUQEb7X7NP4JbM56hoE5.mp3,False,False,False
+5c9201c62c6641db90434d64170836a4,English,male,Travis,https://resource.heygen.ai/text_to_speech/BUSkovJ3NAUdWb6HagYvQL.mp3,False,False,False
+5ce524794957461b9ab0f7b1414c47b1,English,male,Brent - Lifelike,https://resource.heygen.ai/text_to_speech/9SLAaWFdG24uHU6RUi9JAP.mp3,False,False,False
+5ce5d6620f514ca68e3c5f528f052fae,English,male,Elegant Evan,https://resource.heygen.ai/text_to_speech/L6DyXdVK5fMs7TMPWM5mJU.mp3,False,False,False
+5da937e9df294a4381d7bc390e2684d0,English,female,Lila Whisper,https://resource.heygen.ai/text_to_speech/Qw7s3BQSxgEzhCviDM2JDY.mp3,False,False,False
+5db490d8cbc24c9f84c2b6385bb74fa5,English,male,Mr. Thunder,https://resource.heygen.ai/text_to_speech/Hv3zhvDrMpnauWjq4KcynH.mp3,False,False,False
+5e79b182416849a4beba3b57a8057d4d,English,unknown,Daran outside sitting,https://static.heygen.ai/voice_preview/4d90bfa284e44ec09c8610b0661da781.mp3,False,False,False
+5eb1adac973c432f90e07a5807059d55,English,Female,Oxana - Lifelike,https://resource.heygen.ai/text_to_speech/DiiLGiUGdHoCUTZKF4gWEG.mp3,False,False,False
+5f53576fdddf4057a6075ad44b052f88,English,female,Gravelly Gwen,https://resource.heygen.ai/text_to_speech/boSTjEnRkACZ3Wv5AfhTgS.mp3,False,False,False
+5f8c50a6c11f4214b60bf5c8e3efebfc,English,unknown,Gail inside standing,https://static.heygen.ai/voice_preview/173f8b557e35422bb9db5b02469e8a75.mp3,False,False,False
+5ffce78831ba427da529b0e344f2496e,English,female,Ellie Faye,https://resource.heygen.ai/text_to_speech/3cq7AAyvCqqJCFgMsJvRoN.mp3,False,False,False
+60a91c6889e241859daf5d6a16fb8699,English,male,Juan - Lifelike,https://resource.heygen.ai/text_to_speech/eMuBRToFnnLWr9g5LRP4d3.mp3,False,False,False
+60e3630d4b2b4e918e405a371999bb75,English,unknown,Lea Centered — beige top,https://static.heygen.ai/voice_preview/68ffbeb1ba76458eb962ab83e7947501.mp3,False,False,False
+613f8304431144918ed6a83d4b3e3196,English,Female,Elenora - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=uRrsLJDG4urYHxrDdqWjuF.mp3,False,False,False
+61646c861eb64e2d9036d8db51385356,Turkish,female,Tranquil Tulin,https://resource.heygen.ai/text_to_speech/aAK6YXHAF2Km6JDFWPauzU.mp3,False,False,False
+6189d551d44b4a2d92f31e3822e310c0,English,female,Bouncy Bailey,https://resource.heygen.ai/text_to_speech/m4wPLd9c8nJBv9NhvEMKkA.mp3,False,False,False
+61a4359785664d01a59664ceb87ce6d4,Arabic,male,Hakeem Hassan,https://resource.heygen.ai/text_to_speech/2bSBendwDxwDfMk3DjY4B7.mp3,False,False,False
+622ad4ab17bb49308ced73e5a2cb3a44,English,male,Energetic Elijah,https://resource.heygen.ai/text_to_speech/sZ5tqqEhahwGQJM528CBii.mp3,False,False,False
+6255f703bfd94afe810f06d3186a9353,Hindi,female,Anika Mehra,https://resource.heygen.ai/text_to_speech/rgf49PyKUzPhjktkg5KThf.mp3,False,False,False
+626ca51acb2e496f8dcee8d7591fda3c,Spanish,male,Narrator Mateo ,https://resource.heygen.ai/text_to_speech/jXkmUvnf3dqYfGsh62GxyJ.mp3,False,False,False
+629ba45790ce423f8881621efd71f53e,English,female,Grace Elder,https://resource.heygen.ai/text_to_speech/Dhy8D7hfgzakBh65JWDbHa.mp3,False,False,False
+63119bfc193a4763b8e0353487b6e571,English,male,Canyon Rivers,https://resource.heygen.ai/text_to_speech/cbG9aWkQgstZhcYtjmyavb.mp3,False,False,False
+6344c50000744023a6fb9e50ec1d1f8b,English,male,Mellow Marcus,https://resource.heygen.ai/text_to_speech/xgcK6CsZmrxhgrES8bgWDk.mp3,False,False,False
+6410425896c74fd69500eb78a3e91802,English,female,Hushed Heather,https://resource.heygen.ai/text_to_speech/RwNfXgCxpnSexKuMyMXoTR.mp3,False,False,False
+642f1c235dcb4b6fb0e8c6f50cd3779d,English,female,Zippy Zoe,https://resource.heygen.ai/text_to_speech/dRcyBdFN3AwTFu4YSaQjzn.mp3,False,False,False
+645bbfb44ed94fcdab417539da543f12,English,male,Radio Rick,https://resource.heygen.ai/text_to_speech/yvQ3r8YAB3mQQTfzzHSPkL.mp3,False,False,False
+65d3435332e948c7a2add29bf4d62d02,English,female,Bright Bella.,https://resource.heygen.ai/text_to_speech/CgtDkXUViDXNcdA7Trm7zB.mp3,False,False,False
+6624975326bb4229a58df4df280de9af,English,male,Bold Blake,https://resource.heygen.ai/text_to_speech/GP6ZEjtSF6YSC5RWyAdkr6.mp3,False,False,False
+6638ffaf65b64703bbeb985630487ef9,English,male,Expressive Evan,https://resource.heygen.ai/text_to_speech/Qq87Azy7Y6TLhtRJZq5EnA.mp3,False,False,False
+663f88f849384c2cbe988b51081fc84b,Spanish,female,Ana Lopez,https://resource.heygen.ai/text_to_speech/4UsRcbk7oWEffDq2dBPLB7.mp3,False,False,False
+6648fd92bcba41df809a01712faf9a4a,English,male,Harry - Narration,https://static.heygen.ai/voice_preview/Q8bBCXxNPuwnZKixnNHawf.mp3,False,False,False
+664b73058b784aa89ddb2924c141d441,Turkish,female,Dynamic Derya,https://resource.heygen.ai/text_to_speech/5UWuAJV8NjCyW36JoUUKKd.mp3,False,False,False
+66f9dae8e40749bd8e3bbe4aba83f121,English,male,Maverick Stone,https://resource.heygen.ai/text_to_speech/owC2DW3AsXHM35VwFcCykd.mp3,False,False,False
+6712aee5bd12487eabac2fa165ac93b9,English,female,Sarah Stone,https://resource.heygen.ai/text_to_speech/KtBBi7jr3hQWHYcPQa3srf.mp3,False,False,False
+683b6cb0733c4b2baba16efd84066616,English,male,Calm Caleb,https://resource.heygen.ai/text_to_speech/kqhjS8WAxsb7qfBhXFnFUM.mp3,False,False,False
+6872a840c4194f42a7f8ce0aee47660c,Portuguese,male,Pedro Lima,https://resource.heygen.ai/text_to_speech/tr67HZYtX9AGBdhd2EL9Un.mp3,False,False,False
+68a63c5eb8304b4f92a97efea30c50f8,English,male,Rafael,https://resource.heygen.ai/text_to_speech/uzMsAnz3Q4ZzJLnwY9VPrH.mp3,False,False,False
+68c7001d8ff34d168d287e1bd7653041,French,male,Etienne Lefebvre,https://resource.heygen.ai/text_to_speech/wQmFavjvSJBGr2Z3QV589C.mp3,False,False,False
+68dedac41a9f46a6a4271a95c733823c,English,Female,June - Lifelike,https://resource.heygen.ai/text_to_speech/vMWu88quJmBwKNFryV5LAb.mp3,False,False,False
+6924376faa724608a539daba27d691b6,Italian,male,Savvy Stefano,https://resource.heygen.ai/text_to_speech/rKpLpeYhhv9kLGqbRfrWKM.mp3,False,False,False
+695086d68b194191bd7907f0196d1374,English,female,Crisp Chloe,https://resource.heygen.ai/text_to_speech/hi7xgy9AdAZFMbvGGmmRZh.mp3,False,False,False
+6981538b2a85415bbcd878978190314e,English,male,Slick Simon,https://resource.heygen.ai/text_to_speech/Xhr2xACGbyVc4wLrd5kvNK.mp3,False,False,False
+69ab9617a561446992605c2c7924aacb,English,male,Baritone Ben,https://resource.heygen.ai/text_to_speech/BM2KSJC3wSdbbDcsd7C3ad.mp3,False,False,False
+6ad549fcd687425886a4387e9197a1cb,English,male,Professor Dean,https://resource.heygen.ai/text_to_speech/hyhgRKYHKSCCTbinfERZTg.mp3,False,False,False
+6b5c5f11e7b24daca9c0d2371ecd8bc9,English,male,Raymond-Professional,https://static.heygen.ai/voice_preview/DToLuPLsgsCcodNThceGUa.mp3,False,False,False
+6b8cccddc62341b4acbe2c567e07d50b,English,male,Hudson Wilder,https://resource.heygen.ai/text_to_speech/azNfcLGj5QfpopVzvUHbSA.mp3,False,False,False
+6b956e6dac4343bab8d95979b2f68e71,Indonesian,male,Seb,https://resource.heygen.ai/text_to_speech/UKzbvwHXLcB4zJDi47EKbg.mp3,False,False,False
+6bae8b7bf48846bab424d00b807e59c1,English,male,Decisive David,https://resource.heygen.ai/text_to_speech/MW3kTh3m4dHNfDh64LDsce.mp3,False,False,False
+6bfec778d7974c3e8a7ec27141b359ef,English,male,Tobias,https://resource.heygen.ai/text_to_speech/7x6vbT68fXZiginKWM7Eri.mp3,False,False,False
+6c0f29c88e4541e39cf5f0bbb2745f4d,English,male,Alastair Kensington,https://resource.heygen.ai/text_to_speech/PxHdRZsFmZuesTsLvvKpMa.mp3,False,False,False
+6c3d39e3232643139d8bb2035e963dda,English,male,Oxley,https://resource.heygen.ai/text_to_speech/jEB4kwxKPLmb3PUrKVGXF5.mp3,False,False,False
+6c4510a375b0451892d3d61f96e7f81a,English,female,Sienna Bell,https://resource.heygen.ai/text_to_speech/RPg6oNkxhSqFcaCPEsXwoA.mp3,False,False,False
+6ce26db0cb6f4e7881b85452619f7f19,Spanish,female,Camila Vega,https://resource.heygen.ai/text_to_speech/haT6KJcRgZptKUs4RhDisT.mp3,False,False,False
+6d9be61f6e0646f4b6750d3eb03b118f,English,Female,Belle - Natural,https://static.heygen.ai/voice_preview/wbXoiYJ2e6xwKC5i2EUSCY.mp3,False,False,False
+6db9fd33d5a2402e9440b51fcc71ba18,English,male,Andrew Rizz ,https://resource.heygen.ai/text_to_speech/YYFp3uTeEpA2RnvQTfH9pG.mp3,False,False,False
+6e032ca64a1745a0b48036e64042b2fb,English,male,Gerardo - Outdoor,https://resource.heygen.ai/text_to_speech/JrRTDJnKr7tpDb5R2iFrDK.mp3,False,False,False
+6e05e310c3f14ed4ba1545578ce82ff6,English,Female,Chloe - Lifelike,https://resource.heygen.ai/text_to_speech/gkVUvC9Q4pLfhPg5CkxpBj.mp3,False,False,False
+6e1d87f0fd124fc9a423fd5d676ce566,Portuguese,male,Energetic Eric,https://resource.heygen.ai/text_to_speech/35ToUmQJNZdeGkJiLwkdzn.mp3,False,False,False
+6e51a203c3e74398ae8046f3c320abf6,English,male,Samuel-Narration,https://static.heygen.ai/voice_preview/TuVCqyvCGvbEGA9JkFkaFY.mp3,False,False,False
+6f99ce5bdd0b4b949210301469696f3d,English,female,Smooth Sophie,https://resource.heygen.ai/text_to_speech/BEKF8RVMsRZB37Ea4orEED.mp3,False,False,False
+6fe41db3d6ee40e4800718270ba22670,English,female,Assertive Anna,https://resource.heygen.ai/text_to_speech/3U4zGTzMWmy4Bn9QoEMRAR.mp3,False,False,False
+7042665eceec4300afd14e4f3ecf9157,Spanish,female,Lively Laura,https://resource.heygen.ai/text_to_speech/uVXRGaTkwzcNozjyj62W5G.mp3,False,False,False
+707375bffbb6443ca99ec8f81459738f,English,Female,Grace - Natural,https://static.heygen.ai/voice_preview/jGVaobvjJGySAFFFF6BS6Z.mp3,False,False,False
+712534c680f94736aa0f5b47e4b58da9,English,Female,Mireia - Lifelike,https://resource.heygen.ai/text_to_speech/aAug7z6632YmbP36aaQTf5.mp3,False,False,False
+7194df66c861492fb6cc379e99905e22,English,Female,Jocelyn - Lifelike,https://resource.heygen.ai/text_to_speech/sY9XzsvY4bXqhs9PsXo3FS.mp3,False,False,False
+71c663964e82485eabca1f4aedd7bfc1,English,male,Troy-Natural,https://static.heygen.ai/voice_preview/Qs6kFXo4t3TetRQS5AYb6F.mp3,False,False,False
+72a90016199b4a31bd6d8a003eef8ee2,English,Female,Masha - Lifelike,https://resource.heygen.ai/text_to_speech/HDMBn4or5uC9bKHE8XkGsb.mp3,False,False,False
+72e922488a614041b5ab5f6ee07e3deb,Italian,male,Serene Marco,https://resource.heygen.ai/text_to_speech/wxRuUDZ9FhqC8UemHmrByn.mp3,False,False,False
+747e5085c2ed4546bd79934c440d8854,Spanish,male,Diego Martinez,https://resource.heygen.ai/text_to_speech/Z3EmvaWwBD82xfmjYJDQGb.mp3,False,False,False
+75087b6898fc468a97f1ad08f1d12962,English,male,Henry Aldridge,https://resource.heygen.ai/text_to_speech/r7f448CNcWqmCqwZFTgasT.mp3,False,False,False
+755902b751654f30a6ef49e8bbcacfec,Italian,male,Murmuring Matteo,https://resource.heygen.ai/text_to_speech/aWtpMteTDDuuCAqBUMZBZ9.mp3,False,False,False
+75a5a6de69204dc9ba448158d1b6a8de,English,male,Dominic,https://resource.heygen.ai/text_to_speech/Wm3CqEVvZq87QetcwEBeeE.mp3,False,False,False
+75af67cc2ceb498681d0085bb56bddc3,English,male,Mason Finn,https://resource.heygen.ai/text_to_speech/cHpG2DUJVYofXuSpsgsQNm.mp3,False,False,False
+75afb1e55ad3458693e5f540092c4b40,Hindi,male,Vibrant Vikram,https://resource.heygen.ai/text_to_speech/6i7eba7rj9Z4Wi3P64wnJG.mp3,False,False,False
+7628976b151a4741a65bb5760ce71ce5,English,male,Veteran Victor,https://resource.heygen.ai/text_to_speech/XnGY8hcpsXbeS5d4ReJa9P.mp3,False,False,False
+768069f1a7a24891a0531edf3f426902,English,female,Claire,https://resource.heygen.ai/text_to_speech/nS7AvvLTfRT3hsTDiQayGZ.mp3,False,False,False
+76ab09881e9f48d8901fd433755851c0,English,male,Eager Ethan,https://resource.heygen.ai/text_to_speech/ekrc73EhtqCijQLDe5fn9T.mp3,False,False,False
+76d38d2180e74bf29baf916be2578bac,English,male,Nik_Public,https://resource.heygen.ai/text_to_speech/locale=en-USmodel=id=hNvp3PucfF2RYYxb4RW79V.mp3,False,False,False
+77a8b81df32f482f851684c5e2ebb0d2,English,female,Calm Chloe,https://resource.heygen.ai/text_to_speech/qvac3DDRcdLpoG8EJiWMzJ.mp3,False,False,False
+784ed53b093f4b778ea114a2cc551b8d,Indonesian,male,Steady Surya,https://resource.heygen.ai/text_to_speech/MR4uu9qQppzAywByy5SWAW.mp3,False,False,False
+78fe79be45d343acb3a27bdd83f73f72,Ukrainian,male,Andriy Zhuravel,https://resource.heygen.ai/text_to_speech/cLa5vcDHQEWWvX786faqM7.mp3,False,False,False
+7970a8907d5d454082c05e75183c7fe4,English,male,Ren - Lifelike,https://resource.heygen.ai/text_to_speech/5zK2LJDk5qjLJfgnU4BKCU.mp3,False,False,False
+797f084e219c426a9ef32e7dc9a3b960,English,male,Imposing Ian,https://resource.heygen.ai/text_to_speech/kpzA5ugtCwc4WWmvyyWATH.mp3,False,False,False
+79d9a0758b1f406ebe8ac3e52e09adb1,English,male,Relaxed Ray,https://resource.heygen.ai/text_to_speech/g2uht4XfBzzfymJXwWVCzP.mp3,False,False,False
+79ebad5386094144a752fac25c1f5418,English,Female,Anja - Lifelike,https://resource.heygen.ai/text_to_speech/jBXcXHJ3ubqkvmcHdDGr2A.mp3,False,False,False
+7a544b76e07648849ed54617f18ea280,English,male,Dexter - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=U2g7uDbKKd4qubtwoEsmZg.mp3,False,False,False
+7ac5306bd4964b45bb59b531567e6a41,English,male,Relaxed Rick,https://resource.heygen.ai/text_to_speech/f7YHBmPb9XozM4brQyM45N.mp3,False,False,False
+7ace95f741c04d43abf53bde18f15d1a,German,male,Scholarly Stefan,https://resource.heygen.ai/text_to_speech/fmQt5wibKEgV9FpZYompvE.mp3,False,False,False
+7b58eed1727a41ccbb199e4762364d39,English,male,Rupert Blackwood,https://resource.heygen.ai/text_to_speech/XqiTEsydL8pmNWHnkjwV2X.mp3,False,False,False
+7b6722df52c44a79b6adb6c3074588d8,Italian,male,Giovanni Rossi,https://resource.heygen.ai/text_to_speech/rKgokZaYkVHxJXxYVfJwga.mp3,False,False,False
+7baaa2055d2e491f85d9071f6edff9de,English,male,Milo Baxter,https://resource.heygen.ai/text_to_speech/PUpgFDfSMAURA9NAUvYZ2M.mp3,False,False,False
+7bdb8502bf8b4fce99dbe6dd0f9b6398,English,male,Matteo - Lifelike,https://resource.heygen.ai/text_to_speech/ocu7DGqrKVdtYG2vFCotVN.mp3,False,False,False
+7bf3a42a7a3847a586017bcbab105734,Spanish,female,Poised Pilar,https://resource.heygen.ai/text_to_speech/oNxdeMjcQewNUSzzrHTAFP.mp3,False,False,False
+7c34f2f432d94cd9b3ace5bd209f70b0,English,female,Reliable Nora,https://resource.heygen.ai/text_to_speech/MHuT4Ts3cpNLTPaYMGvY8c.mp3,False,False,False
+7c66cda484de4960899408fcfb72b86c,English,female,Gentle Gemma,https://resource.heygen.ai/text_to_speech/sdtHVgeupUpRbHu4Pds6dS.mp3,False,False,False
+7c9af08f027949358740310e59ed1841,English,unknown,Sophie_in_car_without_mic,https://static.heygen.ai/voice_preview/49ec1c44269047969f51bb64734a5bf1.mp3,False,False,False
+7e27870bdb5e49ff802b99954ec6cf2e,English,male,DJ Troy,https://resource.heygen.ai/text_to_speech/ddBAgxjmXt3WA3pExpmeZK.mp3,False,False,False
+7e4e469711394247bb252ff848ac061d,Portuguese,male,Tiago Costa,https://resource.heygen.ai/text_to_speech/Xx3QkQyz2LahcaLKskFbig.mp3,False,False,False
+7e5de8908ba749c4b2b71cea36a28742,English,female,"Sophie Vale
+",https://resource.heygen.ai/text_to_speech/JTAitYuFePCjiffwvjieWC.mp3,False,False,False
+7ea54c7c9b0342b184f11a8935e6953e,Hindi,female,Nisha Kapoor,https://resource.heygen.ai/text_to_speech/BxWdWH79F9KqXPQmnUyRDB.mp3,False,False,False
+7eae1818778d41388eae9f9da3b904dc,English,male,Daniel Hayes,https://resource.heygen.ai/text_to_speech/7x9wdbzYWJud9rWEAszuzT.mp3,False,False,False
+7eede676afe54704a619ccdb70309b76,German,male,Commanding Clemens,https://resource.heygen.ai/text_to_speech/5iFsterv85pZn4u2bLjAHh.mp3,False,False,False
+7f0f096d5c0a493ea86dc8da095d799c,English,female,Gentle Gemma,https://resource.heygen.ai/text_to_speech/zs6vJffMZdxDhS3f8zDdg7.mp3,False,False,False
+7f1b5e5bc4bf44f896b304439d346485,Hindi,female,Ravi,https://resource.heygen.ai/text_to_speech/XUbTfJMTfpjK4kMynkx9BN.mp3,False,False,False
+7f6838b1b0f141deba891800621a4fe8,Turkish,male,Emre Kadir,https://resource.heygen.ai/text_to_speech/xKZXc5dLXZmeMuQnMFgoMc.mp3,False,False,False
+7f8afc39a934486e92908259beb6657c,English,female,Smiley Stacy,https://resource.heygen.ai/text_to_speech/h4iiQQQvjQ5YewkWxyXjxg.mp3,False,False,False
+7ffb69e578d4492587493c26ebcabc31,English,Female,Judy - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=XaEnBUj8JmBNtRUTWsZbkL.mp3,False,False,False
+80b6e0a9cd6d4c54ae5789f3cd679e31,English,male,Deep Douglas,https://resource.heygen.ai/text_to_speech/528wrz4R6G49uui4LT5LPK.mp3,False,False,False
+815ed33648a24395a305bed6357eb73c,English,female,Claire Lawson,https://resource.heygen.ai/text_to_speech/tfsqtwsC2UVyuYmQtMr3jX.mp3,False,False,False
+8160f2a0dda6477dbbe8ed02cd1ec049,Dutch,male,Wise Willem,https://resource.heygen.ai/text_to_speech/ZU4DtwXRraY7SP9MdyP3LY.mp3,False,False,False
+81dd577b721b44c09ae388f3983ba211,English,female,Affable Alice,https://resource.heygen.ai/text_to_speech/Z5ca2q7mJjpTAc6GnWpBjj.mp3,False,False,False
+82025eb9625b4c09aec78f89528cc33a,English,male,Rugged Rob,https://resource.heygen.ai/text_to_speech/rtUCzMPFQWzrAeB5bLSoCi.mp3,False,False,False
+8275926614aa43d894157d7904ad70b3,English,male,Anxious Allen,https://resource.heygen.ai/text_to_speech/xdPLERzwSxebfpTcdrT2iB.mp3,False,False,False
+82e7dad5136942bca1a67bb90d95f1b7,English,male,Oliver Hart,https://resource.heygen.ai/text_to_speech/gLFEhxMCZFaiqnthkWXvYH.mp3,False,False,False
+836aa05e398543d08231f68bffdfc025,Turkish,male,Deniz Yılmaz,https://resource.heygen.ai/text_to_speech/7KnbkgGA2CP4H6bPfX3VBd.mp3,False,False,False
+8445e1a518c74304bcaa5b793d1b2f54,English,male,Reliable Tom,https://resource.heygen.ai/text_to_speech/VZBkUx643sUY7qGph9Tynd.mp3,False,False,False
+849dbf55415e4beea43c4522f8e3a377,English,male,August - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=KD7E7sDZMiENULEBrgeLR3.mp3,False,False,False
+84c48528a3ee436c9dcf2c968584d97c,Hindi,male,Sunny Sahil,https://resource.heygen.ai/text_to_speech/e489giLm5DihANAN2enBV7.mp3,False,False,False
+84d0173e0b9a4ec9bc7b65a2717555bc,English,female,Seductive Sara,https://resource.heygen.ai/text_to_speech/DDWNjiTafSieJKJW4UBMsi.mp3,False,False,False
+8552d4c72f6448009910edf84b93b0f6,English,female,Energetic Ella,https://resource.heygen.ai/text_to_speech/rSggVq7p4GvHLXpS7aGAfU.mp3,False,False,False
+85d55c0b96f645a692ab569f53721331,English,male,Gerald,https://resource.heygen.ai/text_to_speech/vkJHyUa3cYQY9mNaTNaFD6.mp3,False,False,False
+860ca671f3794622a94c48ccc66cf43e,Turkish,male,Majestic Mehmet,https://resource.heygen.ai/text_to_speech/XTKwXmfiW5HqVWd6heNs9X.mp3,False,False,False
+86e484394d8b44649d686a77a14d2ce6,Hindi,female,Nirmala,https://resource.heygen.ai/text_to_speech/xUmob87su5HccMTFcYaCP5.mp3,False,False,False
+8732e9eb6a874f58becfe99177c06270,English,unknown,Lucas Centered — black hoodie,https://static.heygen.ai/voice_preview/7a2cfd5e89ae4823a0d49f9d9a67998c.mp3,False,False,False
+87aaddf80fe74ff292691099cd5c0633,Arabic,male,Hakim Al-Rawi,https://resource.heygen.ai/text_to_speech/wp7MCL5bqBLdRE82W4nTt4.mp3,False,False,False
+886d5b163da4436daa5fae885e175636,English,male,Charles - Friendly,https://static.heygen.ai/voice_preview/sj5stM39YqYcmjn7629wmT.mp3,False,False,False
+88c37edcb8e74b2388dfb288b786dba2,English,male,Bojan - Lifelike ,https://resource.heygen.ai/text_to_speech/9CLh5UraxmY7usyBXCba2D.mp3,False,False,False
+88f5e1546a4245cca66c332671eb6d78,German,female,Lena Fischer,https://resource.heygen.ai/text_to_speech/5QVKmgJCoi4TEyVXB3kg24.mp3,False,False,False
+897e08ae92a54e2f9178ae074120262b,German,female,Pleasant Petra,https://resource.heygen.ai/text_to_speech/dYXz8kW7sEsYp5Bxv8pFbW.mp3,False,False,False
+8a4dfef7aacf4ad88c10ae9391bd3098,English,male,Soothed Samuel,https://resource.heygen.ai/text_to_speech/ANkL77BAZPYqSUydV32ueG.mp3,False,False,False
+8a9fd0a131c94da08b761389e1e07cee,English,male,Gritty Griffin,https://resource.heygen.ai/text_to_speech/aCoNmejXoQPvomcWC6fdxg.mp3,False,False,False
+8aaf1086539f4856b37ef899c160bbd7,English,male,Resonant Robert,https://resource.heygen.ai/text_to_speech/m8faTyNYjeWvaveVRKDvud.mp3,False,False,False
+8af68d7ea38f4e7ca05cf46c3f7a590b,Vietnamese,male,"Cuong
+",https://resource.heygen.ai/text_to_speech/xuju8U3CbYxmzyeDx5RzeZ.mp3,False,False,False
+8b368e8526c44eaaa63dd5178db29f59,English,male,Riley - Lifelike,https://resource.heygen.ai/text_to_speech/ocuAEW4ohRpSamm4JefTrN.mp3,False,False,False
+8b697adb69794662b62e559f344b4892,English,unknown,Daran inside sitting,https://static.heygen.ai/voice_preview/05ecb168b9524bff9a62f29f66d5e27c.mp3,False,False,False
+8bb2c6f55b64448588b5dfc403ab2374,Turkish,female,Charming Ceyda,https://resource.heygen.ai/text_to_speech/iT9af66EytkYP5Uj5JaPFj.mp3,False,False,False
+8bc7752d5caf40ca87bb1cbd5b5ef006,English,male,Sage Spencer,https://resource.heygen.ai/text_to_speech/3sQK2mhPmiqVGQhk4jcNXT.mp3,False,False,False
+8be286fcca644d7cad388bac1d035b52,English,male,Deep Douglas,https://resource.heygen.ai/text_to_speech/rgY4PfhdibkjiZnSwN9LK9.mp3,False,False,False
+8c2bae33807d48bb83f24de3367c7769,English,Female,Lindiwe - Lifelike,https://resource.heygen.ai/text_to_speech/rx8Q3AWncquvT3YQKPXaTU.mp3,False,False,False
+8c68ca59f600432284901d1056c813a9,English,female,Bright Beatrice,https://resource.heygen.ai/text_to_speech/SHbjXe4kvHWzXa6ppEyjLS.mp3,False,False,False
+8d5aee969f98437d997b27113393edea,English,male,Storyteller Ollie,https://resource.heygen.ai/text_to_speech/MuNutNzgekseGNjkdsGNkh.mp3,False,False,False
+8e826a834a674a6a84ecdf0f7a6bd662,English,Female,Verena - Lifelike,https://resource.heygen.ai/text_to_speech/LUa3MhaT5WhRzGbTQvNMzD.mp3,False,False,False
+8ee2f9c253a64228931dba0b65a2d4b4,English,female,Bright Bella,https://resource.heygen.ai/text_to_speech/A27FoeCiJdmYHWpyAaQJoM.mp3,False,False,False
+8ef72c67f3db44acb00fd9eb9b4a6546,English,male,Eli Carter,https://resource.heygen.ai/text_to_speech/vvNb7X4MDiTjY3NobtXATj.mp3,False,False,False
+8f03500c019542408bf387e224237f36,English,female,Radiant Riley,https://resource.heygen.ai/text_to_speech/iLd5etyRbwECrTq9RQ8QLo.mp3,False,False,False
+8f4b4e3a470c4c7f8b833e080f6ed002,English,male,Grand Richard,https://resource.heygen.ai/text_to_speech/YBvg6hH9Pnn74ixbAwoKmL.mp3,False,False,False
+8f8f8978a6454b03bebc6afa6b78c97b,English,male,Tough Timothy,https://resource.heygen.ai/text_to_speech/f27kujYn7fLQDX6K6NohLj.mp3,False,False,False
+8fcadf28f2b14ca08162741d7cd34044,English,female,Narrative Nora,https://resource.heygen.ai/text_to_speech/4SAqXpGZLSvscfqDE68FYT.mp3,False,False,False
+9014258b76904d81b7091363d5a4a48b,English,female,Little Annie,https://resource.heygen.ai/text_to_speech/TXohjiM87rLjbhoMGMHzve.mp3,False,False,False
+901cb35c369b4739be97042dc4aa0ffb,English,male,Swift Sam,https://resource.heygen.ai/text_to_speech/NfkytmpzBp9sYJ5fvxS2ZC.mp3,False,False,False
+905b722070844856b5057a00cab498d8,English,male,Rafael,https://resource.heygen.ai/text_to_speech/38xMNAqCyf9abNizpbjarD.mp3,False,False,False
+90bab79483c242d7b4487e5708db6744,French,male,Pierre Narrateur,https://resource.heygen.ai/text_to_speech/Qy352B9oyio7JYy2i9sLT5.mp3,False,False,False
+90c49ec1a41847dcb8e4ff36dad72762,English,male,William Axel,https://resource.heygen.ai/text_to_speech/m9TkahzdfGuSJjjL9iC9Ra.mp3,False,False,False
+912d8b43d20d44579f9fbe20108275b9,English,female,Sophie Blake,https://resource.heygen.ai/text_to_speech/qooCnCZVuZkxvPXHJcQnKM.mp3,False,False,False
+9169e484eb0740b286ef8a679d78fa3f,English,male,Glenn-Natural,https://static.heygen.ai/voice_preview/AqYCGxK5CxXfGWjBDLyjch.mp3,False,False,False
+91d8fc5c65c34ddb8b0ec6ff7d3bfeef,English,male,Resonant Richard,https://resource.heygen.ai/text_to_speech/uykR3wwWmjM2KDCQuQZWRL.mp3,False,False,False
+9200c3f04ea4462a8aec3730e589ac5d,English,female,Feisty Fiona,https://resource.heygen.ai/text_to_speech/s8JXxZNVqpihZ2eBHh7wyn.mp3,False,False,False
+925e90a739c14f3b9cabb49ede9a7b08,English,female,Playful Paige,https://resource.heygen.ai/text_to_speech/wcWyP8NWdTihgprpHodVxb.mp3,False,False,False
+92646a63f886446aa87422ec5a57c435,English,male,Jack Sullivan,https://resource.heygen.ai/text_to_speech/zo5UESYejsqwLYLRwFoDDV.mp3,False,False,False
+928c92b0b59b404982e0e586874398b5,English,male,Pleasant Pete,https://resource.heygen.ai/text_to_speech/tiiehgxHvf7o73ZVNLrCci.mp3,False,False,False
+92d48901d91a47dfa187f64db4d60315,Hindi,male,Serene Arjun,https://resource.heygen.ai/text_to_speech/kxpbNCzM3FzE6tLXDkvbJU.mp3,False,False,False
+94636fb8bbf14c26b61d2d17972f2d80,English,male,Noble Nicholas,https://resource.heygen.ai/text_to_speech/v5V4KC3iefp9PBCQaaHqXB.mp3,False,False,False
+9496e7cb390e4b9f9950b58ee8666587,English,female,Charlotte Windsor,https://resource.heygen.ai/text_to_speech/MLamu3RecW5foJZJsmyFqS.mp3,False,False,False
+94caba033ba54380b752ec65b8ad3ddf,Hindi,female,Energetic Ela,https://resource.heygen.ai/text_to_speech/zCUtUy868k2Jcfv7MzJiZU.mp3,False,False,False
+94ec497104a04c87904a8aa138d6e46c,Portuguese,female,Sofia Brazil,https://resource.heygen.ai/text_to_speech/ZSSfa8Hoy3vNvwMyE47P99.mp3,False,False,False
+9542b02f456a428ab0328cd94f687de7,English,male,Optimist Ollie ,https://resource.heygen.ai/text_to_speech/WcnfUARG6amVBNPHQiPJy8.mp3,False,False,False
+958ae81fd0e642f19b8d422293b13033,English,male,Narrative Nolan,https://resource.heygen.ai/text_to_speech/7Kz8e3NndVamDea3Cybmyd.mp3,False,False,False
+958ba165182b4ce192b631627dd5da2b,English,female,Melody Mae,https://resource.heygen.ai/text_to_speech/kigbhYTuvu9Pm6btFQ6sDQ.mp3,False,False,False
+95f44b4bfa4543dfa7a96d1fba1efb64,English,female,Clarity Catherine,https://resource.heygen.ai/text_to_speech/nSZwUEuKQu8JaJGQ8ju9YV.mp3,False,False,False
+9601d91197304203b3323f00c394a48c,English,unknown,Tim outside sitting,https://static.heygen.ai/voice_preview/d5e2d3353d384aaf9fa8c5375e827c4d.mp3,False,False,False
+960fe48e5eec4621845176a4255a3259,English,female,Lovely Lucy,https://resource.heygen.ai/text_to_speech/NCrgkPtrq2TDu2y2vjxQDk.mp3,False,False,False
+970b74f87fc24542b7c1dbd0727c6df9,Portuguese,male,Smooth Pedro,https://resource.heygen.ai/text_to_speech/zfTwg6bvCFJAUwxFzJaNiJ.mp3,False,False,False
+97aa1eae5090419fa7b60acf2583c760,English,male,Chike Obi,https://resource.heygen.ai/text_to_speech/9tkMyfhaDph5xZ83wYzQrK.mp3,False,False,False
+9861d56bf90d4ba6a332e32d03702a39,German,male,Karl Weber,https://resource.heygen.ai/text_to_speech/ngigLy782pU2invz22DQhE.mp3,False,False,False
+9863189c914f4b35bdef1c1362e8f5b8,English,female,Vivacious Veronica,https://resource.heygen.ai/text_to_speech/HxWfsndD3eyEaS47SDvXpn.mp3,False,False,False
+989dd7b6282b4aa983bd6310dbdff4ea,English,male,Victor Lowell,https://resource.heygen.ai/text_to_speech/itvkXRMXg4gGyJLHoUqzAb.mp3,False,False,False
+98a1d5a7478347ba80704fc229ccf89c,English,male,Harrison Cole,https://resource.heygen.ai/text_to_speech/ta9vZBLhZooqTYkM4gdakK.mp3,False,False,False
+98a5cce6ac414f7dae880ecd19b0e011,French,male,Théo Élan,https://resource.heygen.ai/text_to_speech/XTkhAr5zwJdUrFRAtDzc5U.mp3,False,False,False
+98ec920efd144d81b3939296d933fec3,English,male,Nervous Nick,https://resource.heygen.ai/text_to_speech/BC8vvtEFU9tPGwjyNRKua6.mp3,False,False,False
+99ba7041bb36476b8e8f6c8b712893d9,English,male,Classic Christopher,https://resource.heygen.ai/text_to_speech/RcAk5UwVv79zMwuAserUih.mp3,False,False,False
+99ddbff52c5f4887a3ce4844fb21e882,English,male,Uncle Amos,https://resource.heygen.ai/text_to_speech/LHVQhcucm3P9aSqaRkSyHa.mp3,False,False,False
+9a1bd4a5a2dd4cafb153867108411358,English,male,Assertive Adam,https://resource.heygen.ai/text_to_speech/ndvNN2tFQWqAPcgvmsSBLE.mp3,False,False,False
+9a2d2c7598814e7fbe3717026b0bef0d,English,male,Coach Cooper,https://resource.heygen.ai/text_to_speech/6e4b8arQKXvGDKpwri9erG.mp3,False,False,False
+9ab864e3f4954f549a1b4a79ac4407d3,English,male,Mayor Mike,https://resource.heygen.ai/text_to_speech/c7SjM4fxtxzgQ5sUfTmZuR.mp3,False,False,False
+9af0c9f884554c8ba6e4d396b488862b,English,male,Resonant Richard,https://resource.heygen.ai/text_to_speech/rydbAinYNJJ4F2dW6G3Ajh.mp3,False,False,False
+9b1e38002cdf44aeaf05ad43fecddd5f,English,male,Nathan Reed,https://resource.heygen.ai/text_to_speech/wWSx42Y6gZCN2HyaGmJLWC.mp3,False,False,False
+9b6d89a2ac3f4a0eaa82f4d9ed9cabbf,English,male,Carl Hudson,https://resource.heygen.ai/text_to_speech/uqACmYUviAeumvTaMBwSaH.mp3,False,False,False
+9bd9594b2f52471c904b3950af5323ec,English,female,Lehka ,https://resource.heygen.ai/text_to_speech/uQUfUx3baRrENAGGpWNwM5.mp3,False,False,False
+9c3fffd41ca64d5d83bdfe60be3c532a,English,female,Teen Tara,https://resource.heygen.ai/text_to_speech/8ETFYNx4XZH4AF9DSWQFqi.mp3,False,False,False
+9c9db984e9434c4dbc04120b276216d7,English,unknown,Tim at cafe,https://static.heygen.ai/voice_preview/cc7e8aba359647978ee46a78406bc2b8.mp3,False,False,False
+9cfe3785136147ea967c7632f52c8788,English,Male,Benjamin - Professional,https://static.heygen.ai/voice_preview/THfjKiRjWcaDxtDgPbyrLc.mp3,False,False,False
+9d0ee78b0f5c42ad82db4b81e6c80366,Spanish,male,Mellow Manuel,https://resource.heygen.ai/text_to_speech/DCtjSwmhZBvTuR4yAbqHbD.mp3,False,False,False
+9d3ef0452bcc420d86ecc39b557b4f2d,English,female,Avery Lane,https://resource.heygen.ai/text_to_speech/oZrqK7nYVH2xvgFMRKRWs9.mp3,False,False,False
+9ddec9f2efd846a4ad4e73ac75ff0a8c,English,female,Kiara,https://resource.heygen.ai/text_to_speech/3rfMzUUihvhCAi3AmS2yw7.mp3,False,False,False
+9e02bd3d74bb48a6bbfe468177e1857b,Hindi,male,Arjun,https://resource.heygen.ai/text_to_speech/aD7f7vqzpnq8DEsvuNp4F8.mp3,False,False,False
+9e11a965228c499993433d0472bd8d4e,English,unknown,Gail outside walking,https://static.heygen.ai/voice_preview/9c1a44b7c24c414a9c4df38bf196a286.mp3,False,False,False
+9e18bbe8306c43da9fd1f598289b03ca,Indonesian,male,Radiant Rio ,https://resource.heygen.ai/text_to_speech/aowRGfZwUkqaBNDdv49oAo.mp3,False,False,False
+9e1b6c0e0fbf41088f9e21bafe38f5da,Portuguese,male,Tiago,https://resource.heygen.ai/text_to_speech/iVtZzqL5v2k3PANfmk8WRV.mp3,False,False,False
+9ec46dd0e4194158a3c958db4b15aefa,English,male,Noble Nigel,https://resource.heygen.ai/text_to_speech/jrZuBngWXTPWubrsRtmXA7.mp3,False,False,False
+a0bbe277ff3f4601a9b4c4a382db2b2f,English,male,Spirited Paul,https://resource.heygen.ai/text_to_speech/8RWasZhyBB65XvBVdrEAXQ.mp3,False,False,False
+a0bd2e5d41a74643be47ac75ca9171a2,Arabic,male,Rami Idris,https://resource.heygen.ai/text_to_speech/a8sjYLJMWGH5NkFWCrAwjg.mp3,False,False,False
+a0d56de5b6104ff0acb7c7584b5c7ce8,English,female,Hazel Everly,https://resource.heygen.ai/text_to_speech/Fob2WxEgixnAzTfNvTw76n.mp3,False,False,False
+a12d857b0424427ea109213dc373c618,English,male,Kenneth - Natural,https://static.heygen.ai/voice_preview/TMMLHLXFCCX3d9wv7pfHQJ.mp3,False,False,False
+a1f0ce3e007f481f82832b0811182217,Spanish,female,Vivid Valeria,https://resource.heygen.ai/text_to_speech/ob9CGP3DYsXTMFLCmkBhbB.mp3,False,False,False
+a1f6daa7181f489893aeedfee8624666,English,male,Cordial Christopher,https://resource.heygen.ai/text_to_speech/EQ8GAFpKZsjBawH7bTE2mf.mp3,False,False,False
+a22a7a8cd45042ad83e9bb9203e1a84b,English,Female,Lily - Professional,https://static.heygen.ai/voice_preview/9kuXwV9GzDFmNRe629mLR4.mp3,False,False,False
+a2805de1ed104642a9cd299eddc8097e,English,male,Henry Worthington,https://resource.heygen.ai/text_to_speech/VbiNEHiVHpqBLcKk2CNfAA.mp3,False,False,False
+a33f0124b8024ca9ac3385d995ebc0e9,Hindi,female,Riya Sharma,https://resource.heygen.ai/text_to_speech/zKyT2FRocrpAoQDLUYzGA.mp3,False,False,False
+a3a51db09788457b922674bab038dab8,English,male,Onat - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=p29JAQDcDPcrgaE5YTmVik.mp3,False,False,False
+a3c2199a45074765a2aaef907f2b0b30,English,Female,Miyu - Lifelike,https://resource.heygen.ai/text_to_speech/PXh7zeUK6berJok6ohEkaU.mp3,False,False,False
+a426f8a763824ceaad3a2eb29c68e121,English,male,Raul - Lifelike,https://resource.heygen.ai/text_to_speech/yjXmLuWU55vNkW3RYYGfrS.mp3,False,False,False
+a4b8e7cd67464ded80a21592e297a0f4,English,Male,Max- Outdoor,https://resource.heygen.ai/text_to_speech/rCBSN84zyUjM778JGaYh5.mp3,False,False,False
+a56a4fa01bc94c79be13f9803dfb5721,English,Female,Audrey - Cheerful,https://static.heygen.ai/voice_preview/FmbRdxCQTcBFnrczYfJFmD.mp3,False,False,False
+a5d0cef9f960416c8f5b970062ebb725,English,male,Mile - Lifelike ,https://resource.heygen.ai/text_to_speech/ZedWzupBEhc7zAjuQUm8Nn.mp3,False,False,False
+a5fe770570d6425d9e106c9412fc632b,Spanish,male,Diego Sonoro,https://resource.heygen.ai/text_to_speech/jpuXSBufRpUnghWFsrJ8MA.mp3,False,False,False
+a6813ea36c8942c9a3c1dfd5f50bdff1,English,male,Dynamic Devin,https://resource.heygen.ai/text_to_speech/apCBqgGNWSoPyFPNUQLiKK.mp3,False,False,False
+a6f2b5cdf7bf4d20a6c3b9a23c404ea0,Hindi,female,Gentle Gita,https://resource.heygen.ai/text_to_speech/eif7SU8XD7Px3Wn8EyEWpV.mp3,False,False,False
+a8bd3734021040f88a5e3a4497598c19,English,female,Spunky Sandra,https://resource.heygen.ai/text_to_speech/68usHG7mNuXtKEmnubXdtE.mp3,False,False,False
+a949466e82aa4a9db5068f57947a0480,English,unknown,Daran outside walking,https://static.heygen.ai/voice_preview/fda2e0f98988451280678eff56ec6d6c.mp3,False,False,False
+a98fff860388447ebe046f8a9fda5750,English,male,Kai Chen,https://resource.heygen.ai/text_to_speech/Fyrqmt3WmK5QXv2NWewVJU.mp3,False,False,False
+aa18b4adc4424d8f835bbf5c38104810,Hindi,male,Ravi Mehta,https://resource.heygen.ai/text_to_speech/swpqUDqwEtuG35BtEVkYxh.mp3,False,False,False
+aa815b9a80534d928634cb7df4f99754,English,Female,Sophia - Narration,https://static.heygen.ai/voice_preview/9rsAYURnjDUWN3HsnKv3i3.mp3,False,False,False
+aac8dfa12a744f02ae2ad7bcbcf54ee2,English,unknown,Daran in car,https://static.heygen.ai/voice_preview/edfc8671443c428c9423e5ec9965707e.mp3,False,False,False
+aaf965d50a7f4a31b45728f91f4f25c9,Portuguese,female,"Narrative Nora
+",https://resource.heygen.ai/text_to_speech/sUypdX6iFzwu2udigWNqcU.mp3,False,False,False
+ab40d65529a74f0e83528a1c2133a3b0,Portuguese,female,Serene Sofia,https://resource.heygen.ai/text_to_speech/aGC5ksHigGGnFCHbQK97XP.mp3,False,False,False
+aba5ce361bfa433480f4bf281cc4c4f9,English,male,Oliver Bennett,https://resource.heygen.ai/text_to_speech/bPuHZvjk5gaBNefXKbBxdU.mp3,False,False,False
+abafe2d230fe4830aac66237d46009c2,English,male,Serene Samuel,https://resource.heygen.ai/text_to_speech/zonJsWDs3DjGnyHnEFY9QT.mp3,False,False,False
+abf45c7c8349414cae2e26cfec87a0b3,English,female,Lively Lily,https://resource.heygen.ai/text_to_speech/6JxyWq5qfbkSyzEcAP6cAU.mp3,False,False,False
+ac2e9d2a55144455b90e4e144059c2ab,English,male,Veit - Lifelike,https://resource.heygen.ai/text_to_speech/8LDNa9JVRTJEMFDcH82jd5.mp3,False,False,False
+acc056258b0745a7a78f7b17c9c135e5,English,male,Spunky Sam,https://resource.heygen.ai/text_to_speech/UKwX3xNJpp5W458z5eSB3X.mp3,False,False,False
+acfca8ab4b444e80a9df9e8e3a897cb4,English,male,Max - Lifelike,https://resource.heygen.ai/text_to_speech/Q4JqpDDBFQRuSrn4quHF37.mp3,False,False,False
+ad1725f858f44fbaa9904853759f1f02,English,unknown,Lukas in car,https://static.heygen.ai/voice_preview/65c808d51ba04fd99e4457e3f63ed3fe.mp3,False,False,False
+ad257b0545cc4892b5400e1cd8efdd9a,English,female,Radiant Raven,https://resource.heygen.ai/text_to_speech/rXwya8wnksu5Xip8XLFzuT.mp3,False,False,False
+ad4fb9f7b538496db2c372279601b510,English,female,Zara Okeke,https://resource.heygen.ai/text_to_speech/YQK5TkPQiYq6cDjiSLSGhN.mp3,False,False,False
+ad55c7f151354e1bbf3e213712896d3d,English,female,Kind Kathleen,https://resource.heygen.ai/text_to_speech/qJwN8N4ae8hVMHhQwfj85T.mp3,False,False,False
+ae5ae7947ae246d1b35ec2cf60441641,English,male,Thomas Blake,https://resource.heygen.ai/text_to_speech/tUgM6hzpxEqjWSeVTXJsQD.mp3,False,False,False
+aeeb145b5a2f418d8f41456f79644f33,English,Female,Piper - Lifelike,https://resource.heygen.ai/text_to_speech/b75w3ghzcypq755Con7ETQ.mp3,False,False,False
+af3e81a1a36d4234ba7eddaf1f191bc5,Spanish,male,Danny,https://resource.heygen.ai/text_to_speech/2pYasfhRGZZNTa8UqQHpML.mp3,False,False,False
+afab75da785b4a42b6fcc5ad282d8fa9,English,male,Warren-Narration,https://static.heygen.ai/voice_preview/X8AszKmeDFDaCA9Gkr4tqL.mp3,False,False,False
+affd1c4042734865a72d9bcaf80d5d6b,English,female,Surfer girl,https://resource.heygen.ai/text_to_speech/minPnSygSrcbuvBqiWoREC.mp3,False,False,False
+b0a0ff6259034cd9a79f512e8736c293,English,female,Grandma Rose,https://resource.heygen.ai/text_to_speech/YW2jvU52tmncixbeKVR8S3.mp3,False,False,False
+b193202ce9b14e59bf186c6ceb25c520,English,male,Ryan Carter,https://resource.heygen.ai/text_to_speech/RDMxJvgbBKPcX35bK7f3bH.mp3,False,False,False
+b1a71b2cdd964ceaa0d81b98e9de6620,English,female,Magical Riya,https://resource.heygen.ai/text_to_speech/o4zkLBxQM5ysk22T6BkBdH.mp3,False,False,False
+b1c7a59be9c34ebda35b4637e57c2d2c,English,male,Grant Ellis,https://resource.heygen.ai/text_to_speech/wHYR88xpM7fEYgFnT9NzQU.mp3,False,False,False
+b1f858c658044ceba92ba1b2303844dd,English,female,Sparkling Sarah,https://resource.heygen.ai/text_to_speech/xcxygvRsSMHy2y8zctifBG.mp3,False,False,False
+b22f325f391b46c7a7674cdb5f1e1488,English,male,"Percy Clark
+",https://resource.heygen.ai/text_to_speech/VSva6pgZ9AG6GxzkVV8SvL.mp3,False,False,False
+b238eb130d894c518dc45a2917e52af9,English,male,Professor Percy,https://resource.heygen.ai/text_to_speech/ggb84FZTAzYhze87KrKeL9.mp3,False,False,False
+b246627e8401489d877f6e8031d02d1a,English,female,"Cute Chloe
+
+",https://resource.heygen.ai/text_to_speech/WpAzpqq2qazt8fZJ6KHrUR.mp3,False,False,False
+b2ed14cf33f3449794fc0ec7d2336e81,English,Female,Derya - Lifelike,https://resource.heygen.ai/text_to_speech/3AgsYjDcEBeDZwukR9SEYD.mp3,False,False,False
+b3150d405d374dd99e569282ee68fa21,English,male,Mason - Natural,https://static.heygen.ai/voice_preview/8ybzJogfVPFiZL9kfUN4g3.mp3,False,False,False
+b32b7aae004c4e1792b0da7684a806ab,Indonesian,male,Eager Eko,https://resource.heygen.ai/text_to_speech/Ga2CQA7zuG4xvTEFacw6g3.mp3,False,False,False
+b3ce01af7fc24b919f7e1838d3488bb5,English,male,Thanos,https://resource.heygen.ai/text_to_speech/SJWKW8TjPmuH5RvWQCgehb.mp3,False,False,False
+b419a6ca5fb448c9a8ffdd1db0230c16,English,male,Ethan Grant,https://resource.heygen.ai/text_to_speech/4PrAa4LB3HCsXLehTGcpcV.mp3,False,False,False
+b46d51ae7bbc4da68bb222b8a3452dad,English,male,Gritty George,https://resource.heygen.ai/text_to_speech/sef3y82UgNoq9LjguXBro7.mp3,False,False,False
+b4d04a4ca86b42c895844c786c9043d3,English,male,Craig-Natural,https://static.heygen.ai/voice_preview/aTXHGEV8e3iTccph2SZ4DG.mp3,False,False,False
+b5c94d7d5b774cccaa29eb44dcc6fa3c,English,male,Benedict Shaw,https://resource.heygen.ai/text_to_speech/5JG2sRDs9pxH6QRAsuaDjc.mp3,False,False,False
+b8a9a7f8383a4f4e9bb76b6e29eaf171,English,male,Stirring Samuel,https://resource.heygen.ai/text_to_speech/WnrDYUTcjqeR3FLWBrkSkG.mp3,False,False,False
+b9e746ea96e04954aa7d19a786b74355,English,male,James Alden,https://resource.heygen.ai/text_to_speech/cDYkR5LRteX2UwBYhdGq9Y.mp3,False,False,False
+ba668278785443608737757c48103598,English,female,Lila Quinn,https://resource.heygen.ai/text_to_speech/smq8FJNZCGb2Dy3tcj2Pca.mp3,False,False,False
+ba917cf024604037954f462b8ab4ac33,English,unknown,Lea inside ,https://static.heygen.ai/voice_preview/97704f4299c44950b1fa90302b3cc4ab.mp3,False,False,False
+baeba2c18fea4438a4d83a54a462498a,Turkey,male,Grim Gökhan,https://resource.heygen.ai/text_to_speech/R3ph4egzGsqBwBZ3f8oJ9B.mp3,False,False,False
+bafe9c3dbd26476086f4baa7b93d4aba,French,male,Étienne Moreau,https://resource.heygen.ai/text_to_speech/dqXeg8Pc3S83u5YrutHZDn.mp3,False,False,False
+bb8918a904d444da97ec3036bc65b463,Spanish,female,Tranquil Tessa,https://resource.heygen.ai/text_to_speech/gA5getePxsQBJfnGbyzEpk.mp3,False,False,False
+bb8c78a1fa2a4c27948bc0e4dd2099a4,German,male,Decisive Dylan,https://resource.heygen.ai/text_to_speech/94PivE52oLvdqmQFkT9xcS.mp3,False,False,False
+bb98453542504750a5c2fc0fc19e3299,English,male,Hank,https://resource.heygen.ai/text_to_speech/Gaz7n3dMmfmVk4ggZSkRLX.mp3,False,False,False
+bbc1f5ddc810412ab98baab4daf9f11b,Italian,male,Marco Santini,https://resource.heygen.ai/text_to_speech/c4z8WEGE2QMEdn8STabEPi.mp3,False,False,False
+bc4703b3531d48abbced30ef86e3d67a,English,female,Miss Loreta,https://resource.heygen.ai/text_to_speech/YNfdps7wYPjv4pXEHmEsfQ.mp3,False,False,False
+bca6c6aadc7f465fb72ec30e35975094,English,male,Grim Gregory,https://resource.heygen.ai/text_to_speech/6XnmJbKYKKBnQ5sD7rGji3.mp3,False,False,False
+bd9106cb6c9949449bac016c271bd657,English,male,Bryan - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=7tr9hYLmjaVn5oKf3uDhE7.mp3,False,False,False
+bd9428b49722494bb4def9b1a8292c9a,English,male,Noble Nathan,https://resource.heygen.ai/text_to_speech/cDCCXYTK8ZLcQgqe66oSUN.mp3,False,False,False
+bddeea54679945d0afaedbeb70e9ffa5,English,unknown,Tim laying inside,https://static.heygen.ai/voice_preview/962c71f634694b998700e6bc426f731d.mp3,False,False,False
+bea6ba5d920b4cbf912ddf1e8e8ffcdb,English,male,Jonas - Lifelike,https://resource.heygen.ai/text_to_speech/tgyVXUwmLV9j24r2kXwkki.mp3,False,False,False
+c028be6858d04ee79c12a2209ab47bf8,English,Female,Hailey - Calm,https://static.heygen.ai/voice_preview/M4XBjtiH4yaz9GQhXHtSnV.mp3,False,False,False
+c02e9a6b77bb4707b7c579378ee0aede,English,male,Tranquil Tim,https://resource.heygen.ai/text_to_speech/LAYQKrd4wAMQe2tYorYsjF.mp3,False,False,False
+c08176bb0d5e4ff786ac75245eda9514,Spanish,male,Pablo Martinez,https://resource.heygen.ai/text_to_speech/7KVuQpaH9Fucs3XbbzywVY.mp3,False,False,False
+c091c06823cd4d4a98c03884f0362b7e,English,male,Fernando - Outdoor,https://resource.heygen.ai/text_to_speech/gQHKAcx2VaUvzMRLYd9q3N.mp3,False,False,False
+c0f94ec846234252aaa23b30838a0f39,English,male,Patrizio - Lifelike,https://resource.heygen.ai/text_to_speech/qAVHygDYYnSzYpe9FFQctE.mp3,False,False,False
+c1b33dc93210452c9c5b5902d0bdd61b,Spanish,male,Gentle Gabriel,https://resource.heygen.ai/text_to_speech/sh7dBxBtjUrc6SFTcSGGZ5.mp3,False,False,False
+c1fd28dad31e489782a7ccea8613b664,English,male,Affable Alex,https://resource.heygen.ai/text_to_speech/3eLt3CXhWzYhyE24y27GyW.mp3,False,False,False
+c258754311294e7093dd03c73a623983,English,male,Blake,https://resource.heygen.ai/text_to_speech/7RvVrtsYAebx4QW9jyGmQT.mp3,False,False,False
+c266a65389d640fea4787b946e3ac22e,Hindi,male,Crisp Kumar,https://resource.heygen.ai/text_to_speech/amibMqjJEsEnc4cE6jaq33.mp3,False,False,False
+c29568d0e4a54715bb62bb40daa67875,English,Female,Alison - Cheerful,https://static.heygen.ai/voice_preview/ZQLzm4o75YDvt8uS33Lqbd.mp3,False,False,False
+c2bd14ff81e24ac590673c89c30a869f,English,male,Sir Henry,https://resource.heygen.ai/text_to_speech/oaBguK6Kkq5GMKYroXJ2N6.mp3,False,False,False
+c2d282c83e73494aa0681f9bd6742615,English,female,Valley Girl Vicky,https://resource.heygen.ai/text_to_speech/Nwb7eeZqFggK98C7MgTtL4.mp3,False,False,False
+c33d64f87f98441c9fe129cfca326779,English,unknown,Lea Corner — beige top,https://static.heygen.ai/voice_preview/897c575e5db34fedbfefabef687036e9.mp3,False,False,False
+c3735afd05f1412581d58c7b14f7ee40,Spanish,male,Curious Diego,https://resource.heygen.ai/text_to_speech/65wMguzAqcDLRDvK8NVpRC.mp3,False,False,False
+c417874bf01c4accb5a7288ea2e2665c,English,Female,Giulia - Lifelike,https://resource.heygen.ai/text_to_speech/GiHDHnUSHbFYXgFpdDKgjQ.mp3,False,False,False
+c430ac49505d4e598f21dc320347f7ca,German,male,Hermann König,https://resource.heygen.ai/text_to_speech/uUEo6Qafxwvcp38JjtLZyC.mp3,False,False,False
+c4313f9f0b214a7a8189c134736ce897,English,Female,Abigail - Lifelike,https://resource.heygen.ai/text_to_speech/Q8qJJgtxaDkm6q8QVXg9fj.mp3,False,False,False
+c4f98f419e68484babea9ae2d7308fe9,English,male,Brit Narrator,https://resource.heygen.ai/text_to_speech/m5Rv6njk8wZXK2ARUwAyMb.mp3,False,False,False
+c5ac25373fdf4617885bedcf01e3638a,English,unknown,Lea Selfie — beige top,https://static.heygen.ai/voice_preview/f979f0b1a5814e4698decb14c7f7270c.mp3,False,False,False
+c5db9eadde61460ea7e5cc62d41b31f2,English,male,Whispering Will,https://resource.heygen.ai/text_to_speech/Lg6k56UWxmajnyTeucDviA.mp3,False,False,False
+c67d6fca1c3d4f55b81fcf9abc37d77f,English,female,Tiffany,https://resource.heygen.ai/text_to_speech/cXHBCFGsX6genic9vR8BaB.mp3,False,False,False
+c6bae9353c964b33a0ef3aba6ce16363,English,female,Fresh Faith,https://resource.heygen.ai/text_to_speech/BEJYNunJx6j6gqc4MPHdqb.mp3,False,False,False
+c76a2a4b9976410aa76a1c5f57f38c78,Hindi,female,Young Yumna,https://resource.heygen.ai/text_to_speech/TGX6c85UySSJ5kJYXhcmjP.mp3,False,False,False
+c78587d22dfb428c8117ad38005142be,English,male,Stately Simon,https://resource.heygen.ai/text_to_speech/5JLM3Y7HA3p7uEnhzNHVdc.mp3,False,False,False
+c787e970b29d4c38b65fd9fb70023169,German,male,Heinrich Bass,https://resource.heygen.ai/text_to_speech/SXiRkK9Rs7tg4x4HjgeqKB.mp3,False,False,False
+c7964107abe4475b8443b2a3f0747db8,Hindi,male,Easygoing Eshan,https://resource.heygen.ai/text_to_speech/8gk3hZaBJgKM8VAXhKG7EV.mp3,False,False,False
+c79a7502b599489fa04cc628c5729dfb,German,female,Tom Ellis,https://resource.heygen.ai/text_to_speech/kxbDiqqqA9f6p2LJnuGxA4.mp3,False,False,False
+c7c398ea067c4f43a9d2e15dd7c59cf4,English,female,Spirited Sophie,https://resource.heygen.ai/text_to_speech/zSe2gzJZuttXtQYabphGe.mp3,False,False,False
+c7ce3036f467445485d80b153c5a88a8,English,male,Anchorman Tony,https://resource.heygen.ai/text_to_speech/Aojh5qfFkuhLJ8sYwiWEmZ.mp3,False,False,False
+c7d3fc95d60542fb9a1c27f05a2d0574,English,male,Zane the Zany,https://resource.heygen.ai/text_to_speech/2UWMwWMQrTdjbpLjdoJt7T.mp3,False,False,False
+c8bb90e69d314d81a1da8fa193e09254,Italian,male,Gravitas Giovanni,https://resource.heygen.ai/text_to_speech/Jruh7SFNWmdy8SLNEeB9Aa.mp3,False,False,False
+c8f228e9ead44542829eb87d51420fbf,English,Female,Charlotte - Narration,https://static.heygen.ai/voice_preview/hF2vCwDV6mPojTnvvHva24.mp3,False,False,False
+c91cdf2bb5a546c58435c6ad4b20c8f6,English,male,Narrator Liam,https://resource.heygen.ai/text_to_speech/5jXqnoETwgKJ35KJ9sKDTP.mp3,False,False,False
+c939317ae9e8433b8070fe2b8e7e7bf5,Hindi,male,Rajesh,https://resource.heygen.ai/text_to_speech/JnYeQh5PzGnaCo8KEXYi2N.mp3,False,False,False
+c9b55ae271a042bb8f38ff6aeadc11c6,Spanish,male,Isabella,https://resource.heygen.ai/text_to_speech/TW9CCCbmi2LBeKuFQG37BX.mp3,False,False,False
+c9d291f7431040a3af110975be3d1ffe,Spanish,male,Soft Santiago,https://resource.heygen.ai/text_to_speech/jZEq9SBDrPPeoghZLAM7WA.mp3,False,False,False
+c9ddb1e245d840e8b9e0bb57fd9fb744,English,female,Tahlia Brooks,https://resource.heygen.ai/text_to_speech/MjJoikUZSKnatsCyyQ23DG.mp3,False,False,False
+c9e335c326124569b0397c1a7fb39ea4,English,Female,Emilia - Outdoor,https://resource.heygen.ai/text_to_speech/hcWaStUTBFTtNg4kQPfT8c.mp3,False,False,False
+ca09cfafab804c92911f685e04438e4e,Polish,female,Bold Kasia,https://resource.heygen.ai/text_to_speech/b4uTkKMgdzzYTzVGNmnjXD.mp3,False,False,False
+ca25f7daa6d3403eb7b57da3890d65e5,English,unknown,Sophie_in_car_with_mic,https://static.heygen.ai/voice_preview/61c0d314fae6436dbb5e73fa7b4958f0.mp3,False,False,False
+cac876fea7c541e7a634a9b386ee3b53,English,male,Levi - Friendly,https://static.heygen.ai/voice_preview/XAaEPdKfrho2rmXVqi8M6M.mp3,False,False,False
+caf41d1ea2bd42c2ae0b61f90af817cd,English,male,Sage Silas,https://resource.heygen.ai/text_to_speech/cwFBs7gL8F5kLxhk67ffrC.mp3,False,False,False
+cb5969dfc20f47d5b2a5453058c081ca,English,female,Instructive Isabelle,https://resource.heygen.ai/text_to_speech/LUmxBNxHwoc3b8T9zMaHe5.mp3,False,False,False
+cc24de74b21e4cef981e2dab2dc5c196,English,male,Jason,https://resource.heygen.ai/text_to_speech/6FUJjGHTNebjPJ7owfHp5K.mp3,False,False,False
+cc42dcfe8b1141ad80da3a72e3c86b2d,English,female,Tranquil Tessa,https://resource.heygen.ai/text_to_speech/CKkNdRSn4rkXLhBFbgGdPQ.mp3,False,False,False
+cc7021e4b9dd4d698bb130d588d9d1b8,English,unknown,Lea in car 2,https://static.heygen.ai/voice_preview/39cd44707d8743d18ad46c0037b49f51.mp3,False,False,False
+cc992676c7474458931f01f98dd1607a,English,male,Alfie,https://resource.heygen.ai/text_to_speech/gxGzkt8cS8e4ADqERxaXod.mp3,False,False,False
+cca32c3e60494eada7d8763d899acdfd,English,male,Julian,https://resource.heygen.ai/text_to_speech/q3DDtT5RisfZQEyBXBNAu7.mp3,False,False,False
+ccf05082198240f18053e57ac1dc2b5c,English,male,Jackson - Narration,https://static.heygen.ai/voice_preview/Xq8odYA7oSdemnkrrNxv9K.mp3,False,False,False
+cd05d8c2c52444fbbbbbe16d86734464,English,male,Julian - Narration,https://static.heygen.ai/voice_preview/dcvPwsn8tLtJrosBrufgxk.mp3,False,False,False
+cd86b669fbd7441f99d36c31117abcfb,English,unknown,Lucas inside standing,https://static.heygen.ai/voice_preview/900bfd3e55544599a9d95fbf8ed02ae8.mp3,False,False,False
+cd92a228f9bf4fb1adaa1531595cd5d4,English,Female,Indira - Cheerful,https://static.heygen.ai/voice_preview/H63XT8YQH7L4vupiCXGd2Z.mp3,False,False,False
+cfd729d20b054f71a4c085361c4e8384,English,female,Harmony Harper,https://resource.heygen.ai/text_to_speech/4Zas9pWdpYJheNG3JNgbgZ.mp3,False,False,False
+d098ac22a4f04bfea42673f4afc4b859,English,female,Polished Piper,https://resource.heygen.ai/text_to_speech/a3KSWCVNEP2qn9oYZ7C3k3.mp3,False,False,False
+d0eb9bb33b7540ca859c56be95784775,English,female,Fola,https://resource.heygen.ai/text_to_speech/Sje7k2pX5qq5GsDrc8vPya.mp3,False,False,False
+d130207b980346c0b82f08c518793570,English,male,Casual Chris,https://resource.heygen.ai/text_to_speech/Di2e4FZbUt6ekYVGHvTQRW.mp3,False,False,False
+d13eb4c060b74324a2bd05aafe45eac7,English,male,Obi,https://resource.heygen.ai/text_to_speech/x67mERLG8QbLPZQe5YLqaT.mp3,False,False,False
+d15575db26ac41aca91d7a074a77e3cf,English,male,Timid Theodore,https://resource.heygen.ai/text_to_speech/KwREc3UonbpByipA55rZuf.mp3,False,False,False
+d15e19e335644b6ba00fcbb7e5986eac,English,male,DJ Cowboy,https://resource.heygen.ai/text_to_speech/nEetV7T3waSG4Hu9JuRJWA.mp3,False,False,False
+d27e22d18a244962916eacc554ed55ff,Hindi,male,Vivaan Mehta,https://resource.heygen.ai/text_to_speech/7AGtpS9rDQ3qeiCSXgjsvf.mp3,False,False,False
+d2d1fe1fb46e4b4c9ea2acb66d0a3ec7,Spanish,male,Zane Hype,https://resource.heygen.ai/text_to_speech/v8DZN6NjivtnMLgnVHwrTg.mp3,False,False,False
+d36f8d1c27054f7baa52c216ad874d16,English,male,Alexander - Narration,https://static.heygen.ai/voice_preview/eSxLsT26vJFS7aomV3aX9X.mp3,False,False,False
+d3c60878751f46d88e9bbcdf2f8c0402,English,male,Sage Sawyer,https://resource.heygen.ai/text_to_speech/hX5HmGs34GR59wjQZ4FF3f.mp3,False,False,False
+d4153053882544ecb750b53a54d42c06,Hindi,female,Cheerful Chhavi,https://resource.heygen.ai/text_to_speech/hqukTrwXnrJkBkEupr6SRX.mp3,False,False,False
+d476711f1cc34162a340d07b71281755,French,female,Ethan Cole,https://resource.heygen.ai/text_to_speech/Di8DEHcBv3pWwAGHYgLAkL.mp3,False,False,False
+d4efc0dc3c7445d5a357fe6aaecaf39c,English,unknown,Lucas Inside — black hoodie,https://static.heygen.ai/voice_preview/bcf3c73da42444ea9efb9b0c1626ce35.mp3,False,False,False
+d55dcb2320ff4c4a9c74c3f4837f9155,English,male,Plain Joe,https://resource.heygen.ai/text_to_speech/Xo86fpVbyxut2ASREQEarJ.mp3,False,False,False
+d581a81e813d49aba3cf7938189305eb,Indonesian,male,Arjuna,https://resource.heygen.ai/text_to_speech/ny9GWohCxWEmNFJ9SYwKUJ.mp3,False,False,False
+d5e87b3c1778488697d8c35f50ff7a28,English,Male,Keith - Cheerful,https://static.heygen.ai/voice_preview/s9TAzfFvQ5CwT97Airbvu8.mp3,False,False,False
+d64fbf0a53334406aa8ac349899508e7,English,male,Jovial Jack,https://resource.heygen.ai/text_to_speech/FXq55EMTUrFdLKADtxnGiK.mp3,False,False,False
+d69ce0b1e2124ce48d1d05514b49b635,English,male,Captivating Clark,https://resource.heygen.ai/text_to_speech/ayvpXDUFoSYmXdpfovDLrY.mp3,False,False,False
+d7603bcd5d6c46a7b8eebf261ac59495,English,male,Steady Simon,https://resource.heygen.ai/text_to_speech/QFBpR9sqFdVCbvjrPqScfc.mp3,False,False,False
+d84493795278413d8d7a2dc6c9026318,English,male,Dynamic Derek,https://resource.heygen.ai/text_to_speech/yTWQDUniuwRfxJVBVQtttX.mp3,False,False,False
+d9546fd289b744939b62f11b7fc71f55,English,female,Brooklyn,https://resource.heygen.ai/text_to_speech/K3AeXzCZctxMuEzt7tw7ZP.mp3,False,False,False
+d9c3540e29e446bb989014c1093f4804,English,male,Hyped Henry,https://resource.heygen.ai/text_to_speech/TXmjSFtUJnH7C9Q4RFzPKD.mp3,False,False,False
+da30cca4a70f437aa89a3f1fbe9332be,Spanish,male,Scholarly Sergio,https://resource.heygen.ai/text_to_speech/WXYAnfyhjWdZh7JiJEDXhZ.mp3,False,False,False
+da528f88227d4ec1b61b517ba3ca0099,English,male,Elder Brooks,https://resource.heygen.ai/text_to_speech/9nr2n5MRTVToSjPC3i8CH9.mp3,False,False,False
+da6a3889803f4ef29db3b9cdd7ec7135,English,female,Megan Riley,https://resource.heygen.ai/text_to_speech/kiP97yy6aGC9eUXyi4Qr4Q.mp3,False,False,False
+db39b0cb43e2470db5344c1a34f7a669,English,male,Lively Liam,https://resource.heygen.ai/text_to_speech/mCkBms7SzHVLAhZpBWGQz6.mp3,False,False,False
+db67785a764844d7b6c792647385d02d,English,male,Veteran Voice,https://resource.heygen.ai/text_to_speech/Cy3a6dFecv7EpnUJtXqUhD.mp3,False,False,False
+dc44cce2502749a389d12b9baf4a0e5f,English,female,Ella Hastings,https://resource.heygen.ai/text_to_speech/wiekDs5sfkSkJjZqYs2qo6.mp3,False,False,False
+dc5370c68baa4905be87f702758df4b0,English,male,Instructor Ishaan,https://resource.heygen.ai/text_to_speech/Av2Hawv593eXDuUgGBLh8W.mp3,False,False,False
+dc642788a3c6410f8a2a7c6e70df9037,French,male,Dashing Didier,https://resource.heygen.ai/text_to_speech/dEGNJDZsC3ou7biopDkqJX.mp3,False,False,False
+dc9976c395d44db9987061f565dcb81f,English,unknown,Daran outside sitting 2,https://static.heygen.ai/voice_preview/3f10cd72ea5f408782a512e0201f002f.mp3,False,False,False
+dd00b0b9c5284a20bcdb5d1d1802362f,English,unknown,Lea on balcony,https://static.heygen.ai/voice_preview/c89ed634f01a4a0c97384bb8f0ad3f6a.mp3,False,False,False
+dd1093ecc95649ebbb61af4db1a4211f,English,male,Seasoned Ace,https://resource.heygen.ai/text_to_speech/CRrPaqFXYtc2hgg4CzejnA.mp3,False,False,False
+dd1d7451185b40ddbbb5fbb90f8e4cde,French,male,Claude Leclerc,https://resource.heygen.ai/text_to_speech/o55v5BqomEUhNPs54G7Nci.mp3,False,False,False
+de00faa2b147475e80bad860368fa26d,English,female,Seductive Scarlett,https://resource.heygen.ai/text_to_speech/iUCKHfKQPdcB3BLpsvPv6d.mp3,False,False,False
+dea92eeb96984004b5a04dd656d3ef9f,English,male,Dylan - Cheerful,https://static.heygen.ai/voice_preview/bqCoKYFgQMFDnCvmU5BjpU.mp3,False,False,False
+df70a23d21f745528446a144e7627bd9,Hindi,female,Lehka Modulated,https://resource.heygen.ai/text_to_speech/Q456BKRgeY59gZTABEQreV.mp3,False,False,False
+dfea36b07588437d93e9f73c828fec5a,Romanian,male,Hushed Horatiu,https://resource.heygen.ai/text_to_speech/fa4UJXxBKpyYEmZhvsjDDL.mp3,False,False,False
+dff6d90fcd724a1b98e2e72c60d63d59,Hindi,male,Gravitas Aryan,https://resource.heygen.ai/text_to_speech/NTf6SWaQhCQYpRzEJQTFXg.mp3,False,False,False
+e06951e6f4b743af9df2f61e41607dad,English,male,Ethan Brooks,https://resource.heygen.ai/text_to_speech/qEUX3q3kKMZwA2wRbEgpHE.mp3,False,False,False
+e0ac150da93944b1a3412915e98bdb76,English,Female,Yola - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=vdkicocTK6jEsfYQw58tED.mp3,False,False,False
+e0beae5b24a843b7a9ea021c1db975dd,English,male,Leos - Lifelike,https://resource.heygen.ai/text_to_speech/n9fh2bTc7R2Xzz7vhWaApV.mp3,False,False,False
+e101d8384bff43bbb898772d943d8909,English,Female,Bahar - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=tNwHtQAarmiVbG4DT2WMxa.mp3,False,False,False
+e11f0b51e57541f4abebd5f5d76defb8,French,male,Mathieu,https://resource.heygen.ai/text_to_speech/mMxb55JcRfjVfMRhMoehd3.mp3,False,False,False
+e1591b1bd68b4f50a29669a82ec1125e,English,male,Mr. Evil ,https://resource.heygen.ai/text_to_speech/JsEXSaE4v9jPJ4fBVK7yu9.mp3,False,False,False
+e181578eb130425eb6c6ec322b9c4dee,English,male,Leszek - Outdoor,https://resource.heygen.ai/text_to_speech/xkePdZxrgZ25V5z3RwAPrN.mp3,False,False,False
+e1ccd6ecac8e4c15819ad143efdd4ce2,English,female,Lovely Luna ,https://resource.heygen.ai/text_to_speech/E6YYwAEY59EnPPJgtidkrD.mp3,False,False,False
+e270ce672d754d41a150a30348946b6c,English,male,William Prescott,https://resource.heygen.ai/text_to_speech/kwTn3W9o2XgajHjketZGqd.mp3,False,False,False
+e27cd18abc7942f5825c8cd7cf75488e,Arabic,female,Hushed Hiba,https://resource.heygen.ai/text_to_speech/4Mi7PES49XfA8uQQctGZuP.mp3,False,False,False
+e31e9614d31d4678be3377da14d99d3b,English,male,Mature Morgan,https://resource.heygen.ai/text_to_speech/XtViYZUekDNL8SQQ3GXDbE.mp3,False,False,False
+e3f01ccc931744e195b90751bb9fc284,English,female,Pixie Piper,https://resource.heygen.ai/text_to_speech/UcxXLgANgEzZ7W9TqMadHc.mp3,False,False,False
+e4deab3887964af3994d9b05a53b1163,English,male,Lush Leonard,https://resource.heygen.ai/text_to_speech/cQj5RqUR63m2oqKSnCVcXc.mp3,False,False,False
+e517d576d2094b7e861ec52701aa7fe3,Indonesian,male,Fajar Hadi,https://resource.heygen.ai/text_to_speech/j5hsjucv7SkqozLbXQmNNo.mp3,False,False,False
+e56d5de538a840cba8134da985dc6559,English,Female,Kavya - Outdoor,https://resource.heygen.ai/text_to_speech/49YQCJKJ3iNymNVBduhdV.mp3,False,False,False
+e5f89518d5564535885cb6d674e57173,English,male,Artur - Lifelike,https://resource.heygen.ai/text_to_speech/ZZHjx8cseMxjkm2ycr6PB5.mp3,False,False,False
+e60c9e782d6a4e8d97496498b832a653,English,male,Sterling Pierce,https://resource.heygen.ai/text_to_speech/j9xq37YGcgoyRrX2Bx33Vi.mp3,False,False,False
+e85b2b61d55a49d08ed15f4fd746c791,English,male,Spirited Suraj,https://resource.heygen.ai/text_to_speech/dMhF2ZxN4inWGrtuvxzUe3.mp3,False,False,False
+e8e0874371d44ba5ad880aee39eba3e4,English,female,Mabel Forsythe,https://resource.heygen.ai/text_to_speech/HMBVpeEu329ZuAjgLHZwxF.mp3,False,False,False
+e958ccffd8204cca847b8a1ce32433d7,Indonesian,male,Bintang,https://resource.heygen.ai/text_to_speech/4RcU8cZHEuyvJTESAgC5L6.mp3,False,False,False
+e9873ae92ec747d5bf593c4b4d3cbd24,Portuguese,male,Ricardo Silva,https://resource.heygen.ai/text_to_speech/zWqgjFhFHE7djmL4qdBJvX.mp3,False,False,False
+e9caf49d7f8e4fbeac1919c3dee72dd5,English,male,Jeffery-Natural,https://static.heygen.ai/voice_preview/Fhr6aCxMMN76FweQrYUzL9.mp3,False,False,False
+e9d7158a6af84f7aa5b5b654a5713ca3,English,male,Kwame the Great,https://resource.heygen.ai/text_to_speech/Dv6ykJ9skqiEc4KqrJWmW5.mp3,False,False,False
+ea92ea816b9a4f6a988f839d62016ec1,Portuguese,male,Bold Bernardo,https://resource.heygen.ai/text_to_speech/vmGLWzqwPD2VbwaBZStdaS.mp3,False,False,False
+ebd5dbe676eb47abaf099195f5b0e364,English,male,Brooding Byron,https://resource.heygen.ai/text_to_speech/3jYqVnyq7SNNVJN5mCSvtb.mp3,False,False,False
+ec16daf4a0984e51972c2f5a5b22b501,English,male,Barnaby Thorne,https://resource.heygen.ai/text_to_speech/i9WNtj64CrhUf7ZGtaDo9k.mp3,False,False,False
+ec89770b32f842f883851188b6e4923f,English,female,Ella Thompson,https://resource.heygen.ai/text_to_speech/zqPEvMdTPdccRXkZ3GQH4a.mp3,False,False,False
+ed3920e7d9ce428b9ed90e0478e60100,Spanish,female,Serena Narrador,https://resource.heygen.ai/text_to_speech/9LGjvhyYmRrsj4f6dsGgV.mp3,False,False,False
+ed53f8fe7716423d90a747c724fe9f41,English,female,Catherine,https://resource.heygen.ai/text_to_speech/D7io9PM4hYG5MDQ6hed9rN.mp3,False,False,False
+ed7148e110b6477aa012861c6df616b5,English,Female,Scarlett - Lifelike,https://resource.heygen.ai/text_to_speech/Ce6ih55tUvp5wGY5nzw3zB.mp3,False,False,False
+ed8b909f2cb046d197bf16d74bce4a74,English,male,Jaxson Steele,https://resource.heygen.ai/text_to_speech/Ds8BZnXqGW4AYoHViAFXrE.mp3,False,False,False
+ef74816547734c36ab44fd4f4d7434c3,French,female,Chic Carolyn,https://resource.heygen.ai/text_to_speech/PNAJM2KZ2erP3JGDNdPwga.mp3,False,False,False
+efe4d8ac7dea48349f0fdf4670b948e5,English,unknown,Kim inside sitting,https://static.heygen.ai/voice_preview/2669e4b186434bbdb1a7276654c78e47.mp3,False,False,False
+f06faf23805a4a2282bf9a5db727e066,English,male,Kwaku,https://resource.heygen.ai/text_to_speech/WPsofzzbH52Ph6wRcRiTJD.mp3,False,False,False
+f0e85b4704444baf960bf40da463e57b,English,male,Confident Connor,https://resource.heygen.ai/text_to_speech/AY9Axbb4HaEZMJDoryje7h.mp3,False,False,False
+f12eba45838f47a9b18ec5b7a83bca9a,English,female,Radiant Riya,https://resource.heygen.ai/text_to_speech/PcDyAcp4fvMnSnxs8FmV7R.mp3,False,False,False
+f27dbc2f132d4082b2a2eb3a47932dc8,English,female,Luminous Lila,https://resource.heygen.ai/text_to_speech/p6TNYJj4erRAAFqZoxpEYi.mp3,False,False,False
+f31c3ad8130848db924f1143f47c6f0c,Hindi,female,Balanced Bina,https://resource.heygen.ai/text_to_speech/9TgNqusHsMKAQqdbjchUQe.mp3,False,False,False
+f32e6d88cb8b4d9f82080a05151c1124,English,male,Gravelly Grant,https://resource.heygen.ai/text_to_speech/G3vewJM33d8Q9KBUvqcdwA.mp3,False,False,False
+f4b965c309494dcdb6b8f475bf8e839c,English,male,Chill Chase,https://resource.heygen.ai/text_to_speech/BRx7r9dKYbpAEiKjPnCpSi.mp3,False,False,False
+f4d5cfeddc4d42a581c02584b5d71746,English,male,Yogi Scott,https://resource.heygen.ai/text_to_speech/3S6cfUT84PhZvD5mrb2bhb.mp3,False,False,False
+f5ad8791cad64c4b9cd7d1e644573de2,English,female,Formal Fiona,https://resource.heygen.ai/text_to_speech/y2nq7R3MiWxnqapxfX3N8A.mp3,False,False,False
+f5d52985019847c5b0501a445c66dba8,English,Female,Jin - Professional,https://resource.heygen.ai/text_to_speech/locale=model=id=xG6NXbEmXQy9h5VSmK92xg.mp3,False,False,False
+f6d7e19df7364577b0025bda1f4ef842,German,female,Gentle Greta,https://resource.heygen.ai/text_to_speech/oFXNZi836iyBcDhHok9v2Y.mp3,False,False,False
+f6d92a5cacc2425ea1fabfe3b79df31a,English,male,Timothy - Lifelike,https://resource.heygen.ai/text_to_speech/P9NmdxD2Rj6CZTNJHRzs5n.mp3,False,False,False
+f6ee76e2ccd04a4387cd564d7ec33038,English,male,Charming Charlie,https://resource.heygen.ai/text_to_speech/H8orNDESGJc2fyPVTWQoaf.mp3,False,False,False
+f7bdae9ed8834f5190d056dce1009edf,English,male,Vibrant Vince,https://resource.heygen.ai/text_to_speech/CTgDRe6KY8FBPRoxL9zHy7.mp3,False,False,False
+f7e3642faa4f4ca09c4c24f4e988c39c,English,male,Gentle George,https://resource.heygen.ai/text_to_speech/p7uujGrpUwaxSrwp9TWTUA.mp3,False,False,False
+f86f4645a6164198a7f35c7255fcb0d1,English,Male,Arnold - Cheerful,https://static.heygen.ai/voice_preview/iSgRx3f8nZevE25EEBaH4B.mp3,False,False,False
+f99360655a0844dc9f028658061359d5,Portuguese,male,Gustavo Rocha,https://resource.heygen.ai/text_to_speech/H4BUcrps8HW2qHu4wGMTWW.mp3,False,False,False
+f99c95718e5a404dba4752bcf27cdd2f,English,male,Victor Hayes,https://resource.heygen.ai/text_to_speech/DKPanG2sVHddYVVNWxTnQQ.mp3,False,False,False
+fabf3d28753a4d7691d51bbf87d697fb,English,male,Baritone Bryce,https://resource.heygen.ai/text_to_speech/QiYCTUJvzgv745cu3NLQyZ.mp3,False,False,False
+fafabcdeb1d142d3bdb4220f5be8aa67,German,female,Lena von Berlin,https://resource.heygen.ai/text_to_speech/E584NAHsRtYCpsBr9knQqX.mp3,False,False,False
+fb2617d76da44cba9a5bbfb1cc1b782b,English,male,Warrior Rohan,https://resource.heygen.ai/text_to_speech/ycsK2oMF2ZVxTTC7jaGxAb.mp3,False,False,False
+fbab34b1eca949e9b2341c7d9fb9ffa2,English,male,Dr. Sterling,https://resource.heygen.ai/text_to_speech/dQPYxPfZwf66wFVUbmaXN9.mp3,False,False,False
+fbe57e9d9c7d4629885d410b28194875,Hindi,female,Vibrant Veda,https://resource.heygen.ai/text_to_speech/M5Wyqn5SNEJzjiaP5CoqE6.mp3,False,False,False
+fc05093ef13343feb701f1143c676437,English,male,Trendy Tyrone,https://resource.heygen.ai/text_to_speech/XBAEgLi4N3g4qfACoXtud7.mp3,False,False,False
+fc12cbe3074b42d1b584375ac6726b42,English,male,"Malcolm Jr.
+",https://resource.heygen.ai/text_to_speech/6NJgWoUWcpS2UwDysqERsd.mp3,False,False,False
+fc3a1b6d218246d39ff5199ab147d6ee,English,female,Cute Chloe,https://resource.heygen.ai/text_to_speech/9Vj3HrJaNSde3GqjxqLHM9.mp3,False,False,False
+fcd71edb4dbe4faeb4a93e4ad53950ac,English,male,Mysterious Michael,https://resource.heygen.ai/text_to_speech/i63n6bd8XNw5qSTDbLeDTB.mp3,False,False,False
+fd58d6bfb1ed4780aec65e7d4e524156,Japanese,male,Energetic Eiji,https://resource.heygen.ai/text_to_speech/9Rdno2xazZBNmAjw6S8FsR.mp3,False,False,False
+fdeb03e3681d462cb08a9ba7d7a50392,Indonesian,female,Calm Cinta,https://resource.heygen.ai/text_to_speech/VriPxxtCzqAxtywAwLuG58.mp3,False,False,False
+fe612bdf07a94d5fa7b80bf1282937d1,English,male,Arthur Blackwood,https://resource.heygen.ai/text_to_speech/iyrdZb4iT8cqpnjGcRhWBf.mp3,False,False,False
+fe9179079342487fbf9ed544c1598bce,Hindi,male,Arjun Verma,https://resource.heygen.ai/text_to_speech/UjvQ4orPRaHuAReocF83D9.mp3,False,False,False
+fe981119cd9c4e7fa41ba65466ef564a,English,Male,Dean - Natural,https://static.heygen.ai/voice_preview/w4FoYdku4M9Fp2JYmLUdrT.mp3,False,False,False
+ff2bd0194f0148e1a433ed10915b77f3,English,unknown,Lucas outside at cafe,https://static.heygen.ai/voice_preview/411267f2952448bf9b8cf0103ef25987.mp3,False,False,False
+ff2ecc8fbdef4273a28bed7b5e35bb57,English,unknown,Lea in car,https://static.heygen.ai/voice_preview/486668a06ea243eabbd07b6aaba56fd7.mp3,False,False,False
+fffec054d4f24c1ba7bb33d944333fa5,English,male,Noble Nathaniel,https://resource.heygen.ai/text_to_speech/T5EL8Ud9t7qBbh9bJxALzZ.mp3,False,False,False

@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+}
+
+model Candidate {
+  name         String
+  email        String     @unique
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  Avatar       String?
+  Skills       String[]
+  Voice        String?
+  ph_number    BigInt?
+  id           Int        @id @default(autoincrement())
+  Exam_URL     String?
+  tempPassword String?
+  temp_name    String?    @unique
+  College      String?
+  Exam_date    DateTime?
+  Expiry       DateTime?
+  Interview    Interview?
+  categories   Category[]
+  resumeDetails ResumeDetails?
+}
+
+model Category {
+  id           Int      @id @default(autoincrement())
+  type         String
+  candidateId  Int      
+  createdAt    DateTime @default(now())
+
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+}
+
+model ResumeDetails {
+  id            Int      @id @default(autoincrement())
+  candidateId   Int      @unique
+  education     String?
+  projects      String[]
+  certifications String[]
+  experience    String[]
+  candidate     Candidate @relation(fields: [candidateId], references: [id])
+}
+
+model Question {
+  id                String   @id @unique @default(uuid())
+  question          String
+  createdAt         DateTime
+  constraints       String[]
+  testcases         Json
+  internalTestCases Json
+  title             String?
+}
+
+model Interview {
+  id                   String    @id @unique @default(uuid())
+  candidate_id         Int       @unique
+  interview_date       DateTime
+  status               String
+  Interviewscore       Int?
+  Codingscore          Int?    
+  Answers              String[]
+  code                 String
+  created_at           DateTime  @default(now())
+  codeEvaluation       Json
+  interview_start_time DateTime?
+  questions            String?
+  feedback             Feedback?
+  candidate            Candidate @relation(fields: [candidate_id], references: [id])
+}
+
+model Feedback {
+  id            String    @id @unique @default(uuid())
+  interview_id  String    @unique
+  ratings       Int       @default(0)
+  provided_at   DateTime  @default(now())
+  feedback_text Json
+  interview     Interview @relation(fields: [interview_id], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+  CANDIDATE
+}
