@@ -2,6 +2,7 @@ import axios from 'axios';
 import { spawn } from 'child_process';
 import * as dotenv from 'dotenv';
 import FormData from 'form-data';
+import { NextRequest, NextResponse } from "next/server";
 
 dotenv.config();
 
@@ -104,9 +105,15 @@ async function processResume(downloadUrl: string, fileName: string) {
     form.append('email', result.email);
     form.append('phone', result.phone);
     form.append('education', result.education);
-    form.append('experience', result.experience);
+    // form.append('skills', result.skills.join(', '));
+    // form.append('projects', result.projects.join(', '));
+    // form.append('certifications', result.certifications?.join(', ') || '');
+    // form.append('experience', Array.isArray(result.experience) ? result.experience.join(', ') : result.experience || '');
     form.append('skills', JSON.stringify(result.skills));
     form.append('projects', JSON.stringify(result.projects));
+    form.append('certifications', JSON.stringify(result.certifications));
+    form.append('experience', Array.isArray(result.experience) ? JSON.stringify(result.experience) : JSON.stringify([result.experience]));
+
 
     const uploadRes = await axios.post(uploadUrl, form, {
       headers: form.getHeaders(),
@@ -126,7 +133,12 @@ async function processResume(downloadUrl: string, fileName: string) {
     }
   }
 }
-async function main() {
+
+
+
+
+
+export async function GET(request: NextRequest) {
   const token = await getGraphToken();
   const { siteId, driveId } = await fetchSiteAndDriveId(token);
   const files = await fetchPdfFiles(siteId, driveId, token);
@@ -139,7 +151,6 @@ async function main() {
   }
 
   console.log(' All resumes processed.');
+  return NextResponse.json({ "message": "success"});
+
 }
-
-main().catch(console.error);
-

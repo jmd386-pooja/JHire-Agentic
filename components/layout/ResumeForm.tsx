@@ -97,10 +97,20 @@ const ResumeForm: React.FC = () => {
   <div className="flex flex-col lg:flex-row lg:justify-end items-center">
     <Button
       onClick={() => setIsModalOpen(true)}
-      style={{ backgroundColor: '#19105B', color: 'white' }}
+      style={{ backgroundColor: '#19105B', color: 'white', marginRight: '10px' }}
       className="px-4 py-2 rounded flex items-center lg:relative lg:top-0 lg:right-4 lg:ml-auto"
     >
       &#43; Upload Resumes
+    </Button>
+
+    <Button
+      onClick={() => {
+        fetch('/api/fetchSharepointResumes')
+      }}
+      style={{ backgroundColor: '#19105B', color: 'white' }}
+      className="px-4 py-2 ms-3 rounded flex items-center lg:relative lg:top-0 lg:right-4 lg:ml-auto"
+    >
+      &#43; Fetch Resumes from Share Point
     </Button>
   </div>
 

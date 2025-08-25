@@ -211,12 +211,15 @@ import json
 import PyPDF2
 import io
 import os
-import requests
+import google.generativeai as genai
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
-API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions"
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Configure Gemini API
+genai.configure(api_key=API_KEY)
 
 # Extract text from PDF
 def extract_text_from_pdf(pdf_bytes):
@@ -230,59 +233,58 @@ def extract_text_from_pdf(pdf_bytes):
         print(f"Error extracting PDF text: {e}", file=sys.stderr)
     return text.strip()
 
-# Use Mistral API to extract candidate details
-def extract_with_mistral(resume_text):
-    system_prompt = """You are an AI assistant that extracts structured candidate details from a resume. 
-                        Return the following fields in valid JSON format:
+# Use Gemini API to extract candidate details
+def extract_with_gemini(resume_text):
+    system_prompt = """You are an AI assistant that extracts structured candidate details from a resume.
+Return the following fields in valid JSON format:
 
-                        - name (string)
-                        - email (string)
-                        - phone (string)
-                        - education (string or array of strings)
-                        - skills (array of strings)
-                        - projects (array of strings)
-                        - certifications (array of strings, optional)
-                        - experience (string or array of strings, optional)
+- name (string)
+- email (string)
+- phone (string)
+- education (string or array of strings)
+- skills (array of strings)
+- projects (array of strings)
+- certifications (array of strings, optional)
+- experience (string or array of strings, optional)
 
-                        Only return a valid JSON response without any explanations, like:
-                        {
-                        "name": "John Doe",
-                        "email": "john@example.com",
-                        "phone": "+91 9876543210",
-                        "education": "B.Tech in Computer Science from XYZ University (2020)",
-                        "skills": ["Python", "SQL", "React"],
-                        "projects": ["Sentiment Analysis on Twitter", "Inventory Tracker Web App"],
-                        "certifications": ["AWS Certified Developer", "Coursera ML Certificate"],
-                        "experience": "Software Engineer at ABC Corp for 2 years"
-}
-
+Only return a valid JSON response without any explanations.
 """
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": resume_text}
-        ]
-    }
-
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        response = requests.post(MISTRAL_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
+        model = genai.GenerativeModel("gemini-2.5-flash-lite")
+        response = model.generate_content([system_prompt, resume_text])
 
-        # Clean up if Mistral returns with ```json blocks
-        content = content.strip().strip("`").replace("```json", "").replace("```", "").strip()
+        # Pick the text from response
+        if hasattr(response, "text") and response.text:
+            content = response.text
+        elif response.candidates:
+            parts = response.candidates[0].content.parts
+            content = "".join(p.text for p in parts if hasattr(p, "text"))
+        else:
+            raise ValueError("Empty response from Gemini API")
+
+        # --- 🛠 FIX: clean code block wrappers ---
+        content = (
+            content.replace("```json", "")
+                   .replace("```", "")
+                   .strip()
+        )
+        # Remove stray "json" at the start if present
+        if content.lower().startswith("json"):
+            content = content[4:].strip()
+
+        # DEBUG: show final cleaned JSON string
+        print("DEBUG: Cleaned JSON string before parsing:", content, file=sys.stderr)
+
         return json.loads(content)
 
     except Exception as e:
-        print(f" Mistral API failed: {e}", file=sys.stderr)
+        import traceback
+        print("Gemini API failed:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         return {}
+
+
 
 # Main entry
 if __name__ == "__main__":
@@ -297,9 +299,10 @@ if __name__ == "__main__":
             print(json.dumps({"error": "Failed to extract text from PDF."}))
             sys.exit(1)
 
-        result = extract_with_mistral(resume_text)
+        result = extract_with_gemini(resume_text)
         print(json.dumps(result, indent=4))
 
     except Exception as e:
         print(json.dumps({"error": str(e)}))
         sys.exit(1)
+ 
