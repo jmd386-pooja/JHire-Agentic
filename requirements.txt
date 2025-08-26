@@ -1,0 +1,27 @@
+# Core dependencies for AI-powered resume ranking
+langchain>=0.1.0
+langchain-google-genai==0.0.6
+google-generativeai==0.3.2
+
+# MCP (Model Context Protocol) support
+fastmcp>=0.1.0
+langchain-mcp-adapters>=0.1.0
+
+# LangGraph for agent creation
+langgraph>=0.1.0
+
+# Data processing
+pandas>=2.0.0
+
+# Database connectivity (SQLite is built-in)
+# psycopg2-binary>=2.9.0  # Removed - using SQLite instead
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Data validation
+pydantic>=2.0.0
+
+# Optional: For enhanced logging and monitoring
+rich>=13.0.0
+tqdm>=4.65.0
