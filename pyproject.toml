@@ -1,21 +1,55 @@
 [project]
 name = "jhire-agentic"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered resume ranking system with MCP server integration"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    # Core dependencies
     "asyncio-mqtt>=0.16.0",
-    "fastmcp>=0.0.1",
-    "google-generativeai==0.3.2",
-    "langchain>=0.1.20",
-    "langchain-google-genai==0.0.6",
-    "langgraph>=0.0.24",
-    "mcp>=1.0.0",
     "pandas>=2.0.0",
-    "psycopg2-binary>=2.9.0",
-    "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
     "rich>=13.0.0",
     "tqdm>=4.65.0",
+    "pydantic>=2.0.0",
+    
+    # Database
+    "psycopg2-binary>=2.9.0",
+    
+    # AI and LangChain
+    "google-generativeai==0.3.2",
+    "langchain>=0.1.20",
+    "langchain-google-genai==0.0.6", 
+    "langchain-community>=0.0.20",
+    "langgraph>=0.0.24",
+    
+    # MCP (Model Context Protocol)
+    "mcp>=1.0.0",
+    "fastmcp>=0.0.1",
+    
+    # Additional utilities
+    "httpx>=0.24.0",
+    "aiofiles>=23.0.0",
+    "typing-extensions>=4.5.0",
+    "jsonschema>=4.17.0"
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0"
+]
+
+[project.scripts]
+resume-agent = "run_agent:main"
+mcp-server = "mcp_server:main"
