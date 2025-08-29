@@ -49,14 +49,31 @@ model Category {
 }
 
 model ResumeDetails {
-  id            Int      @id @default(autoincrement())
-  candidateId   Int      @unique
-  education     String?
-  projects      String[]
-  certifications String[]
-  experience    String[]
-  candidate     Candidate @relation(fields: [candidateId], references: [id])
+  id                Int        @id @default(autoincrement())
+  candidateId       Int        @unique
+
+  name              String
+  email             String
+  phone             String
+  skills            String[]
+
+  UG_college        String?
+  UG_cgpa           String?
+  UG_yop            String?
+  PG_college        String?
+  PG_cgpa           String?
+  PG_yop            String?
+
+  projects          String[]
+  certifications    String[]
+  experience        String[]
+
+  fileName          String
+  processedAt        DateTime   @default(now())
+  
+  candidate         Candidate   @relation(fields: [candidateId], references: [id])
 }
+
 
 model Question {
   id                String   @id @unique @default(uuid())
