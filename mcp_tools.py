@@ -798,8 +798,17 @@ class ResumeProcessor:
             final_scores = self._fallback_final_evaluation(scored_candidates, top_n)
         
         # Sort by final rank
-        final_scores.sort(key=lambda x: x.final_rank)
+        init_lookup = {c.candidate_name: c.initial_score for c in scored_candidates}
+        final_scores.sort(
+            key=lambda s: (s.final_score, init_lookup.get(s.candidate_name, 0.0)),
+            reverse=True
+        )
+
+        for i, fs in enumerate(final_scores, start=1):
+            fs.final_rank = i
+
         return final_scores
+
     
     def process_job_and_rank_candidates(
         self, 

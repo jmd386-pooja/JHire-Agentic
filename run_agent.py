@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-async def run_single_job_example():
+async def run_agent():
     """Run a single job processing example."""
     try:
         # Import the agent (assuming real MCP implementation)
@@ -144,88 +144,14 @@ def display_comprehensive_results(results):
     print("\n" + "="*80)
 
 
-async def run_interactive_mode():
-    """Run the agent in interactive mode."""
-    try:
-        from mcp_client import EnhancedResumeRankingAgent
-        
-        agent = EnhancedResumeRankingAgent()
-        await agent.interactive_job_processing()
-        
-    except Exception as e:
-        print(f"Interactive mode failed: {str(e)}")
-
-
-async def run_batch_example():
-    """Run batch processing example."""
-    try:
-        from mcp_client import BatchJobProcessor
-        
-        processor = BatchJobProcessor()
-        
-        # Example batch jobs
-        example_jobs = [
-            {
-                "title": "Senior Data Scientist",
-                "description": """
-                Senior Data Scientist position requiring ML expertise, Python proficiency,
-                and experience with statistical modeling. Must have 5+ years experience
-                in data science with strong background in deep learning and NLP.
-                """,
-                "top_n": 3
-            },
-            {
-                "title": "Full Stack Developer", 
-                "description": """
-                Full Stack Developer role using React, Node.js, and PostgreSQL.
-                Looking for 2+ years experience with modern web development,
-                API design, and cloud deployment experience.
-                """,
-                "top_n": 4
-            }
-        ]
-        
-        print("Running batch processing example...")
-        batch_results = await processor.process_job_batch(example_jobs)
-        
-        # Generate and display report
-        report = processor.generate_batch_report(batch_results)
-        print("\n" + report)
-        
-    except Exception as e:
-        print(f"Batch processing failed: {str(e)}")
-
 
 def main():
     """Main function with menu options."""
     print("AI Resume Ranking Agent")
-    print("=" * 40)
-    print("1. Process single job description")
-    print("2. Interactive mode")
-    print("3. Batch processing example")
-    print("4. Exit")
-    
-    while True:
-        try:
-            choice = input("\nSelect option (1-4): ").strip()
-            
-            if choice == "1":
-                asyncio.run(run_single_job_example())
-            elif choice == "2":
-                asyncio.run(run_interactive_mode())
-            elif choice == "3":
-                asyncio.run(run_batch_example())
-            elif choice == "4":
-                print("Goodbye!")
-                break
-            else:
-                print("Invalid choice. Please select 1-4.")
-                
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            break
-        except Exception as e:
-            print(f"Error: {str(e)}")
+    try:
+        asyncio.run(run_agent())
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 if __name__ == "__main__":
