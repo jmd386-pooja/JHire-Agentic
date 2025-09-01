@@ -58,12 +58,17 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // User-side access control
+
   if (userToken) {
-    if (!pathname.startsWith("/candidates") && !pathname.startsWith("/Programming_Questions")) {
+    if (
+      !pathname.startsWith("/candidates") &&
+      !pathname.startsWith("/Programming_Questions") &&
+      !pathname.startsWith("/Job_Description") // ✅ allow users to access Job Descriptions
+    ) {
       return NextResponse.redirect(new URL("/candidates", request.url));
     }
   }
+
 
   // Candidate-side access control
   if (candidateToken) {
@@ -80,6 +85,7 @@ export const config = {
   matcher: [
     "/candidates/:path*",
     "/Programming_Questions/:path*",
+    "/Job_Description/:path*",
     "/Instructions",
     "/Interview",
     "/login",

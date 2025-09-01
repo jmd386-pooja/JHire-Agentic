@@ -21,6 +21,7 @@ import {
   Home,
   User,
   Code,
+  FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -29,6 +30,7 @@ const menuItems = [
   // { id: 1, label: "Dashboard", icon: Home, link: "/dashboard" },
   { id: 2, label: "Candidates", icon: Users, link: "/candidates" },
   { id: 3, label: "Programming Questions", icon: Code, link: "/Programming_Questions" },
+  { id: 4, label: "Job Description", icon: FileText, link: "/Job_Description" },
 ];
 
 export default function Sidebar() {
