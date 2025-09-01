@@ -28,23 +28,7 @@ async def run_agent():
         if not job_description:
             # Use default example
             job_description = """
-                Senior Machine Learning Engineer
-        
-                We are looking for an experienced ML Engineer to join our AI team.
-
-                Requirements:
-                - 3+ years experience in machine learning and deep learning
-                - Strong proficiency in Python, TensorFlow, PyTorch
-                - Experience with MLOps, model deployment, and monitoring
-                - Knowledge of computer vision and NLP
-                - Experience with cloud platforms (AWS, GCP)
-                - Strong mathematical background in statistics and linear algebra
-
-                Responsibilities:
-                - Design and implement ML models for production
-                - Optimize model performance and scalability
-                - Collaborate with data scientists and engineers
-                - Build ML infrastructure and pipelines
+                Senior Machine Learning Engineer We are looking for an experienced ML Engineer to join our AI team. Requirements:- 3+ years experience in machine learning and deep learning- Strong proficiency in Python, TensorFlow, PyTorch- Experience with MLOps, model deployment, and monitoring- Knowledge of computer vision and NLP- Experience with cloud platforms (AWS, GCP)- Strong mathematical background in statistics and linear algebra Responsibilities:- Design and implement ML models for production- Optimize model performance and scalability- Collaborate with data scientists and engineers- Build ML infrastructure and pipelines
             """
         
         try:

@@ -1,630 +1,447 @@
 """
-MCP Server for AI-Powered Resume Processor & Ranker using FastMCP
+MCP Server for AI-Powered Resume Processor & Ranker (FastMCP, stdio)
 
-This MCP server provides comprehensive tools for:
-1. Analyzing and categorizing job descriptions using AI
-2. Filtering resumes from database based on categories
-3. Initial AI scoring of candidates
-4. Final LLM-based ranking and detailed evaluation
-5. Database operations and statistics
-6. Complete end-to-end job processing workflow
+- Single SQLite selected by JHIRE_DB_PATH (falls back to ./jhire_resumes.db)
+- Exposes:
+    • health_check
+    • get_database_stats
+    • analyze_job_description
+    • filter_resumes_by_category
+    • initial_score_candidates
+    • final_rank_candidates
+    • process_complete_job
+    • store_job_results
+    • execute_database_query   (SAFE: SELECT-only)
+    • db_info
+    • get_job_history
+    • get_candidate_rankings
 """
 
-import asyncio
+from __future__ import annotations
+
 import json
 import logging
 import os
+import re
+import sqlite3
 import sys
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
 from fastmcp import FastMCP
 
-# Load environment variables
+# ------------ Env & Logging ------------
 load_dotenv()
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+DEFAULT_DB = os.path.abspath(os.path.join(os.path.dirname(__file__), "jhire_resumes.db"))
+DB_PATH = os.environ.get("JHIRE_DB_PATH", DEFAULT_DB)
 
-# Windows Unicode compatibility fix
-def safe_print(text):
-    """Print text safely, handling Unicode encoding issues on Windows."""
-    try:
-        print(text)
-    except UnicodeEncodeError:
-        import re
-        clean_text = re.sub(r'[^\x00-\x7F]+', '', text)
-        print(clean_text)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("resume-mcp-server")
 
-# Fix Windows console encoding
-if sys.platform.startswith('win'):
+# Windows console UTF-8, best-effort
+if sys.platform.startswith("win"):
     try:
-        import os
-        os.system('chcp 65001 >nul 2>&1')
-        os.environ['PYTHONIOENCODING'] = 'utf-8'
-    except:
+        os.system("chcp 65001 >nul 2>&1")
+        os.environ["PYTHONIOENCODING"] = "utf-8"
+    except Exception:
         pass
 
+# ------------ SQLite helpers ------------
+ALLOWED_SELECT = re.compile(r"^\s*SELECT\b", re.IGNORECASE | re.DOTALL)
 
-# Initialize global components
-db_manager = None
-resume_processor = None
+def get_conn() -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def run_select(sql: str) -> List[Dict[str, Any]]:
+    """
+    Strict single-statement reader, but allow PRAGMA for column discovery.
+    """
+    s = (sql or "").strip()
+    if not s:
+        raise ValueError("Empty SQL")
+    first = s.split()[0].upper()
+    if first not in ("SELECT", "PRAGMA"):
+        raise ValueError("Only SELECT or PRAGMA queries are allowed.")
+
+    # Normalize a trailing semicolon but forbid multiple statements
+    if ";" in s:
+        if s.rstrip().endswith(";"):
+            s = s.rstrip().rstrip(";")
+        else:
+            raise ValueError("Only a single statement is allowed.")
+
+    with get_conn() as cx:
+        cur = cx.execute(s)
+        return [dict(r) for r in cur.fetchall()]
+
+def run_select_params(sql: str, params: Tuple[Any, ...]) -> List[Dict[str, Any]]:
+    """SELECT with positional params (qmark style)."""
+    if not ALLOWED_SELECT.match(sql):
+        raise ValueError("Only SELECT queries are allowed.")
+    with get_conn() as cx:
+        cur = cx.execute(sql, params)
+        return [dict(r) for r in cur.fetchall()]
+
+# ------------ Lazy tool helpers ------------
+_resume_processor = None
+_db_manager = None
 
 def get_resume_processor():
-    """Get or initialize the resume processor."""
-    global resume_processor
-    if resume_processor is None:
-        try:
-            from mcp_tools import ResumeProcessor
-            resume_processor = ResumeProcessor()
-            logger.info("Resume processor initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize resume processor: {e}")
-            raise
-    return resume_processor
+    global _resume_processor
+    if _resume_processor is None:
+        from mcp_tools import ResumeProcessor
+        _resume_processor = ResumeProcessor()
+        logger.info("Resume processor initialized")
+    return _resume_processor
 
 def get_database_manager():
-    """Get or initialize the database manager."""
-    global db_manager
-    if db_manager is None:
-        try:
-            from mcp_tools import DatabaseManager
-            db_manager = DatabaseManager()
-            logger.info("Database manager initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize database manager: {e}")
-            raise
-    return db_manager
+    global _db_manager
+    if _db_manager is None:
+        from mcp_tools import DatabaseManager
+        _db_manager = DatabaseManager()
+        logger.info("Database manager initialized")
+    return _db_manager
 
-# Pydantic models for MCP tool inputs/outputs
-class JobDescriptionInput(BaseModel):
-    job_description: str = Field(description="The job description to analyze and categorize")
-    top_n: int = Field(default=10, description="Number of top candidates to return")
-
-class JobCategorizationInput(BaseModel):
-    job_description: str = Field(description="The job description to categorize")
-
-class ResumeFilterInput(BaseModel):
-    category: str = Field(description="Category to filter resumes by (data_science, data_engineering, full_stack, platform_engineering, consulting, software_engineering, product_management, ui_ux_design)")
-    limit: int = Field(default=50, description="Maximum number of resumes to return")
-
-class InitialScoringInput(BaseModel):
-    job_description: str = Field(description="Job description for scoring")
-    category: str = Field(description="Category to filter candidates by")
-    limit: int = Field(default=20, description="Maximum number of candidates to score")
-
-class FinalRankingInput(BaseModel):
-    job_description: str = Field(description="Job description for final ranking")
-    candidate_names: List[str] = Field(description="List of candidate names to rank")
-    top_n: int = Field(default=10, description="Number of top candidates to return")
-
-class DatabaseQueryInput(BaseModel):
-    query: str = Field(description="SQL query to execute")
-    params: Optional[Dict[str, Any]] = Field(default=None, description="Query parameters")
-
-class StoreResultsInput(BaseModel):
-    job_description: str = Field(description="The original job description")
-    job_category_data: Dict[str, Any] = Field(description="Job category analysis results")
-    final_scores_data: List[Dict[str, Any]] = Field(description="Final candidate scores and rankings")
-
-# Create FastMCP server instance
+# ------------ FastMCP server ------------
 mcp = FastMCP("resume-ranker-server")
-
-# Tool definitions using FastMCP
 
 @mcp.tool()
 async def health_check() -> Dict[str, Any]:
-    """Check the health and status of the MCP server and its components."""
     try:
-        # Try to initialize components
-        db_status = "not_initialized"
-        ai_status = "not_initialized"
-        
+        db_status = "healthy"
+        ai_status = "healthy"
         try:
             get_database_manager()
-            db_status = "healthy"
         except Exception as e:
-            db_status = f"unhealthy: {str(e)}"
-        
+            db_status = f"unhealthy: {e}"
         try:
             get_resume_processor()
-            ai_status = "healthy"
         except Exception as e:
-            ai_status = f"unhealthy: {str(e)}"
-        
+            ai_status = f"unhealthy: {e}"
         return {
             "server_status": "healthy",
             "timestamp": datetime.now().isoformat(),
             "components": {
-                "server": "healthy",
                 "database": db_status,
                 "ai_model": ai_status,
-                "tools": "8 available"
             },
-            "available_tools": [
-                "health_check",
-                "get_database_stats", 
-                "analyze_job_description",
-                "filter_resumes_by_category",
-                "initial_score_candidates",
-                "final_rank_candidates",
-                "process_complete_job",
-                "store_job_results"
-            ]
+            "db_path": DB_PATH,
         }
     except Exception as e:
-        return {
-            "server_status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"server_status": "unhealthy", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def get_database_stats() -> Dict[str, Any]:
-    """Get comprehensive statistics about the resume database."""
     try:
         db = get_database_manager()
         df = db.get_all_resumes()
-        
         stats = {
-            "total_resumes": len(df) if not df.empty else 0,
             "status": "success",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "total_resumes": 0 if df is None or df.empty else int(len(df)),
+            "db_path": DB_PATH,
         }
-        
-        if not df.empty:
-            # Add more detailed stats
+        if df is not None and not df.empty:
             stats.update({
                 "columns": df.columns.tolist(),
-                "sample_candidate_names": df.get('full_name', df.get('name', pd.Series())).head(3).tolist(),
-                "database_shape": df.shape,
-                "memory_usage_mb": round(df.memory_usage(deep=True).sum() / 1024 / 1024, 2)
+                "sample_candidate_names": df.get("full_name", df.get("name", pd.Series(dtype=str))).head(3).tolist(),
+                "database_shape": list(df.shape),
+                "memory_usage_mb": round(df.memory_usage(deep=True).sum() / 1024 / 1024, 2),
             })
-        
         return stats
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def analyze_job_description(job_description: str) -> Dict[str, Any]:
-    """Analyze a job description and automatically categorize it using AI."""
     try:
         processor = get_resume_processor()
         job_category = processor._categorize_job_description(job_description)
-        
         return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
             "role_category": job_category.role_category,
             "confidence_score": job_category.confidence_score,
             "reasoning": job_category.reasoning,
             "key_indicators": job_category.key_indicators,
-            "status": "success",
-            "timestamp": datetime.now().isoformat(),
-            "available_categories": [
-                "data_science", "data_engineering", "full_stack", 
-                "platform_engineering", "consulting", "software_engineering",
-                "product_management", "ui_ux_design"
-            ]
         }
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def filter_resumes_by_category(category: str, limit: int = 50) -> Dict[str, Any]:
-    """Filter resumes by category and return matching candidates."""
     try:
         processor = get_resume_processor()
         db = get_database_manager()
-        
-        # Load all resumes
         df = db.get_all_resumes()
-        if df.empty:
-            return {
-                "error": "No resumes found in database",
-                "status": "error",
-                "timestamp": datetime.now().isoformat()
-            }
-        
-        # Filter by category
+        if df is None or df.empty:
+            return {"status": "error", "error": "No resumes found in database"}
         filtered_df = processor._filter_resumes_by_category(df, category)
-        
-        # Prepare response with limited results
-        candidates = []
+        cands = []
         for idx, row in filtered_df.head(limit).iterrows():
-            candidate_name = row.get('full_name', row.get('name', row.get('candidate_name', 'Unknown')))
-            candidates.append({
-                "name": candidate_name,
-                "category": category,
-                "id": row.get('id', idx)
-            })
-        
+            name = row.get("full_name", row.get("name", row.get("candidate_name", "Unknown")))
+            cands.append({"name": name, "category": category, "id": int(row.get("id", idx))})
         return {
-            "category": category,
-            "total_matches": len(filtered_df),
-            "returned_candidates": len(candidates),
-            "limit": limit,
-            "candidates": candidates,
             "status": "success",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "category": category,
+            "total_matches": int(len(filtered_df)),
+            "returned_candidates": len(cands),
+            "limit": limit,
+            "candidates": cands,
         }
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def initial_score_candidates(job_description: str, category: str, limit: int = 20) -> Dict[str, Any]:
-    """Perform initial AI scoring of candidates for a job description."""
     try:
         processor = get_resume_processor()
         db = get_database_manager()
-        
-        # Load and filter resumes
         df = db.get_all_resumes()
-        if df.empty:
-            return {
-                "error": "No resumes found in database",
-                "status": "error",
-                "timestamp": datetime.now().isoformat()
-            }
-        
-        # Prepare resume text
+        if df is None or df.empty:
+            return {"status": "error", "error": "No resumes found in database"}
         df = processor._prepare_resume_text(df)
-        
-        # Filter by category
         filtered_df = processor._filter_resumes_by_category(df, category)
-        
         if filtered_df.empty:
-            return {
-                "error": f"No candidates found for category: {category}",
-                "status": "error",
-                "timestamp": datetime.now().isoformat()
-            }
-        
-        # Perform initial scoring
+            return {"status": "error", "error": f"No candidates found for category: {category}"}
         initial_scores = processor._initial_ai_scoring(filtered_df.head(limit), job_description)
-        
-        # Convert to serializable format
-        scores_data = []
-        for score in initial_scores:
-            scores_data.append({
-                "candidate_name": score.candidate_name,
-                "initial_score": score.initial_score,
-                "key_matches": score.key_matches,
-                "areas_of_concern": score.areas_of_concern
-            })
-        
+        payload = [{
+            "candidate_name": s.candidate_name,
+            "initial_score": s.initial_score,
+            "key_matches": s.key_matches,
+            "areas_of_concern": s.areas_of_concern,
+        } for s in initial_scores]
         return {
-            "job_description_preview": job_description[:200] + "..." if len(job_description) > 200 else job_description,
-            "category": category,
-            "candidates_scored": len(scores_data),
-            "initial_scores": scores_data,
             "status": "success",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "job_description_preview": (job_description[:200] + "...") if len(job_description) > 200 else job_description,
+            "category": category,
+            "candidates_scored": len(payload),
+            "initial_scores": payload,
         }
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def final_rank_candidates(job_description: str, initial_scores_data: List[Dict[str, Any]], top_n: int = 10) -> Dict[str, Any]:
-    """Perform final LLM-based ranking and detailed evaluation of candidates."""
     try:
-        processor = get_resume_processor()
-        
-        # Convert initial scores data back to InitialScore objects
         from mcp_tools import InitialScore
-        initial_scores = []
-        for score_data in initial_scores_data:
-            initial_scores.append(InitialScore(
-                candidate_name=score_data["candidate_name"],
-                initial_score=score_data["initial_score"],
-                key_matches=score_data["key_matches"],
-                areas_of_concern=score_data["areas_of_concern"]
-            ))
-        
-        # Perform final ranking using the correct method name
+        processor = get_resume_processor()
+        initial_scores = [InitialScore(
+            candidate_name=x["candidate_name"],
+            initial_score=x["initial_score"],
+            key_matches=x["key_matches"],
+            areas_of_concern=x["areas_of_concern"],
+        ) for x in initial_scores_data]
         final_scores = processor._final_llm_evaluation(initial_scores, job_description, top_n)
-        
-        # Convert to serializable format
-        final_scores_data = []
-        for score in final_scores:
-            final_scores_data.append({
-                "candidate_name": score.candidate_name,
-                "final_score": score.final_score,
-                "final_rank": score.final_rank,
-                "detailed_reasoning": score.detailed_reasoning,
-                "strengths": score.strengths,
-                "weaknesses": score.weaknesses,
-                "recommendation": score.recommendation
-            })
-        
+        payload = [{
+            "candidate_name": s.candidate_name,
+            "final_score": s.final_score,
+            "final_rank": s.final_rank,
+            "detailed_reasoning": s.detailed_reasoning,
+            "strengths": s.strengths,
+            "weaknesses": s.weaknesses,
+            "recommendation": s.recommendation,
+        } for s in final_scores]
         return {
-            "job_description_preview": job_description[:200] + "..." if len(job_description) > 200 else job_description,
-            "candidates_ranked": len(final_scores_data),
-            "top_n": top_n,
-            "final_rankings": final_scores_data,
             "status": "success",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "job_description_preview": (job_description[:200] + "...") if len(job_description) > 200 else job_description,
+            "candidates_ranked": len(payload),
+            "top_n": top_n,
+            "final_rankings": payload,
         }
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[str, Any]:
-    """Complete end-to-end job processing: categorization, filtering, scoring, ranking, and storage."""
     try:
         processor = get_resume_processor()
-        
-        # Process the complete job
-        results = processor.process_job_and_rank_candidates(
-            job_description=job_description,
-            top_n=top_n
-        )
-        
-        # Convert results to serializable format
-        response = {
-            "job_description_preview": job_description[:200] + "..." if len(job_description) > 200 else job_description,
+        results = processor.process_job_and_rank_candidates(job_description=job_description, top_n=top_n)
+        resp: Dict[str, Any] = {
             "status": "success",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "job_description_preview": (job_description[:200] + "...") if len(job_description) > 200 else job_description,
+            "filtered_candidates": results.get("filtered_candidates", 0),
+            "stored_in_db": results.get("stored_in_db", False),
         }
-        
-        if results.get('job_category'):
-            response["job_category"] = {
-                "role_category": results['job_category'].role_category,
-                "confidence_score": results['job_category'].confidence_score,
-                "reasoning": results['job_category'].reasoning,
-                "key_indicators": results['job_category'].key_indicators
+        if results.get("job_category"):
+            jc = results["job_category"]
+            resp["job_category"] = {
+                "role_category": jc.role_category,
+                "confidence_score": jc.confidence_score,
+                "reasoning": jc.reasoning,
+                "key_indicators": jc.key_indicators,
             }
-        
-        response.update({
-            "filtered_candidates": results.get('filtered_candidates', 0),
-            "stored_in_db": results.get('stored_in_db', False)
-        })
-        
-        # Convert initial scores
-        if results.get('initial_scores'):
-            response["initial_scores"] = [
-                {
-                    "candidate_name": score.candidate_name,
-                    "initial_score": score.initial_score,
-                    "key_matches": score.key_matches,
-                    "areas_of_concern": score.areas_of_concern
-                }
-                for score in results['initial_scores']
-            ]
-        
-        # Convert final scores
-        if results.get('final_scores'):
-            response["final_rankings"] = [
-                {
-                    "candidate_name": score.candidate_name,
-                    "final_score": score.final_score,
-                    "final_rank": score.final_rank,
-                    "detailed_reasoning": score.detailed_reasoning,
-                    "strengths": score.strengths,
-                    "weaknesses": score.weaknesses,
-                    "recommendation": score.recommendation
-                }
-                for score in results['final_scores']
-            ]
-        
-        # Include any errors
-        if results.get('error'):
-            response["warning"] = results['error']
-        
-        return response
-        
+        if results.get("initial_scores"):
+            resp["initial_scores"] = [{
+                "candidate_name": s.candidate_name,
+                "initial_score": s.initial_score,
+                "key_matches": s.key_matches,
+                "areas_of_concern": s.areas_of_concern,
+            } for s in results["initial_scores"]]
+        if results.get("final_scores"):
+            resp["final_rankings"] = [{
+                "candidate_name": s.candidate_name,
+                "final_score": s.final_score,
+                "final_rank": s.final_rank,
+                "detailed_reasoning": s.detailed_reasoning,
+                "strengths": s.strengths,
+                "weaknesses": s.weaknesses,
+                "recommendation": s.recommendation,
+            } for s in results["final_scores"]]
+        if results.get("error"):
+            resp["warning"] = results["error"]
+        return resp
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def store_job_results(job_description: str, job_category_data: Dict[str, Any], final_scores_data: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Store job analysis results in the database."""
     try:
-        db = get_database_manager()
-        
-        # Convert job_category_data back to JobCategory object
         from mcp_tools import JobCategory, FinalScore
-        job_category = JobCategory(
+        db = get_database_manager()
+        jc = JobCategory(
             role_category=job_category_data["role_category"],
             confidence_score=job_category_data["confidence_score"],
             reasoning=job_category_data["reasoning"],
-            key_indicators=job_category_data["key_indicators"]
+            key_indicators=job_category_data["key_indicators"],
         )
-        
-        # Convert final_scores_data back to FinalScore objects
-        final_scores = []
-        for score_data in final_scores_data:
-            final_scores.append(FinalScore(
-                candidate_name=score_data["candidate_name"],
-                final_score=score_data["final_score"],
-                final_rank=score_data["final_rank"],
-                detailed_reasoning=score_data["detailed_reasoning"],
-                strengths=score_data["strengths"],
-                weaknesses=score_data["weaknesses"],
-                recommendation=score_data["recommendation"]
-            ))
-        
-        # Store results
-        success = db.store_job_results(job_description, job_category, final_scores)
-        
+        finals = [FinalScore(
+            candidate_name=x["candidate_name"],
+            final_score=x["final_score"],
+            final_rank=x["final_rank"],
+            detailed_reasoning=x["detailed_reasoning"],
+            strengths=x["strengths"],
+            weaknesses=x["weaknesses"],
+            recommendation=x["recommendation"],
+        ) for x in final_scores_data]
+        ok = db.store_job_results(job_description, jc, finals)
         return {
-            "stored_successfully": success,
-            "job_category": job_category_data["role_category"],
+            "status": "success" if ok else "error",
+            "timestamp": datetime.now().isoformat(),
+            "stored_successfully": bool(ok),
+            "job_category": jc.role_category,
             "candidates_stored": len(final_scores_data),
-            "status": "success" if success else "error",
-            "timestamp": datetime.now().isoformat()
         }
-        
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
+
+# ---- Core DB utilities exposed to clients ----
 
 @mcp.tool()
-async def execute_database_query(query: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """Execute a custom database query for advanced operations."""
+async def execute_database_query(query: str) -> Dict[str, Any]:
+    """
+    SAFE SELECT-only query for the client (used by governing agent / NL2SQL).
+    Returns: {"status":"success","data":[...]} or {"status":"error","error":...}
+    """
     try:
-        db = get_database_manager()
-        conn = db.get_connection()
-        
-        # Execute query safely
-        if params:
-            cursor = conn.execute(query, params)
-        else:
-            cursor = conn.execute(query)
-        
-        # Handle different types of queries
-        if query.strip().upper().startswith('SELECT'):
-            # For SELECT queries, return results
-            results = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description]
-            
-            # Convert to list of dictionaries
-            data = []
-            for row in results:
-                data.append(dict(zip(columns, row)))
-            
-            return {
-                "query": query,
-                "results_count": len(data),
-                "data": data[:100],  # Limit to first 100 rows
-                "columns": columns,
-                "status": "success",
-                "timestamp": datetime.now().isoformat()
-            }
-        else:
-            # For other queries (INSERT, UPDATE, DELETE), return row count
-            rowcount = cursor.rowcount
-            conn.commit()
-            
-            return {
-                "query": query,
-                "rows_affected": rowcount,
-                "status": "success",
-                "timestamp": datetime.now().isoformat()
-            }
-            
+        data = run_select(query)
+        return {"status": "success", "data": data}
     except Exception as e:
-        return {
-            "error": str(e),
-            "query": query,
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+async def db_info() -> Dict[str, Any]:
+    """Report DB path, table list, rough counts, and distinct categories."""
+    try:
+        info: Dict[str, Any] = {"db_path": DB_PATH, "exists": os.path.exists(DB_PATH)}
+        if info["exists"]:
+            with get_conn() as cx:
+                tables = [r["name"] for r in cx.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+                info["tables"] = tables
+                def one(q: str) -> int:
+                    try:
+                        r = cx.execute(q).fetchone()
+                        return int(dict(r).get("c", 0)) if r else 0
+                    except Exception:
+                        return 0
+                info["counts"] = {
+                    "resumes": one("SELECT COUNT(*) AS c FROM resumes"),
+                    "jobdescription": one("SELECT COUNT(*) AS c FROM jobdescription"),
+                    "candidate_scores": one("SELECT COUNT(*) AS c FROM candidate_scores"),
+                }
+                dc = cx.execute(
+                    "SELECT DISTINCT LOWER(category) AS category FROM resumes WHERE category IS NOT NULL LIMIT 50"
+                ).fetchall()
+                info["distinct_category"] = [d["category"] for d in dc]
+        return {"status": "success", "data": info}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
 @mcp.tool()
 async def get_job_history(limit: int = 10) -> Dict[str, Any]:
-    """Get history of processed jobs from the database."""
+    """Recent jobs from jobdescription (paramized)."""
     try:
-        query = """
-        SELECT 
-            id, 
-            job_description,
-            role_category,
-            categorization_confidence,
-            total_candidates_evaluated,
-            created_at
-        FROM jobdescription 
-        ORDER BY created_at DESC 
-        LIMIT ?
-        """
-        
-        result = await execute_database_query(query, {"limit": limit})
-        
-        if result["status"] == "success":
-            return {
-                "job_history": result["data"],
-                "total_jobs": result["results_count"],
-                "status": "success",
-                "timestamp": datetime.now().isoformat()
-            }
-        else:
-            return result
-            
-    except Exception as e:
+        rows = run_select_params(
+            """
+            SELECT id, job_description, role_category, categorization_confidence,
+                   total_candidates_evaluated, created_at
+            FROM jobdescription
+            ORDER BY created_at DESC, id DESC
+            LIMIT ?
+            """,
+            (int(limit),),
+        )
         return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "job_history": rows,
+            "total_jobs": len(rows),
         }
+    except Exception as e:
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def get_candidate_rankings(job_id: int) -> Dict[str, Any]:
-    """Get candidate rankings for a specific job."""
+    """Rankings for a job (paramized)."""
     try:
-        query = """
-        SELECT 
-            candidate_name,
-            final_score,
-            final_rank,
-            detailed_reasoning,
-            strengths,
-            weaknesses,
-            recommendation,
-            created_at
-        FROM candidate_scores 
-        WHERE job_id = ?
-        ORDER BY final_rank
-        """
-        
-        result = await execute_database_query(query, {"job_id": job_id})
-        
-        if result["status"] == "success":
-            # Parse JSON fields
-            for candidate in result["data"]:
-                try:
-                    candidate["strengths"] = json.loads(candidate["strengths"]) if candidate["strengths"] else []
-                    candidate["weaknesses"] = json.loads(candidate["weaknesses"]) if candidate["weaknesses"] else []
-                except json.JSONDecodeError:
-                    candidate["strengths"] = [candidate["strengths"]] if candidate["strengths"] else []
-                    candidate["weaknesses"] = [candidate["weaknesses"]] if candidate["weaknesses"] else []
-            
-            return {
-                "job_id": job_id,
-                "candidates": result["data"],
-                "total_candidates": result["results_count"],
-                "status": "success",
-                "timestamp": datetime.now().isoformat()
-            }
-        else:
-            return result
-            
-    except Exception as e:
+        rows = run_select_params(
+            """
+            SELECT candidate_name, final_score, final_rank, detailed_reasoning,
+                   strengths, weaknesses, recommendation, created_at
+            FROM candidate_scores
+            WHERE job_id = ?
+            ORDER BY final_rank ASC, candidate_name ASC
+            """,
+            (int(job_id),),
+        )
+        # normalize strengths/weaknesses if JSON
+        for r in rows:
+            for key in ("strengths", "weaknesses"):
+                val = r.get(key)
+                if isinstance(val, str):
+                    try:
+                        r[key] = json.loads(val)
+                    except Exception:
+                        r[key] = [val] if val else []
         return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.now().isoformat()
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "job_id": int(job_id),
+            "candidates": rows,
+            "total_candidates": len(rows),
         }
+    except Exception as e:
+        return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
+# ------------ Run FastMCP over stdio ------------
 if __name__ == "__main__":
-    print("Resume Ranker MCP Server - Starting...")
-    mcp.run(transport="stdio")
+    # FastMCP run method name differs by version; this works across versions.
+    if hasattr(mcp, "run"):
+        try:
+            # If run() is sync:
+            mcp.run()
+        except TypeError:
+            # If run() is async coroutine:
+            import asyncio
+            asyncio.run(mcp.run())
+    else:
+        raise RuntimeError("Your fastmcp build has neither run() nor run_stdio(); please upgrade: pip install -U fastmcp")
