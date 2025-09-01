@@ -1,301 +1,305 @@
-import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import { PrismaClient } from '@prisma/client';
-import crypto from 'crypto';
-import path from 'path';
-import fs from 'fs/promises';
-import { string } from 'zod';
+import { NextResponse } from "next/server";
+import { spawn } from "child_process";
+import { PrismaClient } from "@prisma/client";
+import crypto from "crypto";
+import path from "path";
+import fs from "fs/promises";
 
 const prisma = new PrismaClient();
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+  api: { bodyParser: false },
 };
 
-// Helper function to generate a random string
+// Helpers
 function generateRandomString(length: number): string {
-  return crypto.randomBytes(length).toString('hex').slice(0, length);
+  return crypto.randomBytes(length).toString("hex").slice(0, length);
 }
-
-// Helper function to generate a UUID
 function generateUUID(): string {
   return crypto.randomUUID();
 }
-
-// Calculate expiry date
-function calculateExpiryDate(baseDate?: Date | null, daysToAdd: number = 7): Date {
+function calculateExpiryDate(
+  baseDate?: Date | null,
+  daysToAdd: number = 7
+): Date {
   const date = baseDate ? new Date(baseDate) : new Date();
-  return new Date(date.getTime() + daysToAdd * 24 * 60 * 60 * 1000); // Add specified days
+  return new Date(date.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
 }
-
-// Read CSV helper function
 async function readCsv(filePath: string): Promise<any[]> {
   const results: any[] = [];
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8')
-      .then((data) => {
-        data
-          .split('\n')
-          .slice(1) // Skip the header row
-          .forEach((row) => {
-            const columns = row.split(',');
-            results.push({
-              id: columns[0]?.trim(),
-              gender: columns[2]?.trim(),
-            });
-          });
-        resolve(results);
-      })
-      .catch((err) => reject(err));
-  });
+  const data = await fs.readFile(filePath, "utf8");
+  data
+    .split("\n")
+    .slice(1)
+    .forEach((row) => {
+      const columns = row.split(",");
+      results.push({
+        id: columns[0]?.trim(),
+        gender: columns[2]?.trim(),
+      });
+    });
+  return results;
 }
-
 function parseAsUTC(dateString: string): Date {
-  if(dateString.endsWith('Z'))
-    return new Date(dateString);
-  return new Date(dateString + 'Z'); // Appends 'Z' to treat it as UTC
+  if (dateString.endsWith("Z")) return new Date(dateString);
+  return new Date(dateString + "Z");
 }
+// Normalize possibly-string-or-array into clean string[]
+const toArray = (v: unknown): string[] => {
+  if (Array.isArray(v)) {
+    return v
+      .filter((p) => p != null && String(p).trim() !== "")
+      .map((p) => String(p).trim());
+  }
+  return v != null && String(v).trim() !== "" ? [String(v).trim()] : [];
+};
 
 export async function POST(req: Request) {
   try {
-    // Read CSV files for avatars and voices
-    const avatars = await readCsv(path.join(process.cwd(), 'data/avatars.csv'));
-    const voices = await readCsv(path.join(process.cwd(), 'data/voices.csv'));
+    // Read CSVs
+    const avatars = await readCsv(path.join(process.cwd(), "data/avatars.csv"));
+    const voices = await readCsv(path.join(process.cwd(), "data/voices.csv"));
 
-    // Retrieve the form data
+    // Form data
     const formData = await req.formData();
-    const files = formData.getAll('files');
-    const college = formData.get('college')?.toString() || null;
-    const examDate = formData.get('exam_date')?.toString() || null;
-    const expiryDate = formData.get('expiry_date')?.toString() || null;
+    const files = formData.getAll("files");
+    const college = formData.get("college")?.toString() || null;
+    const examDate = formData.get("exam_date")?.toString() || null;
+    const expiryDate = formData.get("expiry_date")?.toString() || null;
     const examDate1 = examDate ? parseAsUTC(examDate) : null;
     const expiryDate1 = expiryDate ? parseAsUTC(expiryDate) : null;
 
     if (!files || files.length === 0) {
-      return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
+      return NextResponse.json(
+        { error: "No files uploaded." },
+        { status: 400 }
+      );
     }
 
-    const candidates = [];
-    const resumeDetails: {
-      education?: string;
-      projects: string[];
-      certifications: string[];
-      experience: string[];
-    }[] = [];
+    // Accumulators
+    const candidates: any[] = [];
+    const resumeDetailsPayloads: any[] = [];
 
+    // Process each uploaded file via Python
     for (const file of files) {
       if (!(file instanceof File)) {
-        return NextResponse.json({ error: 'Invalid file uploaded.' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid file uploaded." },
+          { status: 400 }
+        );
       }
 
-      // Convert file to buffer
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Spawn Python process and pass the buffer via stdin
-      const pythonProcess = spawn('python', ['scripts/extract_resume.py']);
-      let stdout = '';
-      let stderr = '';
+      const python = spawn("python", ["scripts/extract_resume.py"]);
+      let stdout = "";
+      let stderr = "";
 
-      pythonProcess.stdin.write(buffer); // Pass buffer via stdin
-      pythonProcess.stdin.end();
+      python.stdin.write(buffer);
+      python.stdin.end();
 
-      pythonProcess.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
+      python.stdout.on("data", (d) => (stdout += d.toString()));
+      python.stderr.on("data", (d) => (stderr += d.toString()));
 
-      pythonProcess.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-
-      const pythonExit = new Promise<void>((resolve, reject) => {
-        pythonProcess.on('close', (code) => {
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(stderr || 'Python script failed'));
-          }
+      await new Promise<void>((resolve, reject) => {
+        python.on("close", (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(stderr || "Python script failed"));
         });
       });
 
-      await pythonExit;
-
+      // Only surface serious stderr (ignore DEBUG/INFO)
       if (stderr) {
-        console.warn(`Warning from Python script: ${stderr}`);
+        const serious = stderr
+          .split(/\r?\n/)
+          .filter((line) => line.trim() && !/^debug:|^info:/i.test(line))
+          .join("\n");
+        if (serious) console.warn(`Warning from Python script:\n${serious}`);
       }
 
       const result = JSON.parse(stdout);
 
-      // Match avatars and voices by gender
+      // Map & normalize model fields
+      const name = result.name?.toString().trim() || "";
+      const email = result.email?.toString().toLowerCase().trim() || "";
+      const phoneRaw = result.phone ? String(result.phone) : "";
+      const phoneDigits = phoneRaw.replace(/\D/g, "");
+      const ph_number = phoneDigits ? BigInt(phoneDigits) : null;
+
+      const skillsArr = toArray(result.skills);
+      const projectsArr = toArray(result.projects);
+      const certsArr = toArray(result.certifications);
+      const expArr = toArray(result.experience);
+
+      // Map YOP field names coming from Python -> Prisma schema fields
+      const UG_college = result.UG_college ?? null;
+      const UG_cgpa = result.UG_cgpa ?? null;
+      const UG_yop = result.UG_year_of_passing ?? result.UG_yop ?? null;
+
+      const PG_college = result.PG_college ?? null;
+      const PG_cgpa = result.PG_cgpa ?? null;
+      const PG_yop = result.PG_year_of_passing ?? result.PG_yop ?? null;
+
+      const fileName = result.fileName || file.name;
+
+      // Gender-based avatar/voice (fallback to 'male' unless your model adds gender)
+      const gender = (result.gender || "male").toString().toLowerCase().trim();
       const matchingAvatars = avatars.filter(
-      (avatar) =>
-        typeof avatar.gender === 'string' &&
-        avatar.gender?.toLowerCase().trim() === 'male'
-    );
-
-    const matchingVoices = voices.filter(
-      (voice) =>
-        typeof voice.gender === 'string' &&
-        voice.gender?.toLowerCase().trim() === 'male'
-    );
-
-
-      // Select random avatar and voice
+        (a) =>
+          typeof a.gender === "string" &&
+          a.gender.toLowerCase().trim() === gender
+      );
+      const matchingVoices = voices.filter(
+        (v) =>
+          typeof v.gender === "string" &&
+          v.gender.toLowerCase().trim() === gender
+      );
       const selectedAvatar = matchingAvatars.length
         ? matchingAvatars[Math.floor(Math.random() * matchingAvatars.length)].id
         : null;
-
       const selectedVoice = matchingVoices.length
         ? matchingVoices[Math.floor(Math.random() * matchingVoices.length)].id
         : null;
 
+      // Temp login + URL
       const tempName = generateUUID();
-
-      // Generate random tempPassword
       const tempPassword = generateRandomString(12);
-
-      // Construct Exam_URL
-      const host = req.headers.get('host');
-      const protocol = req.headers.get('x-forwarded-proto') || 'http'; // fallback for local
+      const host = req.headers.get("host");
+      const protocol = req.headers.get("x-forwarded-proto") || "http";
       const examUrl = `${protocol}://${host}/${tempName}`;
 
-      // Determine expiry date
+      // Expiry calculation
       const expiry = expiryDate1
         ? new Date(expiryDate1)
         : calculateExpiryDate(examDate1);
 
-      if (result) {
-        candidates.push({
-          name: result.name,
-          email: result.email.toLowerCase().trim(),
-          ph_number: result.phone
-            ? BigInt(result.phone.replace(/\D/g, ''))
-            : null,
-          Skills: result.skills,
-          Avatar: selectedAvatar,
-          Voice: selectedVoice,
-          temp_name: tempName,
-          tempPassword: tempPassword,
-          Exam_URL: examUrl,
-          College: college,
-          Exam_date: examDate1 ? examDate1 : null,
-          Expiry: expiry,
-        });
-        resumeDetails.push({
-          education: result.education,
-          projects: result.projects,
-          certifications: result.certifications,
-          experience: result.experience
-        });
-      }
+      // Candidate payload (Prisma Candidate)
+      candidates.push({
+        name,
+        email,
+        ph_number,
+        Skills: skillsArr, // Candidate.Skills (String[])
+        Avatar: selectedAvatar,
+        Voice: selectedVoice,
+        temp_name: tempName,
+        tempPassword,
+        Exam_URL: examUrl,
+        College: college,
+        Exam_date: examDate1 || null,
+        Expiry: expiry,
+      });
+
+      // ResumeDetails payload (Prisma ResumeDetails)
+      resumeDetailsPayloads.push({
+        name,
+        email,
+        phone: phoneDigits,
+        skills: skillsArr,
+        UG_college: UG_college || undefined,
+        UG_cgpa: UG_cgpa || undefined,
+        UG_yop: UG_yop || undefined,
+        PG_college: PG_college || undefined,
+        PG_cgpa: PG_cgpa || undefined,
+        PG_yop: PG_yop || undefined,
+        projects: projectsArr,
+        certifications: certsArr,
+        experience: expArr,
+        fileName,
+      });
     }
 
-    const insertedCandidates = [];
-    const insertedResumeDetails = [];
-    const interviews = [];
+    // Persist to DB (upsert per candidate)
+    const insertedCandidates: any[] = [];
 
-    for (const candidate of candidates) {
-      try {
-        const createdCandidate = await prisma.candidate.upsert({
-          where: { email: candidate.email },
-          update: candidate,
-          create: candidate,
-        });
-        insertedCandidates.push({
-          ...createdCandidate,
-          ph_number: createdCandidate.ph_number?.toString() || null,
-        });
+    for (let i = 0; i < candidates.length; i++) {
+      const candidate = candidates[i];
+      const detail = resumeDetailsPayloads[i];
 
-        const i = insertedCandidates.length - 1;
-        const detail = resumeDetails[i];
+      // Upsert Candidate
+      const createdCandidate = await prisma.candidate.upsert({
+        where: { email: candidate.email },
+        update: candidate,
+        create: candidate,
+      });
 
-        let projects: string[] = [];
-        let certifications: string[] = [];
-        let experience: string[] = [];
+      insertedCandidates.push({
+        ...createdCandidate,
+        ph_number: createdCandidate.ph_number?.toString() || null,
+      });
 
-        if(detail.projects) {
-          projects = Array.isArray(detail.projects) ? 
-          detail.projects.filter(p => p != undefined || p != null) : 
-          [detail.projects]
-        }
-        if(detail.certifications) {
-          certifications = Array.isArray(detail.certifications) ? 
-          detail.certifications.filter(p => p != undefined || p != null) : 
-          [detail.certifications]
-        }
-        if(detail.experience) {
-          experience = Array.isArray(detail.experience) ? 
-          detail.experience.filter(p => p != undefined || p != null) : 
-          [detail.experience]
-        }
+      // Upsert ResumeDetails (1:1 on candidateId)
+      await prisma.resumeDetails.upsert({
+        where: { candidateId: createdCandidate.id },
+        update: {
+          // only updatable fields
+          skills: detail.skills,
+          UG_college: detail.UG_college,
+          UG_cgpa: detail.UG_cgpa,
+          UG_yop: detail.UG_yop,
+          PG_college: detail.PG_college,
+          PG_cgpa: detail.PG_cgpa,
+          PG_yop: detail.PG_yop,
+          projects: detail.projects,
+          certifications: detail.certifications,
+          experience: detail.experience,
+          fileName: detail.fileName,
+        },
+        create: {
+          candidateId: createdCandidate.id,
+          name: detail.name,
+          email: detail.email,
+          phone: detail.phone,
+          skills: detail.skills,
+          UG_college: detail.UG_college,
+          UG_cgpa: detail.UG_cgpa,
+          UG_yop: detail.UG_yop,
+          PG_college: detail.PG_college,
+          PG_cgpa: detail.PG_cgpa,
+          PG_yop: detail.PG_yop,
+          projects: detail.projects,
+          certifications: detail.certifications,
+          experience: detail.experience,
+          fileName: detail.fileName,
+        },
+      });
 
-        // const projects = Array.isArray(detail.projects) ? detail.projects : [detail.projects];
-        // const certifications = Array.isArray(detail.certifications) ? detail.certifications : [detail.certifications];
-        // const experience = Array.isArray(detail.experience) ? detail.experience : [detail.experience];
-
-        const upsertResumeDetails = await prisma.resumeDetails.upsert({
-          where: { candidateId: createdCandidate.id },
-          update: {
-            education: detail.education || '',
-            projects: projects || [],
-            certifications: certifications || [],
-            experience: experience || [],
-          },
-          create: {
-            candidateId: createdCandidate.id,
-            education: detail.education || '',
-            projects: projects || [],
-            certifications: certifications || [],
-            experience: experience || [],
-          },
-        });
-
-        insertedResumeDetails.push(upsertResumeDetails);
-
-        const interviewDate = candidate.Exam_date || new Date();
-
-        // Upsert into the Interview table
-        const upsertedInterview = await prisma.interview.upsert({
-          where: { candidate_id: createdCandidate.id },
-          update: {
-            interview_date: interviewDate, // Update interview_date if already exists
-            status: 'pending', // Update status to pending
-            Interviewscore: 0, // Default value
-            Codingscore: 0, // Default value
-            Answers: [], // Default empty array for answers
-            code: '', // Default empty string for code
-            codeEvaluation: {}, // Default empty JSON object for code evaluation
-            interview_start_time: null, // Default to null
-            questions: '', // Default empty string for questions
-          },
-          create: {
-            candidate_id: createdCandidate.id, // Associate with the candidate
-            interview_date: interviewDate, // Set interview_date
-            status: 'pending', // Default status
-            Interviewscore: null, // Default value
-            Codingscore: null, // Default value
-            Answers: [], // Default empty array for answers
-            code: '', // Default empty string for code
-            created_at: new Date(), // Automatically set the created_at timestamp
-            codeEvaluation: {}, // Default empty JSON object for code evaluation
-            interview_start_time: null, // Default to null
-            questions: '', // Default empty string for questions
-          },
-        });
-
-        interviews.push(upsertedInterview);
-      } catch (error) {
-        console.error(`Error inserting candidate: ${candidate.email}`, error);
-      }
+      // Upsert Interview (1:1 on candidate_id)
+      const interviewDate = createdCandidate.Exam_date || new Date();
+      await prisma.interview.upsert({
+        where: { candidate_id: createdCandidate.id },
+        update: {
+          interview_date: interviewDate,
+          status: "pending",
+          Interviewscore: 0,
+          Codingscore: 0,
+          Answers: [],
+          code: "",
+          codeEvaluation: {},
+          interview_start_time: null,
+          questions: "",
+        },
+        create: {
+          candidate_id: createdCandidate.id,
+          interview_date: interviewDate,
+          status: "pending",
+          Interviewscore: null,
+          Codingscore: null,
+          Answers: [],
+          code: "",
+          created_at: new Date(),
+          codeEvaluation: {},
+          interview_start_time: null,
+          questions: "",
+        },
+      });
     }
 
     return NextResponse.json({ data: insertedCandidates });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     return NextResponse.json(
-      { error: error.message || 'Unexpected error.' },
+      { error: error.message || "Unexpected error." },
       { status: 500 }
     );
   }

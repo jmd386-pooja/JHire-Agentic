@@ -70,8 +70,6 @@ Only return a valid JSON response without any explanations.
         if content.lower().startswith("json"):
             content = content[4:].strip()
 
-        # DEBUG
-        print("DEBUG: Cleaned JSON string before parsing:", content, file=sys.stderr)
 
         return json.loads(content)
 

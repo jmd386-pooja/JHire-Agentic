@@ -21,8 +21,6 @@ interface Candidate {
 
 
 export default function CandidatesPage() {
-  console.log("HIiiii");
-  
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
