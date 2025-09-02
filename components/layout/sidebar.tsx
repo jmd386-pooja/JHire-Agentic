@@ -22,6 +22,7 @@ import {
   User,
   Code,
   FileText,
+  TrendingUp,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -31,6 +32,7 @@ const menuItems = [
   { id: 2, label: "Candidates", icon: Users, link: "/candidates" },
   { id: 3, label: "Programming Questions", icon: Code, link: "/Programming_Questions" },
   { id: 4, label: "Job Description", icon: FileText, link: "/Job_Description" },
+  { id: 5, label: "Ranking", icon: TrendingUp, link: "/Ranking" },
 ];
 
 export default function Sidebar() {

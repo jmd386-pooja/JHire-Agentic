@@ -52,9 +52,9 @@ model ResumeDetails {
   id                Int        @id @default(autoincrement())
   candidateId       Int        @unique
 
-  name              String
-  email             String
-  phone             String
+  name              String?
+  email             String?
+  phone             String?
   skills            String[]
 
   UG_college        String?
@@ -68,7 +68,7 @@ model ResumeDetails {
   certifications    String[]
   experience        String[]
 
-  fileName          String
+  fileName          String?
   processedAt        DateTime   @default(now())
   
   candidate         Candidate   @relation(fields: [candidateId], references: [id])
@@ -110,6 +110,50 @@ model Feedback {
   feedback_text Json
   interview     Interview @relation(fields: [interview_id], references: [id])
 }
+
+model JobDescription {
+  id                        BigInt   @id @default(autoincrement())
+  job_description           String
+  role_category             String
+  categorization_confidence Float
+  categorization_reasoning  String
+  key_indicators            Json
+  total_candidates_evaluated Int
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+}
+
+model CandidateScore {
+  id               BigInt   @id @default(autoincrement())
+  job_id           BigInt
+  candidate_name   String
+  resume_email     String?
+  final_score      Float
+  final_rank       Int
+  detailed_reasoning String
+  strengths        Json
+  weaknesses       Json
+  recommendation   String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+}
+
+model EmailAudit {
+  id              BigInt   @id @default(autoincrement())
+  sent_at         DateTime @default(now())
+  job_id          BigInt?
+  candidate_name  String?
+  candidate_email String?
+  email_type      String?
+  subject         String?
+  username        String?
+  password        String?
+  exam_link       String?
+  send_status     String?
+  raw_result      Json?
+}
+
 
 enum Role {
   USER

@@ -272,7 +272,7 @@ export default function ResumeInputs() {
           className="w-full p-4 border rounded-lg h-40 mt-8"
         />
 
-        <Button onClick={handleButtonClick} className="mt-3">
+        <Button onClick={handleButtonClick} className="mt-7">
           Submit
         </Button>
 
