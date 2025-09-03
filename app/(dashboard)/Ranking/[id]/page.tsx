@@ -66,7 +66,10 @@ export default async function CandidatePage({ params }: Props) {
                     <strong>Score:</strong> {c.final_score}
                   </p>
                   <p>
-                    <strong>Recommendation:</strong> {c.recommendation}
+                    <strong>Recommendation:</strong>
+                    <pre className="bg-gray-100 rounded p-2 text-sm">
+                  <p className="text-gray-700">{c.recommendation}</p>
+                  </pre> 
                   </p>
                 </div>
 
@@ -84,7 +87,9 @@ export default async function CandidatePage({ params }: Props) {
 
                 <div className="mt-4">
                   <p className="font-semibold">Detailed Reasoning:</p>
+                  <pre className="bg-gray-100 rounded p-2 text-sm">
                   <p className="text-gray-700">{c.detailed_reasoning}</p>
+                  </pre>
                 </div>
               </div>
             ))}

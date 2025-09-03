@@ -70,6 +70,7 @@ export default async function RankingPage() {
                 <div className="rounded-xl border cursor-pointer shadow p-7 mb-4 bg-white hover:bg-gray-100 transition">
                   <h2 className="font-semibold">{job.role_category}</h2>
                   <p className="text-gray-600">{job.job_description}</p>
+                  <p className="text-gray-600">{job.id}</p>
                 </div>
               </Link>
             ))}

@@ -151,6 +151,11 @@ export async function GET(request: NextRequest) {
   }
 
   console.log(' All resumes processed.');
+  console.log(' Start categorization...');
+  
+  await axios.get('http://localhost:3000/api/CategorizeResume');
+  console.log(' End categorization...');
+
   return NextResponse.json({ "message": "success"});
 
 }
