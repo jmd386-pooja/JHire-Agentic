@@ -278,7 +278,7 @@ export default function ResumeInputs() {
 
         {/* Summary */}
         <div className="mt-8">
-          <h2 className="font-semibold text-2xl mb-2">Stored Inputs</h2>
+          <h2 className="font-semibold text-2xl mb-2">Descriptions </h2>
           <ul className="list-disc pl-5 space-y-1 text-gray-700">
             {Object.entries(inputs).map(([category, value]) => (
               <li key={category}>
