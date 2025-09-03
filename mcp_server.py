@@ -1,7 +1,7 @@
 """
 MCP Server for AI-Powered Resume Processor & Ranker (FastMCP, stdio)
 
-- Single SQLite selected by JHIRE_DB_PATH (falls back to ./jhire_resumes.db)
+- Single SQLite selected by DATABASE_URL (falls back to ./jhire_resumes.db)
 - Exposes:
     • health_check
     • get_database_stats
@@ -31,12 +31,13 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+import psycopg, psycopg.rows
 
 # ------------ Env & Logging ------------
 load_dotenv()
 
 DEFAULT_DB = os.path.abspath(os.path.join(os.path.dirname(__file__), "jhire_resumes.db"))
-DB_PATH = os.environ.get("JHIRE_DB_PATH", DEFAULT_DB)
+DB_PATH = os.environ.get("DATABASE_URL", DEFAULT_DB)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("resume-mcp-server")
@@ -52,40 +53,36 @@ if sys.platform.startswith("win"):
 # ------------ SQLite helpers ------------
 ALLOWED_SELECT = re.compile(r"^\s*SELECT\b", re.IGNORECASE | re.DOTALL)
 
+def _pg_params():
+    dsn = os.getenv("DATABASE_URL")
+    return {"conninfo": dsn}
+
+def pg_conn():
+    # psycopg 3 connection
+    return psycopg.connect(**{k: v for k, v in _pg_params().items() if v})
+
+    
 def get_conn() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
-def run_select(sql: str) -> List[Dict[str, Any]]:
-    """
-    Strict single-statement reader, but allow PRAGMA for column discovery.
-    """
-    s = (sql or "").strip()
-    if not s:
-        raise ValueError("Empty SQL")
-    first = s.split()[0].upper()
-    if first not in ("SELECT", "PRAGMA"):
-        raise ValueError("Only SELECT or PRAGMA queries are allowed.")
-
-    # Normalize a trailing semicolon but forbid multiple statements
-    if ";" in s:
-        if s.rstrip().endswith(";"):
-            s = s.rstrip().rstrip(";")
-        else:
-            raise ValueError("Only a single statement is allowed.")
-
-    with get_conn() as cx:
-        cur = cx.execute(s)
-        return [dict(r) for r in cur.fetchall()]
-
-def run_select_params(sql: str, params: Tuple[Any, ...]) -> List[Dict[str, Any]]:
-    """SELECT with positional params (qmark style)."""
-    if not ALLOWED_SELECT.match(sql):
+def run_select(sql: str):
+    sql = (sql or "").strip()
+    if not sql.upper().startswith("SELECT"):
         raise ValueError("Only SELECT queries are allowed.")
-    with get_conn() as cx:
-        cur = cx.execute(sql, params)
-        return [dict(r) for r in cur.fetchall()]
+    if ";" in sql[:-1]:
+        raise ValueError("Only a single statement is allowed.")
+    with pg_conn() as cx, cx.cursor(row_factory=psycopg.rows.dict_row) as cur:
+        cur.execute(sql)
+        return list(cur.fetchall())
+
+def run_select_params(sql: str, params: tuple):
+    if not (sql or "").strip().upper().startswith("SELECT"):
+        raise ValueError("Only SELECT queries are allowed.")
+    with pg_conn() as cx, cx.cursor(row_factory=psycopg.rows.dict_row) as cur:
+        cur.execute(sql, params)
+        return list(cur.fetchall())
 
 # ------------ Lazy tool helpers ------------
 _resume_processor = None
@@ -109,6 +106,7 @@ def get_database_manager():
 
 # ------------ FastMCP server ------------
 mcp = FastMCP("resume-ranker-server")
+
 
 @mcp.tool()
 async def health_check() -> Dict[str, Any]:
@@ -351,6 +349,7 @@ async def execute_database_query(query: str) -> Dict[str, Any]:
 @mcp.tool()
 async def db_info() -> Dict[str, Any]:
     """Report DB path, table list, rough counts, and distinct categories."""
+    get_database_manager().ensure_schema_once()
     try:
         info: Dict[str, Any] = {"db_path": DB_PATH, "exists": os.path.exists(DB_PATH)}
         if info["exists"]:

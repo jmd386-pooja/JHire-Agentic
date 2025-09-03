@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 import json
-import sqlite3
+import psycopg, psycopg.rows
 
 import pandas as pd
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -19,6 +19,9 @@ from langchain.schema import HumanMessage
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
+import threading
+_bootstrapped = False
+_bootstrap_lock = threading.Lock()
 
 # Load environment variables
 load_dotenv()
@@ -33,7 +36,12 @@ DEFAULT_TEMPERATURE = 0.1
 DEFAULT_TOP_N = 10
 
 # Database configuration
-DB_PATH = os.getenv('DB_PATH', 'jhire_resumes.db')
+PG_DSN = os.getenv('DATABASE_URL')
+
+def pg_conn():
+    if not PG_DSN:
+        raise RuntimeError("DATABASE_URL not set")
+    return psycopg.connect(PG_DSN)
 
 
 class JobCategory(BaseModel):
@@ -64,127 +72,281 @@ class FinalScore(BaseModel):
 
 
 class DatabaseManager:
-    """Manages SQLite database connections and operations."""
+    """Manages PostgreSQL database connections and operations."""
     
     def __init__(self):
         """Initialize database connection."""
         self.connection = None
         self._connect()
-        self._initialize_tables()
+        self.ensure_schema_once()
     
     def _connect(self):
         """Establish database connection."""
         try:
-            self.connection = sqlite3.connect(DB_PATH)
-            logger.info(f"Successfully connected to SQLite database at {DB_PATH}")
+            self.connection = pg_conn()
+            logging.getLogger(__name__).info("Connected to PostgreSQL")
         except Exception as e:
             logger.error(f"Failed to connect to database: {e}")
             raise
     
-    def _initialize_tables(self):
-        """Initialize required tables if they don't exist."""
-        try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            # Enable foreign key support for SQLite
-            cursor.execute("PRAGMA foreign_keys = ON")
-            
-            # Create resumes table if it doesn't exist
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS resumes (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    full_name VARCHAR(255),
-                    email VARCHAR(255),
-                    phone VARCHAR(50),
-                    location VARCHAR(255),
-                    category VARCHAR(100),
-                    role_category VARCHAR(100),
-                    job_category VARCHAR(100),
-                    position_type VARCHAR(100),
-                    technical_skills TEXT,
-                    work_experience TEXT,
-                    education TEXT,
-                    certifications TEXT,
-                    degrees TEXT,
-                    projects TEXT,
-                    languages TEXT,
-                    soft_skills TEXT,
-                    achievements TEXT,
-                    linkedin_url VARCHAR(500),
-                    github_url VARCHAR(500),
-                    portfolio_url VARCHAR(500),
-                    years_of_experience INTEGER,
-                    current_company VARCHAR(255),
-                    current_role VARCHAR(255),
-                    salary_expectations VARCHAR(100),
-                    availability VARCHAR(100),
-                    visa_status VARCHAR(100),
-                    remote_preference VARCHAR(100),
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Create jobdescription table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS jobdescription (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    job_description TEXT NOT NULL,
-                    role_category VARCHAR(100) NOT NULL,
-                    categorization_confidence REAL NOT NULL,
-                    categorization_reasoning TEXT NOT NULL,
-                    key_indicators TEXT NOT NULL,
-                    total_candidates_evaluated INTEGER NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Create candidate_scores table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS candidate_scores (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    job_id INTEGER,
-                    candidate_name VARCHAR(255) NOT NULL,
-                    final_score REAL NOT NULL,
-                    final_rank INTEGER NOT NULL,
-                    detailed_reasoning TEXT NOT NULL,
-                    strengths TEXT NOT NULL,
-                    weaknesses TEXT NOT NULL,
-                    recommendation VARCHAR(100) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (job_id) REFERENCES jobdescription(id) ON DELETE CASCADE
-                )
-            """)
-            
-            # Create indexes for better performance
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_resumes_category ON resumes(category)")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_resumes_role_category ON resumes(role_category)")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_candidate_scores_job_id ON candidate_scores(job_id)")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_candidate_scores_candidate_name ON candidate_scores(candidate_name)")
-            
-            # Check if resumes table has data, if not, insert sample data
-            cursor.execute("SELECT COUNT(*) FROM resumes")
-            resume_count = cursor.fetchone()[0]
-            
-            if resume_count == 0:
-                logger.info("No resumes found, inserting sample data...")
-                self._insert_sample_resumes(cursor)
-            
-            conn.commit()
-            logger.info("Database tables initialized successfully")
-            
-        except Exception as e:
-            logger.error(f"Error initializing database tables: {e}")
-            if conn:
-                conn.rollback()
-            raise
-        finally:
-            if cursor:
-                cursor.close()
+    def get_connection(self):
+        # No schema work here — just ensure a live connection.
+        if self.connection is None or getattr(self.connection, "closed", True):
+            self._connect()
+        return self.connection
     
+    def ensure_schema(self) -> None:
+        """
+        Create required tables and the 'resumes' compatibility view if they don't exist.
+        Works whether your Prisma tables are CamelCase ("Candidate") or lowercase (candidate).
+        """
+        log = logging.getLogger(__name__)
+        if self.connection is None or getattr(self.connection, "closed", True):
+            self._connect()
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                # ---------- Required app tables ----------
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS public.jobdescription (
+                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                      job_description            TEXT        NOT NULL,
+                      role_category              TEXT        NOT NULL,
+                      categorization_confidence  DOUBLE PRECISION NOT NULL,
+                      categorization_reasoning   TEXT        NOT NULL,
+                      key_indicators             JSONB       NOT NULL,
+                      total_candidates_evaluated INTEGER     NOT NULL,
+                      created_at                 TIMESTAMPTZ NOT NULL DEFAULT now(),
+                      updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                """)
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS public.candidate_scores (
+                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                      job_id           BIGINT REFERENCES public.jobdescription(id) ON DELETE CASCADE,
+                      candidate_name   TEXT      NOT NULL,
+                      resume_email     TEXT,
+                      final_score      DOUBLE PRECISION NOT NULL,
+                      final_rank       INTEGER   NOT NULL,
+                      detailed_reasoning TEXT    NOT NULL,
+                      strengths        JSONB     NOT NULL,
+                      weaknesses       JSONB     NOT NULL,
+                      recommendation   TEXT      NOT NULL,
+                      created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+                      updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                """)
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS public.exam_credentials (
+                      candidate_email TEXT PRIMARY KEY,
+                      username        TEXT NOT NULL,
+                      password        TEXT NOT NULL,
+                      exam_link       TEXT NOT NULL,
+                      created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                """)
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS public.email_audit (
+                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                      sent_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+                      job_id          BIGINT,
+                      candidate_name  TEXT,
+                      candidate_email TEXT,
+                      email_type      TEXT,
+                      subject         TEXT,
+                      username        TEXT,
+                      password        TEXT,
+                      exam_link       TEXT,
+                      send_status     TEXT,
+                      raw_result      JSONB
+                    )
+                """)
+
+                # ---------- Detect Prisma table casing ----------
+                def tbl_exists(name: str) -> bool:
+                    cur.execute("""
+                        SELECT 1
+                        FROM information_schema.tables
+                        WHERE table_schema='public' AND table_name=%s
+                        LIMIT 1
+                    """, (name,))
+                    return cur.fetchone() is not None
+
+                has_camel = tbl_exists("Candidate") and tbl_exists("Category") and tbl_exists("ResumeDetails")
+                has_lower = tbl_exists("candidate") and tbl_exists("category") and tbl_exists("resume_details")
+
+                # ---------- Create/replace the resumes view ----------
+                if has_camel:
+                    create_view_sql = """
+                    CREATE OR REPLACE VIEW public.resumes AS
+                    SELECT
+                      -- Candidate (all columns, clearly prefixed)
+                      c.id                          AS candidate_id,
+                      c."name"                      AS candidate_name,
+                      c."email"                     AS candidate_email,
+                      c."status"                    AS candidate_status,
+                      c."createdAt"                 AS candidate_created_at,
+                      c."updatedAt"                 AS candidate_updated_at,
+                      c."Avatar"                    AS candidate_avatar,
+                      c."Skills"                    AS candidate_skills,       -- TEXT[]
+                      c."Voice"                     AS candidate_voice,
+                      c."ph_number"                 AS candidate_ph_number,
+                      c."Exam_URL"                  AS candidate_exam_url,
+                      c."tempPassword"              AS candidate_temp_password,
+                      c."temp_name"                 AS candidate_temp_name,
+                      c."College"                   AS candidate_college,
+                      c."Exam_date"                 AS candidate_exam_date,
+                      c."Expiry"                    AS candidate_expiry,
+                    
+                      -- ResumeDetails (all columns, prefixed; alias colliding names)
+                      rd.id                         AS resume_id,
+                      rd."candidateId"              AS resume_candidate_id,
+                      rd."name"                     AS resume_name,
+                      rd."email"                    AS resume_email,
+                      rd."phone"                    AS resume_phone,
+                      rd."skills"                   AS resume_skills,          -- TEXT[]
+                      rd."UG_college"               AS resume_ug_college,
+                      rd."UG_cgpa"                  AS resume_ug_cgpa,
+                      rd."UG_yop"                   AS resume_ug_yop,
+                      rd."PG_college"               AS resume_pg_college,
+                      rd."PG_cgpa"                  AS resume_pg_cgpa,
+                      rd."PG_yop"                   AS resume_pg_yop,
+                      rd."projects"                 AS resume_projects,        -- TEXT[]
+                      rd."certifications"           AS resume_certifications,  -- TEXT[]
+                      rd."experience"               AS resume_experience,      -- TEXT[]
+                      rd."fileName"                 AS resume_file_name,
+                      rd."processedAt"              AS resume_processed_at,
+                    
+                      -- Category (aggregated because it's 1-to-many)
+                      ARRAY_AGG(DISTINCT cat.id)                     FILTER (WHERE cat.id IS NOT NULL)         AS category_ids,
+                      ARRAY_AGG(DISTINCT cat."type")                 FILTER (WHERE cat."type" IS NOT NULL)     AS category_types,
+                      ARRAY_AGG(cat."createdAt")                     FILTER (WHERE cat."createdAt" IS NOT NULL)AS category_created_at,
+                    
+                      -- Back-compat / convenience columns your code already uses
+                      COALESCE(array_to_string(rd."skills",         ' '), '') AS technical_skills,
+                      COALESCE(array_to_string(rd."experience",     ' '), '') AS work_experience,
+                      COALESCE(array_to_string(rd."projects",       ' '), '') AS projects,
+                      COALESCE(array_to_string(rd."certifications", ' '), '') AS certifications,
+                      COALESCE(rd."UG_college", '')                         AS education,
+                      COALESCE(string_agg(DISTINCT cat."type", ' '), '')    AS category,      -- single text field
+                      c."name"                                              AS full_name,     -- legacy alias
+                      c."email"                                             AS email          -- legacy alias
+                    FROM "Candidate"       AS c
+                    LEFT JOIN "ResumeDetails"   AS rd  ON rd."candidateId" = c.id
+                    LEFT JOIN "Category"        AS cat ON cat."candidateId" = c.id
+                    GROUP BY
+                      c.id, c."name", c."email", c."status", c."createdAt", c."updatedAt",
+                      c."Avatar", c."Skills", c."Voice", c."ph_number", c."Exam_URL",
+                      c."tempPassword", c."temp_name", c."College", c."Exam_date", c."Expiry",
+                      rd.id, rd."candidateId", rd."name", rd."email", rd."phone", rd."skills",
+                      rd."UG_college", rd."UG_cgpa", rd."UG_yop",
+                      rd."PG_college", rd."PG_cgpa", rd."PG_yop",
+                      rd."projects", rd."certifications", rd."experience",
+                      rd."fileName", rd."processedAt";
+                    
+                    """
+                elif has_lower:
+                    create_view_sql = """
+                    CREATE OR REPLACE VIEW public.resumes AS
+                    SELECT
+                      -- candidate
+                      c.id                  AS candidate_id,
+                      c.name                AS candidate_name,
+                      c.email               AS candidate_email,
+                      c.status              AS candidate_status,
+                      c.created_at          AS candidate_created_at,
+                      c.updated_at          AS candidate_updated_at,
+                      c.avatar              AS candidate_avatar,
+                      c.skills              AS candidate_skills,        -- TEXT[]
+                      c.voice               AS candidate_voice,
+                      c.ph_number           AS candidate_ph_number,
+                      c.exam_url            AS candidate_exam_url,
+                      c.temp_password       AS candidate_temp_password,
+                      c.temp_name           AS candidate_temp_name,
+                      c.college             AS candidate_college,
+                      c.exam_date           AS candidate_exam_date,
+                      c.expiry              AS candidate_expiry,
+
+                      -- resume_details
+                      rd.id                 AS resume_id,
+                      rd.candidate_id       AS resume_candidate_id,
+                      rd.name               AS resume_name,
+                      rd.email              AS resume_email,
+                      rd.phone              AS resume_phone,
+                      rd.skills             AS resume_skills,           -- TEXT[]
+                      rd.ug_college         AS resume_ug_college,
+                      rd.ug_cgpa            AS resume_ug_cgpa,
+                      rd.ug_yop             AS resume_ug_yop,
+                      rd.pg_college         AS resume_pg_college,
+                      rd.pg_cgpa            AS resume_pg_cgpa,
+                      rd.pg_yop             AS resume_pg_yop,
+                      rd.projects           AS resume_projects,         -- TEXT[]
+                      rd.certifications     AS resume_certifications,   -- TEXT[]
+                      rd.experience         AS resume_experience,       -- TEXT[]
+                      rd.file_name          AS resume_file_name,
+                      rd.processed_at       AS resume_processed_at,
+
+                      -- category aggregated
+                      ARRAY_AGG(DISTINCT cat.id)            FILTER (WHERE cat.id IS NOT NULL)      AS category_ids,
+                      ARRAY_AGG(DISTINCT cat.type)          FILTER (WHERE cat.type IS NOT NULL)    AS category_types,
+                      ARRAY_AGG(cat.created_at)             FILTER (WHERE cat.created_at IS NOT NULL) AS category_created_at,
+
+                      -- back-compat fields used by your agents
+                      COALESCE(array_to_string(rd.skills,         ' '), '') AS technical_skills,
+                      COALESCE(array_to_string(rd.experience,     ' '), '') AS work_experience,
+                      COALESCE(array_to_string(rd.projects,       ' '), '') AS projects,
+                      COALESCE(array_to_string(rd.certifications, ' '), '') AS certifications,
+                      COALESCE(rd.ug_college, '')                       AS education,
+                      COALESCE(string_agg(DISTINCT cat.type, ' '), '')  AS category,
+                      c.name                                           AS full_name,
+                      c.email                                          AS email
+                    FROM candidate c
+                    LEFT JOIN resume_details rd ON rd.candidate_id = c.id
+                    LEFT JOIN category       cat ON cat.candidate_id = c.id
+                    GROUP BY
+                      c.id, c.name, c.email, c.status, c.created_at, c.updated_at,
+                      c.avatar, c.skills, c.voice, c.ph_number, c.exam_url,
+                      c.temp_password, c.temp_name, c.college, c.exam_date, c.expiry,
+                      rd.id, rd.candidate_id, rd.name, rd.email, rd.phone, rd.skills,
+                      rd.ug_college, rd.ug_cgpa, rd.ug_yop,
+                      rd.pg_college, rd.pg_cgpa, rd.pg_yop,
+                      rd.projects, rd.certifications, rd.experience,
+                      rd.file_name, rd.processed_at;
+
+                    """
+                else:
+                    create_view_sql = None
+                    log.warning("Prisma tables not found (Candidate/Category/ResumeDetails). Skipping view creation.")
+
+                if create_view_sql:
+                    cur.execute(create_view_sql)
+
+            conn.commit()
+            log.info("Schema ensured (tables + resumes view ready).")
+        except Exception as e:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            log.error("ensure_schema failed: %s", e, exc_info=True)
+            raise
+        
+    def ensure_schema_once(self):
+        global _bootstrapped
+        if _bootstrapped:
+            return
+        with _bootstrap_lock:
+            if _bootstrapped:
+                return
+            try:
+                self.ensure_schema()
+                _bootstrapped = True
+            except Exception:
+                # never let schema errors print to stdout or kill the process
+                logging.getLogger(__name__).exception("ensure_schema failed (will retry later)")
+
+
+
     def _insert_sample_resumes(self, cursor):
         """Insert sample resume data for testing."""
         sample_resumes = [
@@ -245,15 +407,6 @@ class DatabaseManager:
         
         logger.info(f"Inserted {len(sample_resumes)} sample resumes")
     
-    def get_connection(self):
-        """Get database connection, reconnect if needed."""
-        try:
-            if self.connection is None:
-                self._connect()
-            return self.connection
-        except Exception as e:
-            logger.error(f"Database connection error: {e}")
-            raise
     
     def close(self):
         """Close database connection."""
@@ -262,124 +415,111 @@ class DatabaseManager:
             logger.info("Database connection closed")
     
     def get_all_resumes(self) -> pd.DataFrame:
-        """Fetch all resumes from the resumes table."""
+        # NEW: be defensive – if the view didn’t exist yet, create and retry once
         try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            query = "SELECT * FROM resumes"
-            cursor.execute(query)
-            
-            # Fetch all rows and convert to DataFrame
-            rows = cursor.fetchall()
-            logger.info(f"Fetched {len(rows)} rows from database")
-            
-            # Get column names
-            column_names = [description[0] for description in cursor.description]
-            logger.info(f"Column names: {column_names}")
-            
-            # Create DataFrame with proper column names
-            df = pd.DataFrame(rows, columns=column_names)
-            logger.info(f"Created DataFrame with shape: {df.shape}")
-            
-            cursor.close()
-            logger.info(f"Loaded {len(df)} resumes from database")
-            return df
-            
-        except Exception as e:
-            logger.error(f"Error fetching resumes from database: {e}")
-            logger.error(f"Error type: {type(e)}")
-            import traceback
-            logger.error(f"Traceback: {traceback.format_exc()}")
-            raise
+            with self.get_connection().cursor(row_factory=psycopg.rows.dict_row) as cur:
+                cur.execute("SELECT * FROM public.resumes")
+                rows = cur.fetchall()
+            return pd.DataFrame(rows)
+        except psycopg.errors.UndefinedTable:
+            self.ensure_schema_once()
+            with self.get_connection().cursor(row_factory=psycopg.rows.dict_row) as cur:
+                cur.execute("SELECT * FROM public.resumes")
+                rows = cur.fetchall()
+            return pd.DataFrame(rows)
     
-    def store_job_results(
-        self, 
-        job_description: str, 
-        job_category: JobCategory,
-        final_scores: List[FinalScore]
-    ) -> bool:
-        """Store job analysis results in the jobdescription table."""
-        conn = None
-        cursor = None
-        try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            # Validate inputs
-            if not job_description or not job_description.strip():
-                raise ValueError("Job description cannot be empty")
-            
-            if not final_scores:
-                logger.warning("No final scores to store")
-                return False
-            
-            # Insert job description and analysis
-            job_insert_query = """
-            INSERT INTO jobdescription (
-                job_description, 
-                role_category, 
-                categorization_confidence, 
-                categorization_reasoning, 
-                key_indicators,
-                total_candidates_evaluated,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            """
-            
-            cursor.execute(job_insert_query, (
-                job_description.strip(),
-                job_category.role_category,
-                job_category.confidence_score,
-                job_category.reasoning,
-                json.dumps(job_category.key_indicators),
-                len(final_scores)
-            ))
-            
-            job_id = cursor.lastrowid
-            logger.info(f"Inserted job with ID: {job_id}")
-            
-            # Insert candidate scores
-            candidate_insert_query = """
-            INSERT INTO candidate_scores (
-                job_id,
-                candidate_name,
-                final_score,
-                final_rank,
-                detailed_reasoning,
-                strengths,
-                weaknesses,
-                recommendation,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            """
-            
-            for candidate in final_scores:
-                cursor.execute(candidate_insert_query, (
-                    job_id,
-                    candidate.candidate_name,
-                    candidate.final_score,
-                    candidate.final_rank,
-                    candidate.detailed_reasoning,
-                    json.dumps(candidate.strengths),
-                    json.dumps(candidate.weaknesses),
-                    candidate.recommendation
-                ))
-                logger.info(f"Inserted candidate: {candidate.candidate_name}")
-            
-            conn.commit()
-            logger.info(f"Successfully stored job results in database with job_id: {job_id}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error storing job results in database: {e}")
-            if conn:
-                conn.rollback()
+    def store_job_results(self, job_description: str, job_category: JobCategory, final_scores: List[FinalScore],) -> bool:
+        """
+        Store one job description row and all of its candidate scores in PostgreSQL.
+        Returns True on success, False on any error.
+        """
+    
+        # Basic validation up front
+        if not job_description or not job_description.strip():
+            raise ValueError("Job description cannot be empty")
+        if not final_scores:
+            logger.warning("No final scores to store")
             return False
-        finally:
-            if cursor:
-                cursor.close()
-
+        self.ensure_schema()
+        conn = self.get_connection()  # must return a psycopg.Connection
+        try:
+            with conn.cursor() as cur:
+                # 1) Insert the jobdescription row and get its id
+                cur.execute(
+                    """
+                    INSERT INTO jobdescription (
+                        job_description,
+                        role_category,
+                        categorization_confidence,
+                        categorization_reasoning,
+                        key_indicators,
+                        total_candidates_evaluated
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    RETURNING id
+                    """,
+                    (
+                        job_description.strip(),
+                        job_category.role_category,
+                        float(job_category.confidence_score),
+                        job_category.reasoning,
+                        json.dumps(getattr(job_category, "key_indicators", [])),
+                        len(final_scores),
+                    ),
+                )
+                job_id = cur.fetchone()[0]
+                logger.info("Inserted jobdescription id=%s", job_id)
+    
+                # 2) Insert all candidate scores for this job
+                insert_score_sql = """
+                    INSERT INTO candidate_scores (
+                        job_id,
+                        candidate_name,
+                        resume_email,
+                        final_score,
+                        final_rank,
+                        detailed_reasoning,
+                        strengths,
+                        weaknesses,
+                        recommendation
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+    
+                for s in final_scores:
+                    cur.execute(
+                        insert_score_sql,
+                        (
+                            job_id,
+                            s.candidate_name,
+                            None,  # or an email if you have it at this stage
+                            float(s.final_score),
+                            int(s.final_rank),
+                            s.detailed_reasoning,
+                            json.dumps(getattr(s, "strengths", [])),
+                            json.dumps(getattr(s, "weaknesses", [])),
+                            s.recommendation,
+                        ),
+                    )
+                    logger.info("Inserted candidate score for %s", s.candidate_name)
+    
+            # 3) Commit once after all inserts succeed
+            conn.commit()
+            logger.info(
+                "Successfully stored job %s with %d candidate scores",
+                job_id,
+                len(final_scores),
+            )
+            return True
+    
+        except Exception as e:
+            logger.error("Error storing job results: %s", e, exc_info=True)
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            return False
+    
 
 class ResumeProcessor:
     """Advanced AI-powered resume processor with automatic categorization and dual-scoring."""

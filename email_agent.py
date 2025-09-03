@@ -3,17 +3,96 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
+import re, asyncio
 import secrets
 import string
 from typing import Dict, Any, List, Optional, Tuple
+from datetime import datetime
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
+from mcp_client import MCPClient 
 from gmail_mcp_client import GmailMCPClient
+from mcp_tools import DatabaseManager
 
 logger = logging.getLogger(__name__)
+
+APP_BASE_URL = os.getenv("APP_BASE_URL", "https://careers.example.com")
+
+def _fmt_exam_dt(val: Any) -> str:
+    if not val:
+        return "TBD"
+    # mcp returns ISO strings usually; try to pretty print
+    try:
+        if isinstance(val, str):
+            dt = datetime.fromisoformat(val.replace("Z", "+00:00"))
+        else:
+            dt = val
+        return dt.strftime("%b %d, %Y %I:%M %p")
+    except Exception:
+        return str(val)
+
+
+def _invite_html(candidate_id: int,
+                 candidatename: str,
+                 candidateEmail: str,
+                 candidatetempPassword: Optional[str],
+                 candidateExam_URL: Optional[str],
+                 exam_dt: Any) -> str:
+    formattedExamDate = _fmt_exam_dt(exam_dt)
+    accept_url  = f"{APP_BASE_URL}/{candidate_id}/accept"
+    decline_url = f"{APP_BASE_URL}/{candidate_id}/decline"
+
+    return f"""
+      <p>Dear {candidatename},</p>
+
+      <p>Greetings from JMAN Group!</p>
+
+      <p>We would like to block your calendar for the <strong>Level 1 Technical Interview</strong>. Kindly ensure your availability for the session. Please find your interview details below:</p>
+
+      <h4>Interview Details</h4>
+      <div style="margin-left: 20px;">
+        <p><strong>Date and Time:</strong> {formattedExamDate}</p>
+        <p><strong>Position:</strong> Software Engineer</p>
+      </div>
+
+      <h4>Login Credentials</h4>
+      <div style="margin-left: 20px;">
+        <p><strong>Username:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidateEmail}</span></p>
+        <p><strong>Password:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidatetempPassword or "—"}</span></p>
+      </div>
+
+      <p>Use the link below to log in and access your interview details:</p>
+      <p><a href="{candidateExam_URL or APP_BASE_URL}" style="color: #2a6cb5; text-decoration: underline;">Interview Link</a></p>
+
+      <p>We kindly request you to confirm your attendance by selecting one of the options below:</p>
+
+      <div style="margin: 20px 0;">
+        <a href="{accept_url}"
+          style="color: #4CAF50; font-weight: bold; text-decoration: none; font-size: 16px; margin-right: 30px; display: inline-block;">
+          ✔ Accept Invitation
+        </a>
+        <a href="{decline_url}"
+          style="color: #F44336; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">
+          ✖ Decline Invitation
+        </a>
+      </div>
+
+      <p>To ensure a smooth interview experience, please follow these guidelines:</p>
+      <ul style="margin-left: 20px;">
+        <li>Join at least five minutes prior to the scheduled time.</li>
+        <li>Make sure you have stable internet connectivity, at least 5mbps.</li>
+        <li>Check your microphone and camera settings before the start of the interview.</li>
+        <li>Join the interview using a laptop/desktop only.</li>
+        <li>Please join the link via web if you do not have Microsoft Teams installed.</li>
+      </ul>
+
+      <p>If you have any questions or need assistance, feel free to reach out to us.</p>
+
+      <p>Regards,</p>
+      <p>JMAN Group</p>
+    """
 
 
 class ResumeDBClient:
@@ -176,215 +255,97 @@ class ResumeDBClient:
                     out[nm] = em
         return out
 
-
-def gen_password(length: int = 10) -> str:
-    alphabet = string.ascii_letters + string.digits
-    return "".join(secrets.choice(alphabet) for _ in range(length))
-
-
 class EmailOrchestrator:
-    def __init__(self, resume_server_script: str = "mcp_server.py") -> None:
-        self.db = ResumeDBClient(resume_server_script)
+    """
+    Uses MCP server's `execute_database_query` for all DB reads/writes.
+    No direct psycopg/sqlite connections here.
+    """
+    def __init__(self, server_script: str = "mcp_server.py"):
+        self.server_script = server_script
         self.gmail = GmailMCPClient()
-        self.exam_base_url = os.getenv("EXAM_BASE_URL", "https://assess.acme.com/start")
+        
+        async def _mcp(self, tool: str, args: Dict[str, Any]) -> Dict[str, Any]:
+            client = MCPClient(server_cmd=["python", self.server_script])
+            return await client.call_tool(tool, args)
 
-    # ---------- Recipients ----------
-    async def recipients_from_instruction(self, instruction: str, job_id_override: Optional[int] = None) -> Dict[str, str]:
-        inst = instruction.lower()
-        names: List[str] = []
-
-        # explicit names after "to ..."
-        m = re.search(r"to\s+(.+)$", instruction, re.IGNORECASE)
-        if m and all(kw not in inst for kw in ["top", "first", "everyone", "all"]):
-            raw = m.group(1)
-            parts = [p.strip().strip('"\'' ) for p in raw.split(",")]
-            cleaned = []
-            for p in parts:
-                if not p:
-                    continue
-                p = re.split(r"\b(with|using|and)\b", p)[0].strip()
-                if p:
-                    cleaned.append(p)
-            names = cleaned
-
-        if "top" in inst or "first" in inst:
-            m = re.search(r"(?:top|first)\s+(\d+)", inst)
-            n = int(m.group(1)) if m else 5
-            job_id = job_id_override or await self.db.latest_job_id()
-            if job_id is None:
-                return {}
-            return await self.db.top_recipients_for_job(job_id, n)
-
-        if "everyone" in inst or "all" in inst:
-            r = await self.db.sql("SELECT full_name, email FROM resumes WHERE email IS NOT NULL")
-            out: Dict[str, str] = {}
-            if r.get("status") == "success":
-                for row in r.get("data", []):
-                    if row.get("full_name") and row.get("email"):
-                        out[row["full_name"]] = row["email"]
-            return out
-
-        if names:
-            return await self.db.emails_for_names(names)
-
-        return {}
-
-    # ---------- Branding + HTML ----------
-    def _brand(self):
-        company = os.getenv("COMPANY_NAME", "Hiring Team")
-        color = os.getenv("PRIMARY_COLOR", "#1a73e8")
-        logo = os.getenv("COMPANY_LOGO_URL", "")
-        return company, color, logo
-
-    def _wrap_html(self, title: str, body_html: str) -> str:
-        company, color, logo = self._brand()
-        logo_html = f'<img src="{logo}" alt="{company}" style="height:40px;margin-bottom:12px;" />' if logo else ""
-        return f"""
-        <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.55;color:#222;">
-          {logo_html}
-          <h2 style="color:{color};margin:0 0 12px 0;">{title}</h2>
-          <div style="padding:12px 0;">{body_html}</div>
-          <div style="margin-top:20px;font-size:12px;color:#666;">This message was sent by {company}.</div>
-        </div>
-        """
-
-    def build_congrats(self, full_name: str, username: Optional[str], password: Optional[str], link: Optional[str]) -> Tuple[str, str, str]:
-        company, _, _ = self._brand()
-        subject = f"Congratulations — Next Step with {company}"
-        if username and password and link:
-            text = f"""Hi {full_name},
-
-Congratulations! You're selected for the next step.
-
-Login details:
-  • Username: {username}
-  • Password: {password}
-  • Exam link: {link}
-
-Please complete the assessment within 48 hours.
-
-Best,
-{company}"""
-            html_body = f"""
-            <p>Hi {full_name},</p>
-            <p>Congratulations! You're selected for the next step.</p>
-            <ul>
-              <li><b>Username:</b> {username}</li>
-              <li><b>Password:</b> {password}</li>
-              <li><b>Exam link:</b> <a href="{link}">{link}</a></li>
-            </ul>
-            <p>Please complete the assessment within 48 hours.</p>
-            <p>Best,<br/>{company}</p>
+        async def send_interview_invites(self, job_id: int,
+                                 top_n: Optional[int] = None,
+                                 send_all: bool = False,
+                                 explicit_recipients: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
             """
-        else:
-            text = f"""Hi {full_name},
-
-Congratulations! You're selected for the next step.
-We'll follow up shortly with your assessment details.
-
-Best,
-{company}"""
-            html_body = f"""
-            <p>Hi {full_name},</p>
-            <p>Congratulations! You're selected for the next step.</p>
-            <p>We'll follow up shortly with your assessment details.</p>
-            <p>Best,<br/>{company}</p>
+            Sends 'Interview Invitation - JMAN' using fields from public.resumes:
+              candidate_exam_url, candidate_temp_password, candidate_temp_name, candidate_exam_date, candidate_expiry.
+            If explicit_recipients provided (name->email), it uses exactly those.
+            Else derives from candidate_scores for job_id (top_n or all).
+            Audits to email_audit via MCP.
             """
-        html = self._wrap_html("Congratulations", html_body)
-        return subject, text, html
-
-    def build_rejection(self, full_name: str) -> Tuple[str, str, str]:
-        company, _, _ = self._brand()
-        subject = f"Update on Your Application — {company}"
-        text = f"""Hi {full_name},
-
-Thank you for your interest. After careful review, we will not be moving forward at this time.
-
-Best,
-{company}"""
-        html_body = f"""
-        <p>Hi {full_name},</p>
-        <p>Thank you for your interest. After careful review, we will not be moving forward at this time.</p>
-        <p>Best,<br/>{company}</p>
-        """
-        html = self._wrap_html("Application Update", html_body)
-        return subject, text, html
-
-    async def maybe_generate_credentials(self, instruction: str, recipients: Dict[str, str]) -> Dict[str, Dict[str, str]]:
-        needs_creds = any(k in instruction.lower() for k in ["username", "password", "exam", "link"])
-        if not needs_creds or not recipients:
-            return {}
-
-        await self.db.ensure_credentials_table()
-        creds_map: Dict[str, Dict[str, str]] = {}
-        records: List[Tuple[str, str, str, str]] = []
-        for full_name, email in recipients.items():
-            username = email.split("@")[0]
-            password = gen_password(10)
-            token = secrets.token_urlsafe(10)
-            link = f"{self.exam_base_url}?token={token}"
-            creds_map[full_name] = {"username": username, "password": password, "link": link, "email": email}
-            records.append((email, username, password, link))
-
-        await self.db.upsert_credentials(records)
-        return creds_map
-
-    async def act_on_instruction(
-        self,
-        instruction: str,
-        *,
-        job_id_override: Optional[int] = None,
-        explicit_recipients: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
-        """
-        If explicit_recipients is provided (name->email), use that list directly.
-        Otherwise derive recipients from instruction (top/first N / everyone / explicit names).
-        """
-        instruction_l = instruction.lower()
-
-        # Prep audit table
-        await self.db.ensure_email_audit_table()
-
-        # Resolve recipients
-        if explicit_recipients:
-            recipients = {k: v for k, v in explicit_recipients.items() if v}
-        else:
-            recipients = await self.recipients_from_instruction(instruction, job_id_override=job_id_override)
-
-        if not recipients:
-            return {"status": "error", "error": "No recipients resolved from instruction."}
-
-        # Credentials if requested
-        creds_map = await self.maybe_generate_credentials(instruction, recipients)
-
-        # Build & send
-        results = []
-        email_type = "rejection" if ("reject" in instruction_l or "rejection" in instruction_l) else "congrats"
-
-        for full_name, email in recipients.items():
-            creds = creds_map.get(full_name, {})
-            if email_type == "rejection":
-                subj, text, html = self.build_rejection(full_name)
+            # 1) Who to send
+            if explicit_recipients:
+                rows = [{"candidate_name": n, "email": e} for n, e in explicit_recipients.items()]
             else:
-                subj, text, html = self.build_congrats(full_name, creds.get("username"), creds.get("password"), creds.get("link"))
+                limit_clause = "" if send_all else f"LIMIT {int(top_n or 5)}"
+                r = await self.mcp.sql(f"""
+                    SELECT cs.candidate_name, COALESCE(r.email, cs.resume_email, '') AS email
+                    FROM public.candidate_scores cs
+                    LEFT JOIN public.resumes r ON LOWER(r.full_name) = LOWER(cs.candidate_name)
+                    WHERE cs.job_id = {int(job_id)}
+                    ORDER BY cs.final_rank ASC
+                    {limit_clause}
+                """)
+                if r.get("status") != "success" or not r.get("data"):
+                    return {"status":"error","error":"No ranked candidates found"}
+                rows = r["data"]
 
-            r = await self.gmail.send_email([email], subj, text, html=html)
-            status = "ok" if (isinstance(r, dict) and r.get("status") != "error") else "error"
+            sent = 0
+            out = []
+            for rec in rows:
+                name = rec.get("candidate_name") or ""
+                email = (rec.get("email") or "").strip()
+                if not email: continue
 
-            # Audit
-            await self.db.insert_email_audit(
-                job_id=job_id_override,
-                candidate_name=full_name,
-                candidate_email=email,
-                email_type=email_type,
-                subject=subj,
-                username=creds.get("username"),
-                password=creds.get("password"),
-                exam_link=creds.get("link"),
-                send_status=status,
-                raw_result=r if isinstance(r, dict) else {"raw": str(r)},
-            )
+                # 2) Fetch per-candidate creds from the resumes view
+                r2 = await self.mcp.sql(f"""
+                    SELECT candidate_exam_url, candidate_temp_password, candidate_temp_name, candidate_exam_date, candidate_expiry
+                    FROM public.resumes
+                    WHERE LOWER(full_name) = LOWER('{name.replace("'", "''")}')
+                    LIMIT 1
+                """)
+                row = (r2.get("data") or [{}])[0] if r2.get("status") == "success" else {}
+                exam_url = row.get("candidate_exam_url") or ""
+                temp_pwd = row.get("candidate_temp_password") or ""
+                temp_user = row.get("candidate_temp_name") or email
+                exam_date = row.get("candidate_exam_date")
 
-            results.append({"name": full_name, "email": email, "subject": subj, "type": email_type, "result": r})
+                html = _invite_html(
+                    candidate_id=0,  # if you have an id in view, use it here
+                    candidatename=name,
+                    candidateEmail=email,
+                    candidatetempPassword=temp_pwd,
+                    candidateExam_URL=exam_url,
+                    exam_dt=exam_date,
+                )
+                result = self.gmail.send_email(to=email, subject="Interview Invitation - JMAN", html=html)
+                ok = (isinstance(result, dict) and result.get("ok", True))
+                status = "ok" if ok else "error"
 
-        return {"status": "success", "sent": len(results), "details": results}
+                # 3) Audit via MCP
+                await self.mcp.sql(f"""
+                    INSERT INTO public.email_audit
+                      (job_id, candidate_name, candidate_email, email_type, subject, username, password, exam_link, send_status, raw_result)
+                    VALUES
+                      ({int(job_id)}, '{name.replace("'", "''")}', '{email.replace("'", "''")}',
+                       'invite', 'Interview Invitation - JMAN',
+                       '{temp_user.replace("'", "''")}', '{temp_pwd.replace("'", "''")}', '{(exam_url or "").replace("'", "''")}',
+                       '{status}', '{json.dumps(result).replace("'", "''")}')
+                """)
+
+                sent += 1
+                out.append({"name": name, "to": email})
+
+            return {"status":"success","sent":sent,"recipients":out}
+
+
+    def send_interview_invites(job_id: int, top_n: Optional[int] = None, send_all: bool = False) -> Dict[str, Any]:
+        return asyncio.run(EmailOrchestrator().send_interview_invites(job_id, top_n, send_all))
+
+    

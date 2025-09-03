@@ -92,51 +92,72 @@ class NL2SQL:
         )
 
     async def generate(self, question: str) -> str:
-        prompt = f"""
-            You are a SQL generator over a recruiting database. Output ONLY a valid SQL SELECT statement.
-            Rules:
-            1) SELECT-only (no INSERT/UPDATE/DELETE/DDL).
-            2) Allowed tables/columns:
-            {_schema_text()}
+        """
+        LLM-driven SQL generator (SELECT-only).
+        The LLM decides columns, filters, joins, ordering, and limits.
+        We only enforce safety and lightly post-process the text.
+        """
+        schema = _schema_text()
 
-            Guidelines:
-            - Prefer LOWER(..) LIKE for fuzzy text filters.
-            - Prefer explicit columns instead of * for multi-table queries.
-            - Use safe JOINs via explicit keys: resumes.email <-> candidate_scores.resume_email, candidate_scores.job_id <-> jobdescription.id
-            - If the user asks to "list emails of Django folks in Bangalore", select resumes.full_name, resumes.email with WHERE filters.
-            - If they ask "how many", use COUNT(*). For "top N" by rank, ORDER BY candidate_scores.final_rank ASC.
-            - If timeframe is implied ("latest job"), order jobdescription.created_at DESC and LIMIT 1 in a subquery.
+        sys_prompt = (
+            "You are a Postgres SQL writer. Return ONLY one valid SQL SELECT statement. "
+            "Do not include explanations, comments, markdown code fences, or labels."
+        )
 
-            Return ONLY the SQL (no explanations, no markdown).
-            User question: {question}
+        user_prompt = f"""
+            User question:
+            {question}
+
+            Database you may query (schema-qualified names preferred):
+            {schema}
+
+            Hard constraints:
+            - SELECT-only (no INSERT/UPDATE/DELETE/DDL, no COPY, no DO, no CALL).
+            - No semicolons at the end.
+            - Allowed relations ONLY:
+              - public.resumes            -- a VIEW exposing candidate_* fields among others
+              - public.candidate_scores
+              - public.jobdescription
+              - public.email_audit
+            - Prefer schema-qualified names (public.<table_or_view>).
+
+            Guidelines (not strict rules—use your best judgement):
+            - Use LOWER(..) LIKE '%...%' for fuzzy text filters when the question is free-form.
+            - If the user asks “how many”, return COUNT(*) as cnt.
+            - For small listings, include a reasonable subset of columns; LIMIT large results to <= 100 rows.
+            - When “latest” or “most recent” is implied, order by created_at / sent_at DESC as appropriate.
+            - When listing ranked candidates, you MAY join:
+                • public.candidate_scores.candidate_name ↔ LOWER(public.resumes.full_name) OR LOWER(public.resumes.candidate_name)
+                • OR match emails: public.candidate_scores.resume_email ↔ public.resumes.email OR public.resumes.candidate_email
+              Pick whichever is available/most reliable based on the question.
+            - For role/skill/location searches, choose relevant text columns in public.resumes (e.g., category/role_category/job_category/current_role/technical_skills/work_experience/education).
+
+            Return ONLY the SQL (no extra text).
             SQL:
         """
-        out = await self.llm.ainvoke(prompt)
+
+        out = await self.llm.ainvoke(sys_prompt + "\n" + user_prompt)
         text = (out.content or "").strip()
 
-        # Strip common wrappers: code fences and language tags
-        # ```sql ... ```  or ``` ... ```
+        # Remove common wrappers like ```sql ...``` or leading "SQL:" labels
+        import re
         text = re.sub(r"(?is)```(?:sql)?", "", text).strip()
-        # Leading "SQL:" label
         text = re.sub(r"(?is)^\s*SQL:\s*", "", text).strip()
-        # A lone first-line "sql"
         text = re.sub(r"(?is)^\s*sql\s*\n", "", text).strip()
 
-        # Extract the first SELECT ... FROM ... (or WITH ... SELECT ... FROM ...)
+        # Extract the first WITH...SELECT or SELECT...FROM block
         m = re.search(r"(?is)\bwith\b\s+.+?\bselect\b\s+.+?\bfrom\b\s+.+?(?=;|$)", text)
         if not m:
             m = re.search(r"(?is)\bselect\b\s+.+?\bfrom\b\s+.+?(?=;|$)", text)
+        sql = (m.group(0) if m else text).strip()
 
-        if m:
-            sql = m.group(0).strip()
-        else:
-            # fallback: use the whole thing
-            sql = text
+        # Enforce: SELECT-only, no trailing semicolon
+        sql = sql.rstrip(";")
+        if not sql.lower().startswith("select"):
+            raise ValueError(f"Generated SQL rejected: must start with SELECT.\nSQL: {sql}")
 
-        sql = sql.strip().rstrip(";")
-
-        ok, err = _validate(sql)
+        ok, err = _validate(sql)   # your existing validator: SELECT-only, allowed relations, etc.
         if not ok:
             raise ValueError(f"Generated SQL rejected: {err}\nSQL: {sql}")
 
-        return _ensure_limit(sql)
+        return _ensure_limit(sql)  # your existing helper to add a LIMIT when appropriate
