@@ -51,5 +51,5 @@ dev = [
 ]
 
 [project.scripts]
-resume-agent = "run_agent:main"
+resume-agent = "run_conversational_agent:main"
 mcp-server = "mcp_server:main"

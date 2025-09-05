@@ -21,6 +21,70 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+class MCPClient:
+    """
+    Minimal, stable MCP stdio client used by agents to call tools on the MCP server.
+    Provides both async and convenient sync wrappers.
+    """
+
+    def __init__(self, server_script_path: str = "mcp_server.py") -> None:
+        self.server_params = StdioServerParameters(
+            command="python",
+            args=[server_script_path],
+        )
+
+    # ---------- core async API ----------
+
+    async def call_tool(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        arguments = arguments or {}
+        async with stdio_client(self.server_params) as (read, write):
+            async with ClientSession(read, write) as sess:
+                await sess.initialize()
+                res = await sess.call_tool(name, arguments)
+                # Standard JSON payload comes back in the first content item as .text
+                if getattr(res, "content", None):
+                    item = res.content[0]
+                    text = getattr(item, "text", str(item))
+                    try:
+                        return json.loads(text)
+                    except Exception:
+                        # Fallback to raw text if tool returned plain text
+                        return {"status": "success", "result": text}
+                return {"status": "success", "result": ""}
+
+    async def execute_database_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        args: Dict[str, Any] = {"query": query}
+        if params:
+            args["params"] = params
+        return await self.call_tool("execute_database_query", args)
+
+    async def db_info(self) -> Dict[str, Any]:
+        return await self.call_tool("db_info", {})
+
+    async def health_check(self) -> Dict[str, Any]:
+        return await self.call_tool("health_check", {})
+
+    # ---------- optional sync helpers (nice for quick scripts) ----------
+
+    def call_tool_sync(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return asyncio.run(self.call_tool(name, arguments))
+
+    def execute_database_query_sync(self, query: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return asyncio.run(self.execute_database_query(query, params))
+
+    def db_info_sync(self) -> Dict[str, Any]:
+        return asyncio.run(self.db_info())
+
+    def health_check_sync(self) -> Dict[str, Any]:
+        return asyncio.run(self.health_check())
+
+
+# Backward-compat alias (some modules used MCPDB earlier)
+MCPDB = MCPClient
+
+__all__ = ["MCPClient", "MCPDB"]
+
+
 
 class MCPResumeRankingClient:
     """

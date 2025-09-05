@@ -5,7 +5,7 @@ This system analyzes a single job description, automatically categorizes the rol
 filters relevant resumes from SQLite database, performs AI-powered ranking, and then uses LLM for
 final perfect scoring with detailed reasoning. Results are stored back to SQLite.
 """
-
+import re
 import logging
 import os
 from pathlib import Path
@@ -45,11 +45,13 @@ def pg_conn():
 
 
 class JobCategory(BaseModel):
-    """Pydantic model for job category classification."""
-    role_category: str = Field(description="The main role category")
-    confidence_score: float = Field(description="Confidence in the classification from 0.0 to 1.0")
-    reasoning: str = Field(description="Explanation of why this category was chosen")
-    key_indicators: List[str] = Field(description="Key terms/phrases that indicate this category")
+    """Primary + (optional) multiple categories when user provides more than one."""
+    role_category: str = Field(description="Primary role category (canonical key)")
+    all_categories: List[str] = Field(default_factory=list, description="All canonical categories inferred or explicitly provided")
+    confidence_score: float = Field(description="Confidence 0.0–1.0")
+    reasoning: str = Field(description="Why these categories were chosen")
+    key_indicators: List[str] = Field(description="Key terms/phrases indicating the category")
+
 
 
 class InitialScore(BaseModel):
@@ -97,239 +99,452 @@ class DatabaseManager:
     
     def ensure_schema(self) -> None:
         """
-        Create required tables and the 'resumes' compatibility view if they don't exist.
-        Works whether your Prisma tables are CamelCase ("Candidate") or lowercase (candidate).
+        Create/repair:
+          • Extensions: pg_trgm, unaccent
+          • Tables: JobDescription, CandidateScore, EmailAudit (+ FK, indexes, updated_at triggers)
+          • VIEW: public.resumes (Candidate ⟷ ResumeDetails ⟷ Category)
+          • MATERIALIZED VIEW: public.resumes_search (+ GIN trigram, name/email trigram)
+          • Refresh state + triggers to mark resumes_search dirty
+          • Initial refresh of resumes_search
         """
-        log = logging.getLogger(__name__)
-        if self.connection is None or getattr(self.connection, "closed", True):
-            self._connect()
+        import psycopg
+        from psycopg.rows import dict_row
+
         conn = self.get_connection()
+        prev_ac = getattr(conn, "autocommit", False)
         try:
-            with conn.cursor() as cur:
-                # ---------- Required app tables ----------
+            conn.autocommit = True
+        except Exception:
+            pass
+
+        with conn.cursor(row_factory=dict_row) as cur:
+            # ---------------- Extensions ----------------
+            cur.execute('CREATE EXTENSION IF NOT EXISTS "pg_trgm";')
+            cur.execute('CREATE EXTENSION IF NOT EXISTS "unaccent";')
+
+            # ---------------- JobDescription ----------------
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS public."JobDescription"(
+              id BIGSERIAL PRIMARY KEY,
+              job_description            TEXT NOT NULL,
+              role_category              TEXT NOT NULL,
+              categorization_confidence  DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+              categorization_reasoning   TEXT NOT NULL DEFAULT '',
+              key_indicators             JSONB NOT NULL DEFAULT '{}'::jsonb,
+              total_candidates_evaluated INTEGER NOT NULL DEFAULT 0,
+              created_at                 TIMESTAMPTZ NOT NULL DEFAULT now(),
+              updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            """)
+            # backfill columns/defaults if table existed with older shape
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS job_description            TEXT;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS role_category              TEXT;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS categorization_confidence  DOUBLE PRECISION;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS categorization_reasoning   TEXT;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS key_indicators             JSONB;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS total_candidates_evaluated INTEGER;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS created_at                 TIMESTAMPTZ NOT NULL DEFAULT now();""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ADD COLUMN IF NOT EXISTS updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now();""")
+            cur.execute("""UPDATE public."JobDescription" SET categorization_confidence = 0.0
+                           WHERE categorization_confidence IS NULL;""")
+            cur.execute("""UPDATE public."JobDescription" SET categorization_reasoning = ''
+                           WHERE categorization_reasoning IS NULL;""")
+            cur.execute("""UPDATE public."JobDescription" SET key_indicators = '{}'::jsonb
+                           WHERE key_indicators IS NULL;""")
+            cur.execute("""UPDATE public."JobDescription" SET total_candidates_evaluated = 0
+                           WHERE total_candidates_evaluated IS NULL;""")
+            cur.execute("""ALTER TABLE public."JobDescription"
+                ALTER COLUMN job_description            SET NOT NULL,
+                ALTER COLUMN role_category              SET NOT NULL,
+                ALTER COLUMN categorization_confidence  SET DEFAULT 0.0,
+                ALTER COLUMN categorization_confidence  SET NOT NULL,
+                ALTER COLUMN categorization_reasoning   SET DEFAULT '',
+                ALTER COLUMN categorization_reasoning   SET NOT NULL,
+                ALTER COLUMN key_indicators             SET DEFAULT '{}'::jsonb,
+                ALTER COLUMN key_indicators             SET NOT NULL,
+                ALTER COLUMN total_candidates_evaluated SET DEFAULT 0,
+                ALTER COLUMN total_candidates_evaluated SET NOT NULL;""")
+
+            # ---------------- CandidateScore ----------------
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS public."CandidateScore"(
+              id BIGSERIAL PRIMARY KEY,
+              job_id             BIGINT NOT NULL,
+              candidate_name     TEXT NOT NULL,
+              resume_email       TEXT,
+              final_score        DOUBLE PRECISION NOT NULL,
+              final_rank         INTEGER NOT NULL,
+              detailed_reasoning TEXT NOT NULL DEFAULT '',
+              strengths          JSONB NOT NULL DEFAULT '[]'::jsonb,
+              weaknesses         JSONB NOT NULL DEFAULT '[]'::jsonb,
+              recommendation     TEXT NOT NULL DEFAULT '',
+              created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+              updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            """)
+            # ensure columns/defaults
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS job_id             BIGINT;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS candidate_name     TEXT;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS resume_email       TEXT;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS final_score        DOUBLE PRECISION;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS final_rank         INTEGER;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS detailed_reasoning TEXT NOT NULL DEFAULT '';""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS strengths          JSONB NOT NULL DEFAULT '[]'::jsonb;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS weaknesses         JSONB NOT NULL DEFAULT '[]'::jsonb;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS recommendation     TEXT NOT NULL DEFAULT '';""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS created_at         TIMESTAMPTZ NOT NULL DEFAULT now();""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ADD COLUMN IF NOT EXISTS updated_at         TIMESTAMPTZ NOT NULL DEFAULT now();""")
+
+            # enforce not-null set
+            cur.execute("""UPDATE public."CandidateScore" SET detailed_reasoning = ''
+                           WHERE detailed_reasoning IS NULL;""")
+            cur.execute("""UPDATE public."CandidateScore" SET strengths = '[]'::jsonb
+                           WHERE strengths IS NULL;""")
+            cur.execute("""UPDATE public."CandidateScore" SET weaknesses = '[]'::jsonb
+                           WHERE weaknesses IS NULL;""")
+            cur.execute("""UPDATE public."CandidateScore" SET recommendation = ''
+                           WHERE recommendation IS NULL;""")
+            cur.execute("""ALTER TABLE public."CandidateScore"
+                ALTER COLUMN job_id         SET NOT NULL,
+                ALTER COLUMN candidate_name SET NOT NULL,
+                ALTER COLUMN final_score    SET NOT NULL,
+                ALTER COLUMN final_rank     SET NOT NULL;""")
+
+            # FK (add if missing)
+            cur.execute("""
+            DO $$
+            BEGIN
+              IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint WHERE conname = 'candidatescore_job_id_fkey'
+              ) THEN
+                ALTER TABLE public."CandidateScore"
+                  ADD CONSTRAINT candidatescore_job_id_fkey
+                  FOREIGN KEY (job_id)
+                  REFERENCES public."JobDescription"(id)
+                  ON DELETE CASCADE;
+              END IF;
+            END;
+            $$;
+            """)
+            # helpful indexes
+            cur.execute("""CREATE INDEX IF NOT EXISTS idx_candidatescore_job_rank
+                           ON public."CandidateScore"(job_id, final_rank);""")
+            cur.execute("""CREATE INDEX IF NOT EXISTS candidatescore_name_lower_idx
+                           ON public."CandidateScore"(LOWER(candidate_name));""")
+            cur.execute("""CREATE INDEX IF NOT EXISTS candidatescore_email_idx
+                           ON public."CandidateScore"(resume_email);""")
+
+            # ---------------- EmailAudit ----------------
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.email_audit(
+              id              BIGSERIAL PRIMARY KEY,
+              sent_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+              job_id          BIGINT,
+              candidate_name  TEXT,
+              candidate_email TEXT,
+              email_type      TEXT,
+              subject         TEXT,
+              username        TEXT,
+              password        TEXT,
+              exam_link       TEXT,
+              send_status     TEXT,
+              raw_result      JSONB
+            );
+            """)
+
+            # Back-compat view so old code that refers to "EmailAudit" still works:
+            cur.execute('CREATE OR REPLACE VIEW public."EmailAudit" AS SELECT * FROM public.email_audit;')
+
+
+            # ---------------- updated_at trigger fn ----------------
+            cur.execute("""
+            CREATE OR REPLACE FUNCTION public.set_updated_at()
+            RETURNS trigger AS $$
+            BEGIN
+              NEW.updated_at := now();
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+            """)
+            # triggers for updated_at
+            cur.execute("""
+            DO $$
+            BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_jobdescription_updated_at') THEN
+                CREATE TRIGGER trg_jobdescription_updated_at
+                BEFORE UPDATE ON public."JobDescription"
+                FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+              END IF;
+              IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_candidatescore_updated_at') THEN
+                CREATE TRIGGER trg_candidatescore_updated_at
+                BEFORE UPDATE ON public."CandidateScore"
+                FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+              END IF;
+            END;
+            $$;
+            """)
+
+            # ---------------- VIEW: public.resumes ----------------
+            cur.execute("""
+            CREATE OR REPLACE VIEW public.resumes AS
+            SELECT
+              c.id                                 AS candidate_id,
+              c.name                               AS candidate_name,
+              c.email                              AS candidate_email,
+              c.status                             AS candidate_status,
+              c."createdAt"                        AS candidate_created_at,
+              c."updatedAt"                        AS candidate_updated_at,
+              c."Avatar"                           AS candidate_avatar,
+              c."Skills"                           AS candidate_skills,
+              c."Voice"                            AS candidate_voice,
+              c."ph_number"                        AS candidate_phone,
+              c."Exam_URL"                         AS candidate_exam_url,
+              c."tempPassword"                     AS candidate_temp_password,
+              c."temp_name"                        AS candidate_temp_name,
+              c."College"                          AS candidate_college,
+              c."Exam_date"                        AS candidate_exam_date,
+              c."Expiry"                           AS candidate_expiry,
+
+              rd.id                                AS resume_id,
+              rd."candidateId"                     AS resume_candidate_id,
+              rd.name                              AS resume_name,
+              rd.email                             AS resume_email,
+              rd.phone                             AS resume_phone,
+              rd.skills                            AS resume_skills,
+              rd."UG_college"                      AS resume_ug_college,
+              rd."UG_cgpa"                         AS resume_ug_cgpa,
+              rd."UG_yop"                          AS resume_ug_yop,
+              rd."PG_college"                      AS resume_pg_college,
+              rd."PG_cgpa"                         AS resume_pg_cgpa,
+              rd."PG_yop"                          AS resume_pg_yop,
+              rd.projects                          AS resume_projects,
+              rd.certifications                    AS resume_certifications,
+              rd.experience                        AS resume_experience,
+              rd."fileName"                        AS resume_file_name,
+              rd."processedAt"                     AS resume_processed_at,
+
+              COALESCE(array_agg(DISTINCT cat.id)
+                       FILTER (WHERE cat.id IS NOT NULL), '{}')                    AS category_ids,
+              COALESCE(array_agg(DISTINCT cat.type)
+                       FILTER (WHERE cat.type IS NOT NULL), '{}')                  AS category_types,
+              COALESCE(array_agg(DISTINCT cat."createdAt")
+                       FILTER (WHERE cat."createdAt" IS NOT NULL), '{}')           AS category_created_ats,
+              COALESCE(string_agg(DISTINCT cat.type, ','), '')                     AS category_text,
+
+              COALESCE(rd.name,  c.name)  AS full_name,
+              COALESCE(rd.email, c.email) AS email,
+
+              COALESCE(array_to_string(rd.skills, ', '), '')        AS technical_skills,
+              COALESCE(array_to_string(rd.experience, ' || '), '')  AS work_experience,
+              COALESCE(array_to_string(rd.projects, ' || '), '')    AS projects_flat,
+              COALESCE(array_to_string(rd.certifications, ', '), '')AS certifications_flat,
+              COALESCE(rd."UG_college",'') || ' ' ||
+              COALESCE(rd."UG_cgpa",'')    || ' ' ||
+              COALESCE(rd."UG_yop",'')     || ' ' ||
+              COALESCE(rd."PG_college",'') || ' ' ||
+              COALESCE(rd."PG_cgpa",'')    || ' ' ||
+              COALESCE(rd."PG_yop",'')                                   AS education,
+
+              NULL::text AS role_category,
+              NULL::text AS job_category,
+              NULL::text AS current_role
+            FROM "Candidate" c
+            LEFT JOIN "ResumeDetails" rd ON rd."candidateId" = c.id
+            LEFT JOIN "Category"       cat ON cat."candidateId" = c.id
+            GROUP BY
+              c.id, c.name, c.email, c.status, c."createdAt", c."updatedAt",
+              c."Avatar", c."Skills", c."Voice", c."ph_number",
+              c."Exam_URL", c."tempPassword", c."temp_name", c."College",
+              c."Exam_date", c."Expiry",
+              rd.id, rd."candidateId", rd.name, rd.email, rd.phone, rd.skills,
+              rd."UG_college", rd."UG_cgpa", rd."UG_yop",
+              rd."PG_college", rd."PG_cgpa", rd."PG_yop",
+              rd.projects, rd.certifications, rd.experience,
+              rd."fileName", rd."processedAt";
+            """)
+
+            # ---------------- MAT VIEW: public.resumes_search ----------------
+            # create once if missing (no IF NOT EXISTS for matviews prior to recent PG; use catalog check)
+            cur.execute("""
+            SELECT 1 FROM pg_matviews
+            WHERE schemaname='public' AND matviewname='resumes_search';
+            """)
+            exists = cur.fetchone() is not None
+            if not exists:
                 cur.execute("""
-                    CREATE TABLE IF NOT EXISTS public.jobdescription (
-                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                      job_description            TEXT        NOT NULL,
-                      role_category              TEXT        NOT NULL,
-                      categorization_confidence  DOUBLE PRECISION NOT NULL,
-                      categorization_reasoning   TEXT        NOT NULL,
-                      key_indicators             JSONB       NOT NULL,
-                      total_candidates_evaluated INTEGER     NOT NULL,
-                      created_at                 TIMESTAMPTZ NOT NULL DEFAULT now(),
-                      updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now()
-                    )
+                CREATE MATERIALIZED VIEW public.resumes_search AS
+                SELECT
+                  r.candidate_id,
+                  r.full_name,
+                  r.email,
+                  r.candidate_email,
+                  r.category_text,
+                  LOWER(
+                    COALESCE(r.full_name,'')||' '||
+                    COALESCE(r.candidate_name,'')||' '||
+                    COALESCE(r.resume_name,'')||' '||
+                    COALESCE(r.candidate_status,'')||' '||
+                    COALESCE(r.category_text,'')||' '||
+                    COALESCE(r.technical_skills,'')||' '||
+                    COALESCE(r.work_experience,'')||' '||
+                    COALESCE(r.projects_flat,'')||' '||
+                    COALESCE(r.certifications_flat,'')||' '||
+                    COALESCE(r.education,'')||' '||
+                    COALESCE(r.candidate_college,'')||' '||
+                    COALESCE(r.resume_ug_college,'')||' '||
+                    COALESCE(r.resume_pg_college,'')
+                  ) AS search_corpus
+                FROM public.resumes r
+                WITH NO DATA;
                 """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS public.candidate_scores (
-                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                      job_id           BIGINT REFERENCES public.jobdescription(id) ON DELETE CASCADE,
-                      candidate_name   TEXT      NOT NULL,
-                      resume_email     TEXT,
-                      final_score      DOUBLE PRECISION NOT NULL,
-                      final_rank       INTEGER   NOT NULL,
-                      detailed_reasoning TEXT    NOT NULL,
-                      strengths        JSONB     NOT NULL,
-                      weaknesses       JSONB     NOT NULL,
-                      recommendation   TEXT      NOT NULL,
-                      created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
-                      updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
-                    )
-                """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS public.exam_credentials (
-                      candidate_email TEXT PRIMARY KEY,
-                      username        TEXT NOT NULL,
-                      password        TEXT NOT NULL,
-                      exam_link       TEXT NOT NULL,
-                      created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
-                    )
-                """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS public.email_audit (
-                      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                      sent_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
-                      job_id          BIGINT,
-                      candidate_name  TEXT,
-                      candidate_email TEXT,
-                      email_type      TEXT,
-                      subject         TEXT,
-                      username        TEXT,
-                      password        TEXT,
-                      exam_link       TEXT,
-                      send_status     TEXT,
-                      raw_result      JSONB
-                    )
-                """)
+            # indexes on mat view
+            cur.execute("""CREATE UNIQUE INDEX IF NOT EXISTS resumes_search_uidx
+                           ON public.resumes_search (candidate_id);""")
+            cur.execute("""CREATE INDEX IF NOT EXISTS resumes_search_trgm
+                           ON public.resumes_search USING gin (search_corpus gin_trgm_ops);""")
+            cur.execute("""CREATE INDEX IF NOT EXISTS resumes_search_name_trgm
+                           ON public.resumes_search USING gin (LOWER(full_name) gin_trgm_ops);""")
+            cur.execute("""CREATE INDEX IF NOT EXISTS resumes_search_email_trgm
+                           ON public.resumes_search USING gin (LOWER(email) gin_trgm_ops);""")
 
-                # ---------- Detect Prisma table casing ----------
-                def tbl_exists(name: str) -> bool:
-                    cur.execute("""
-                        SELECT 1
-                        FROM information_schema.tables
-                        WHERE table_schema='public' AND table_name=%s
-                        LIMIT 1
-                    """, (name,))
-                    return cur.fetchone() is not None
+            # ---------------- refresh state + triggers ----------------
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.resumes_refresh_state (
+              id int PRIMARY KEY DEFAULT 1,
+              dirty boolean NOT NULL DEFAULT true,
+              updated_at timestamptz NOT NULL DEFAULT now()
+            );
+            """)
+            cur.execute("""INSERT INTO public.resumes_refresh_state (id, dirty)
+                           VALUES (1, true) ON CONFLICT (id) DO NOTHING;""")
+            cur.execute("""
+            CREATE OR REPLACE FUNCTION public.mark_resumes_dirty()
+            RETURNS trigger LANGUAGE plpgsql AS $$
+            BEGIN
+              UPDATE public.resumes_refresh_state
+                SET dirty = true, updated_at = now()
+              WHERE id = 1;
+              RETURN NULL;
+            END $$;
+            """)
+            cur.execute('DROP TRIGGER IF EXISTS trg_candidate_dirty ON "Candidate";')
+            cur.execute('CREATE TRIGGER trg_candidate_dirty AFTER INSERT OR UPDATE OR DELETE ON "Candidate" FOR EACH STATEMENT EXECUTE FUNCTION public.mark_resumes_dirty();')
+            cur.execute('DROP TRIGGER IF EXISTS trg_resumedetails_dirty ON "ResumeDetails";')
+            cur.execute('CREATE TRIGGER trg_resumedetails_dirty AFTER INSERT OR UPDATE OR DELETE ON "ResumeDetails" FOR EACH STATEMENT EXECUTE FUNCTION public.mark_resumes_dirty();')
+            cur.execute('DROP TRIGGER IF EXISTS trg_category_dirty ON "Category";')
+            cur.execute('CREATE TRIGGER trg_category_dirty AFTER INSERT OR UPDATE OR DELETE ON "Category" FOR EACH STATEMENT EXECUTE FUNCTION public.mark_resumes_dirty();')
 
-                has_camel = tbl_exists("Candidate") and tbl_exists("Category") and tbl_exists("ResumeDetails")
-                has_lower = tbl_exists("candidate") and tbl_exists("category") and tbl_exists("resume_details")
-
-                # ---------- Create/replace the resumes view ----------
-                if has_camel:
-                    create_view_sql = """
-                    CREATE OR REPLACE VIEW public.resumes AS
-                    SELECT
-                      -- Candidate (all columns, clearly prefixed)
-                      c.id                          AS candidate_id,
-                      c."name"                      AS candidate_name,
-                      c."email"                     AS candidate_email,
-                      c."status"                    AS candidate_status,
-                      c."createdAt"                 AS candidate_created_at,
-                      c."updatedAt"                 AS candidate_updated_at,
-                      c."Avatar"                    AS candidate_avatar,
-                      c."Skills"                    AS candidate_skills,       -- TEXT[]
-                      c."Voice"                     AS candidate_voice,
-                      c."ph_number"                 AS candidate_ph_number,
-                      c."Exam_URL"                  AS candidate_exam_url,
-                      c."tempPassword"              AS candidate_temp_password,
-                      c."temp_name"                 AS candidate_temp_name,
-                      c."College"                   AS candidate_college,
-                      c."Exam_date"                 AS candidate_exam_date,
-                      c."Expiry"                    AS candidate_expiry,
-                    
-                      -- ResumeDetails (all columns, prefixed; alias colliding names)
-                      rd.id                         AS resume_id,
-                      rd."candidateId"              AS resume_candidate_id,
-                      rd."name"                     AS resume_name,
-                      rd."email"                    AS resume_email,
-                      rd."phone"                    AS resume_phone,
-                      rd."skills"                   AS resume_skills,          -- TEXT[]
-                      rd."UG_college"               AS resume_ug_college,
-                      rd."UG_cgpa"                  AS resume_ug_cgpa,
-                      rd."UG_yop"                   AS resume_ug_yop,
-                      rd."PG_college"               AS resume_pg_college,
-                      rd."PG_cgpa"                  AS resume_pg_cgpa,
-                      rd."PG_yop"                   AS resume_pg_yop,
-                      rd."projects"                 AS resume_projects,        -- TEXT[]
-                      rd."certifications"           AS resume_certifications,  -- TEXT[]
-                      rd."experience"               AS resume_experience,      -- TEXT[]
-                      rd."fileName"                 AS resume_file_name,
-                      rd."processedAt"              AS resume_processed_at,
-                    
-                      -- Category (aggregated because it's 1-to-many)
-                      ARRAY_AGG(DISTINCT cat.id)                     FILTER (WHERE cat.id IS NOT NULL)         AS category_ids,
-                      ARRAY_AGG(DISTINCT cat."type")                 FILTER (WHERE cat."type" IS NOT NULL)     AS category_types,
-                      ARRAY_AGG(cat."createdAt")                     FILTER (WHERE cat."createdAt" IS NOT NULL)AS category_created_at,
-                    
-                      -- Back-compat / convenience columns your code already uses
-                      COALESCE(array_to_string(rd."skills",         ' '), '') AS technical_skills,
-                      COALESCE(array_to_string(rd."experience",     ' '), '') AS work_experience,
-                      COALESCE(array_to_string(rd."projects",       ' '), '') AS projects,
-                      COALESCE(array_to_string(rd."certifications", ' '), '') AS certifications,
-                      COALESCE(rd."UG_college", '')                         AS education,
-                      COALESCE(string_agg(DISTINCT cat."type", ' '), '')    AS category,      -- single text field
-                      c."name"                                              AS full_name,     -- legacy alias
-                      c."email"                                             AS email          -- legacy alias
-                    FROM "Candidate"       AS c
-                    LEFT JOIN "ResumeDetails"   AS rd  ON rd."candidateId" = c.id
-                    LEFT JOIN "Category"        AS cat ON cat."candidateId" = c.id
-                    GROUP BY
-                      c.id, c."name", c."email", c."status", c."createdAt", c."updatedAt",
-                      c."Avatar", c."Skills", c."Voice", c."ph_number", c."Exam_URL",
-                      c."tempPassword", c."temp_name", c."College", c."Exam_date", c."Expiry",
-                      rd.id, rd."candidateId", rd."name", rd."email", rd."phone", rd."skills",
-                      rd."UG_college", rd."UG_cgpa", rd."UG_yop",
-                      rd."PG_college", rd."PG_cgpa", rd."PG_yop",
-                      rd."projects", rd."certifications", rd."experience",
-                      rd."fileName", rd."processedAt";
-                    
-                    """
-                elif has_lower:
-                    create_view_sql = """
-                    CREATE OR REPLACE VIEW public.resumes AS
-                    SELECT
-                      -- candidate
-                      c.id                  AS candidate_id,
-                      c.name                AS candidate_name,
-                      c.email               AS candidate_email,
-                      c.status              AS candidate_status,
-                      c.created_at          AS candidate_created_at,
-                      c.updated_at          AS candidate_updated_at,
-                      c.avatar              AS candidate_avatar,
-                      c.skills              AS candidate_skills,        -- TEXT[]
-                      c.voice               AS candidate_voice,
-                      c.ph_number           AS candidate_ph_number,
-                      c.exam_url            AS candidate_exam_url,
-                      c.temp_password       AS candidate_temp_password,
-                      c.temp_name           AS candidate_temp_name,
-                      c.college             AS candidate_college,
-                      c.exam_date           AS candidate_exam_date,
-                      c.expiry              AS candidate_expiry,
-
-                      -- resume_details
-                      rd.id                 AS resume_id,
-                      rd.candidate_id       AS resume_candidate_id,
-                      rd.name               AS resume_name,
-                      rd.email              AS resume_email,
-                      rd.phone              AS resume_phone,
-                      rd.skills             AS resume_skills,           -- TEXT[]
-                      rd.ug_college         AS resume_ug_college,
-                      rd.ug_cgpa            AS resume_ug_cgpa,
-                      rd.ug_yop             AS resume_ug_yop,
-                      rd.pg_college         AS resume_pg_college,
-                      rd.pg_cgpa            AS resume_pg_cgpa,
-                      rd.pg_yop             AS resume_pg_yop,
-                      rd.projects           AS resume_projects,         -- TEXT[]
-                      rd.certifications     AS resume_certifications,   -- TEXT[]
-                      rd.experience         AS resume_experience,       -- TEXT[]
-                      rd.file_name          AS resume_file_name,
-                      rd.processed_at       AS resume_processed_at,
-
-                      -- category aggregated
-                      ARRAY_AGG(DISTINCT cat.id)            FILTER (WHERE cat.id IS NOT NULL)      AS category_ids,
-                      ARRAY_AGG(DISTINCT cat.type)          FILTER (WHERE cat.type IS NOT NULL)    AS category_types,
-                      ARRAY_AGG(cat.created_at)             FILTER (WHERE cat.created_at IS NOT NULL) AS category_created_at,
-
-                      -- back-compat fields used by your agents
-                      COALESCE(array_to_string(rd.skills,         ' '), '') AS technical_skills,
-                      COALESCE(array_to_string(rd.experience,     ' '), '') AS work_experience,
-                      COALESCE(array_to_string(rd.projects,       ' '), '') AS projects,
-                      COALESCE(array_to_string(rd.certifications, ' '), '') AS certifications,
-                      COALESCE(rd.ug_college, '')                       AS education,
-                      COALESCE(string_agg(DISTINCT cat.type, ' '), '')  AS category,
-                      c.name                                           AS full_name,
-                      c.email                                          AS email
-                    FROM candidate c
-                    LEFT JOIN resume_details rd ON rd.candidate_id = c.id
-                    LEFT JOIN category       cat ON cat.candidate_id = c.id
-                    GROUP BY
-                      c.id, c.name, c.email, c.status, c.created_at, c.updated_at,
-                      c.avatar, c.skills, c.voice, c.ph_number, c.exam_url,
-                      c.temp_password, c.temp_name, c.college, c.exam_date, c.expiry,
-                      rd.id, rd.candidate_id, rd.name, rd.email, rd.phone, rd.skills,
-                      rd.ug_college, rd.ug_cgpa, rd.ug_yop,
-                      rd.pg_college, rd.pg_cgpa, rd.pg_yop,
-                      rd.projects, rd.certifications, rd.experience,
-                      rd.file_name, rd.processed_at;
-
-                    """
-                else:
-                    create_view_sql = None
-                    log.warning("Prisma tables not found (Candidate/Category/ResumeDetails). Skipping view creation.")
-
-                if create_view_sql:
-                    cur.execute(create_view_sql)
-
-            conn.commit()
-            log.info("Schema ensured (tables + resumes view ready).")
-        except Exception as e:
+            # ---------------- initial refresh ----------------
             try:
-                conn.rollback()
+                cur.execute("REFRESH MATERIALIZED VIEW CONCURRENTLY public.resumes_search;")
             except Exception:
-                pass
-            log.error("ensure_schema failed: %s", e, exc_info=True)
-            raise
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                cur.execute("REFRESH MATERIALIZED VIEW public.resumes_search;")
+
+        try:
+            conn.autocommit = prev_ac
+        except Exception:
+            pass
+
+
+
+    def object_exists(self, kind: str, name: str) -> bool:
+        """Check existence of a view/matview/table in public schema."""
+        conn = self.get_connection()
+        with conn.cursor() as cur:
+            try:
+                if kind == "matview":
+                    cur.execute("SELECT 1 FROM pg_matviews WHERE schemaname='public' AND matviewname=%s", (name,))
+                elif kind == "view":
+                    cur.execute("SELECT 1 FROM information_schema.views WHERE table_schema='public' AND table_name=%s", (name,))
+                else:
+                    cur.execute("SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=%s", (name,))
+                return cur.fetchone() is not None
+            except Exception:
+                try: conn.rollback()
+                except Exception: pass
+                return False
+
+
+
+    def refresh_resumes_search_if_dirty(self) -> None:
+        conn = self.get_connection()
+        with conn.cursor() as cur:
+            try:
+                cur.execute("SELECT dirty FROM public.resumes_refresh_state WHERE id = 1")
+                row = cur.fetchone()
+                dirty = bool(row[0]) if row else True
+            except psycopg.errors.UndefinedTable:
+                # previous SELECT put the tx in an aborted state → rollback before creating
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS public.resumes_refresh_state (
+                      id int PRIMARY KEY DEFAULT 1,
+                      dirty boolean NOT NULL DEFAULT true,
+                      updated_at timestamptz NOT NULL DEFAULT now()
+                    )
+                """)
+                cur.execute("""
+                    INSERT INTO public.resumes_refresh_state (id, dirty)
+                    VALUES (1, true)
+                    ON CONFLICT (id) DO NOTHING
+                """)
+                dirty = True
+    
+            if dirty:
+                try:
+                    cur.execute("REFRESH MATERIALIZED VIEW CONCURRENTLY public.resumes_search")
+                except Exception:
+                    # refresh failed mid-tx → rollback and try plain refresh
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
+                    cur.execute("REFRESH MATERIALIZED VIEW public.resumes_search")
+    
+                # mark clean
+                try:
+                    cur.execute("UPDATE public.resumes_refresh_state SET dirty=false WHERE id=1")
+                except Exception:
+                    # if that UPDATE failed for any reason, rollback once and continue
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
+                    cur.execute("UPDATE public.resumes_refresh_state SET dirty=false WHERE id=1")
+    
+        try:
+            conn.commit()
+        except Exception:
+            pass
+
+
+
         
     def ensure_schema_once(self):
         global _bootstrapped
@@ -415,39 +630,82 @@ class DatabaseManager:
             logger.info("Database connection closed")
     
     def get_all_resumes(self) -> pd.DataFrame:
-        # NEW: be defensive – if the view didn’t exist yet, create and retry once
+        self.ensure_schema_once()
+        self.refresh_resumes_search_if_dirty()
+        conn = self.get_connection()
         try:
-            with self.get_connection().cursor(row_factory=psycopg.rows.dict_row) as cur:
+            with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                 cur.execute("SELECT * FROM public.resumes")
-                rows = cur.fetchall()
-            return pd.DataFrame(rows)
+                return pd.DataFrame(cur.fetchall())
         except psycopg.errors.UndefinedTable:
-            self.ensure_schema_once()
-            with self.get_connection().cursor(row_factory=psycopg.rows.dict_row) as cur:
-                cur.execute("SELECT * FROM public.resumes")
-                rows = cur.fetchall()
-            return pd.DataFrame(rows)
+            # Fallback inline join with same column names your pipeline expects
+            with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+                cur.execute("""
+                    SELECT
+                      c.id AS candidate_id,
+                      COALESCE(rd.name,c.name) AS full_name,
+                      COALESCE(rd.email,c.email) AS email,
+                      c.email AS candidate_email,
+                      c."Exam_URL"     AS candidate_exam_url,
+                      c."tempPassword" AS candidate_temp_password,
+                      c."temp_name"    AS candidate_temp_name,
+                      c."Exam_date"    AS candidate_exam_date,
+                      c."Expiry"       AS candidate_expiry,
+                      COALESCE(string_agg(DISTINCT cat.type, ','),'') AS category_text,
+                      COALESCE(array_to_string(rd.skills, ', '), '')       AS technical_skills,
+                      COALESCE(array_to_string(rd.experience, ' || '), '') AS work_experience,
+                      COALESCE(array_to_string(rd.projects, ' || '), '')   AS projects_flat,
+                      COALESCE(array_to_string(rd.certifications, ', '), '') AS certifications_flat,
+                      COALESCE(rd."UG_college",'')||' '||
+                      COALESCE(rd."UG_cgpa",'')   ||' '||
+                      COALESCE(rd."UG_yop",'')    ||' '||
+                      COALESCE(rd."PG_college",'')||' '||
+                      COALESCE(rd."PG_cgpa",'')   ||' '||
+                      COALESCE(rd."PG_yop",'')    AS education,
+                      NULL::text AS role_category,
+                      NULL::text AS job_category,
+                      NULL::text AS current_role
+                    FROM "Candidate" c
+                    LEFT JOIN "ResumeDetails" rd ON rd."candidateId" = c.id
+                    LEFT JOIN "Category"      cat ON cat."candidateId" = c.id
+                    GROUP BY
+                      c.id, rd.name, rd.email, rd.skills, rd.experience, rd.projects, rd.certifications,
+                      c."Exam_URL", c."tempPassword", c."temp_name", c."Exam_date", c."Expiry",
+                      rd."UG_college", rd."UG_cgpa", rd."UG_yop",
+                      rd."PG_college", rd."PG_cgpa", rd."PG_yop"
+                """)
+                return pd.DataFrame(cur.fetchall())
+
+
     
-    def store_job_results(self, job_description: str, job_category: JobCategory, final_scores: List[FinalScore],) -> bool:
+    def store_job_results(
+            self,
+            job_description: str,
+            job_category: JobCategory,
+            final_scores: List[FinalScore],
+        ) -> tuple[bool, Optional[int]]:
         """
-        Store one job description row and all of its candidate scores in PostgreSQL.
-        Returns True on success, False on any error.
+        Store one JobDescription row + all CandidateScore rows.
+        Return (ok, job_id).
         """
-    
-        # Basic validation up front
         if not job_description or not job_description.strip():
-            raise ValueError("Job description cannot be empty")
+            logger.error("store_job_results: empty job_description")
+            return False, None
         if not final_scores:
-            logger.warning("No final scores to store")
-            return False
-        self.ensure_schema()
-        conn = self.get_connection()  # must return a psycopg.Connection
+            logger.warning("store_job_results: no final_scores to store")
+            return False, None
+    
+        conn = self.connection
+        if conn is None:
+            logger.error("store_job_results: no DB connection")
+            return False, None
+    
         try:
             with conn.cursor() as cur:
-                # 1) Insert the jobdescription row and get its id
+                # 1) JobDescription
                 cur.execute(
                     """
-                    INSERT INTO jobdescription (
+                    INSERT INTO "JobDescription" (
                         job_description,
                         role_category,
                         categorization_confidence,
@@ -459,20 +717,29 @@ class DatabaseManager:
                     RETURNING id
                     """,
                     (
-                        job_description.strip(),
+                        job_description,
                         job_category.role_category,
-                        float(job_category.confidence_score),
-                        job_category.reasoning,
+                        float(job_category.confidence_score or 0.0),
+                        job_category.reasoning or "",
                         json.dumps(getattr(job_category, "key_indicators", [])),
                         len(final_scores),
                     ),
                 )
                 job_id = cur.fetchone()[0]
-                logger.info("Inserted jobdescription id=%s", job_id)
+                logger.info('store_job_results: inserted "JobDescription" id=%s', job_id)
     
-                # 2) Insert all candidate scores for this job
-                insert_score_sql = """
-                    INSERT INTO candidate_scores (
+                # 2) Prepare email lookup
+                # Prefer a direct hit by name in the resumes view (which already coalesces rd.email/c.email)
+                email_lookup_sql = """
+                    SELECT email
+                    FROM public.resumes
+                    WHERE LOWER(full_name) = LOWER(%s)
+                    LIMIT 1
+                """
+    
+                # 3) Insert CandidateScore rows (with looked-up email)
+                sql_score = """
+                    INSERT INTO "CandidateScore" (
                         job_id,
                         candidate_name,
                         resume_email,
@@ -487,38 +754,41 @@ class DatabaseManager:
                 """
     
                 for s in final_scores:
+                    # Best-effort email resolution
+                    email = getattr(s, "email", "") or ""
+                    if not email:
+                        try:
+                            cur.execute(email_lookup_sql, (s.candidate_name,))
+                            row = cur.fetchone()
+                            email = row[0] if row and row[0] else ""
+                        except Exception as e:
+                            logger.warning("email lookup failed for %r: %s", s.candidate_name, e)
+                            email = ""
+    
                     cur.execute(
-                        insert_score_sql,
+                        sql_score,
                         (
                             job_id,
                             s.candidate_name,
-                            None,  # or an email if you have it at this stage
-                            float(s.final_score),
-                            int(s.final_rank),
-                            s.detailed_reasoning,
-                            json.dumps(getattr(s, "strengths", [])),
-                            json.dumps(getattr(s, "weaknesses", [])),
-                            s.recommendation,
+                            email,
+                            float(s.final_score or 0.0),
+                            int(s.final_rank or 0),
+                            s.detailed_reasoning or "",
+                            json.dumps(s.strengths or []),
+                            json.dumps(s.weaknesses or []),
+                            s.recommendation or "",
                         ),
                     )
-                    logger.info("Inserted candidate score for %s", s.candidate_name)
     
-            # 3) Commit once after all inserts succeed
             conn.commit()
-            logger.info(
-                "Successfully stored job %s with %d candidate scores",
-                job_id,
-                len(final_scores),
-            )
-            return True
-    
+            return True, job_id
         except Exception as e:
-            logger.error("Error storing job results: %s", e, exc_info=True)
+            logger.error("store_job_results failed: %s", e)
             try:
                 conn.rollback()
             except Exception:
                 pass
-            return False
+            return False, None
     
 
 class ResumeProcessor:
@@ -550,7 +820,41 @@ class ResumeProcessor:
         except Exception as e:
             logger.error(f"Failed to initialize Gemini AI model: {e}")
             raise
-    
+    def _normalize_categories(self, raw: List[str]) -> List[str]:
+        """Map free-text categories to canonical keys used across the system."""
+        canon = {
+            "data_science":        {"data science","data scientist","ml","ml engineer","ai","ai engineer","machine learning"},
+            "data_engineering":    {"data engineering","data engineer","etl","etl developer","big data","spark","hadoop"},
+            "full_stack":          {"full stack","fullstack","web","web developer","frontend+backend"},
+            "platform_engineering":{"platform","platform engineering","devops","sre","infrastructure","cloud"},
+            "consulting":          {"consulting","consultant","advisory","strategy"},
+            "software_engineering":{"software","software engineering","software engineer","developer","programmer"},
+            "product_management":  {"product","product management","product manager","pm","product owner","program manager"},
+            "ui_ux_design":        {"ui/ux","ui ux","ux","ui","design","designer","visual design","product design"},
+        }
+        out = []
+        for s in (raw or []):
+            t = s.strip().lower()
+            if not t: 
+                continue
+            matched = None
+            for key, alts in canon.items():
+                if t == key or t in alts:
+                    matched = key; break
+                # substring fallback (e.g., "ml/data science")
+                if any(a in t for a in alts):
+                    matched = key; break
+            if not matched:
+                # last resort: keep as-is (lets LLM still use it downstream)
+                matched = t.replace(" ", "_")
+            out.append(matched)
+        # unique, stable order
+        seen, uniq = set(), []
+        for k in out:
+            if k not in seen:
+                seen.add(k); uniq.append(k)
+        return uniq
+
     def _load_resumes_from_db(self) -> pd.DataFrame:
         """Load resumes from SQLite database."""
         try:
@@ -571,80 +875,216 @@ class ResumeProcessor:
             raise
     
     def _prepare_resume_text(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Combine ALL columns from resume table into structured text format for AI processing."""
+        """Combine ALL columns from resumes into a structured text blob for AI processing.
+        Robust to lists/arrays/Series/dicts/NaNs.
+        """
+        import numpy as np
         df = df.copy()
-        
-        combined_texts = []
+
+        def _clean_value(v) -> str:
+            """Return a clean human string for any value; empty '' if nothing useful."""
+            # Fast path for None-like
+            if v is None:
+                return ""
+
+            # Flatten lists/tuples/sets
+            if isinstance(v, (list, tuple, set)):
+                parts = [s for s in (_clean_value(x) for x in v) if s]
+                return ", ".join(parts)
+
+            # Flatten pandas/NumPy array-ish
+            if isinstance(v, (pd.Series, np.ndarray)):
+                parts = [s for s in (_clean_value(x) for x in list(v)) if s]
+                return ", ".join(parts)
+
+            # Flatten dict
+            if isinstance(v, dict):
+                parts = [f"{k}: {_clean_value(val)}" for k, val in v.items() if _clean_value(val)]
+                return ", ".join(parts)
+
+            # Scalar: skip NaN/empties
+            try:
+                if pd.isna(v):
+                    return ""
+            except Exception:
+                pass
+
+            s = str(v).strip()
+            if not s:
+                return ""
+            if s.lower() in {"nan", "none", "null", "{}", "[]"}:
+                return ""
+            return s
+
+        combined_texts: list[str] = []
         for _, row in df.iterrows():
-            text_parts = []
-            
-            # Add candidate name if it exists
-            name = row.get('full_name', row.get('name', row.get('candidate_name', 'Unknown')))
+            text_parts: list[str] = []
+
+            # Candidate "name" heading
+            name = row.get("full_name", row.get("name", row.get("candidate_name", "Unknown")))
             text_parts.append(f"CANDIDATE: {name}")
-            
-            # Concatenate ALL columns (excluding the name column we already added)
+
+            # Add every other column as KEY: value
             for column in df.columns:
-                if column.lower() not in ['full_name', 'name', 'candidate_name', 'id']:
-                    value = row.get(column, '')
-                    if pd.notna(value) and str(value).strip():
-                        # Convert all values to string and clean them
-                        clean_value = str(value).strip()
-                        if clean_value and clean_value.lower() not in ['nan', 'none', 'null']:
-                            text_parts.append(f"{column.upper()}: {clean_value}")
-            
-            combined_texts.append('\n'.join(text_parts))
-        
-        df['combined_text'] = combined_texts
+                if column.lower() in {"full_name", "name", "candidate_name", "id"}:
+                    continue
+                clean = _clean_value(row.get(column, ""))
+                if clean:
+                    text_parts.append(f"{column.upper()}: {clean}")
+
+            combined_texts.append("\n".join(text_parts))
+
+        df["combined_text"] = combined_texts
         return df
+
     
+    def _extract_explicit_categories(self, jd: str) -> List[str]:
+        """
+        Accepts patterns like:
+          - "This Job Description categories are Data Science: <JD...>"
+          - "categories are: Data Science / Full Stack: <JD...>"
+          - "category: data engineering and platform engineering: <JD...>"
+        Returns canonicalized categories (via _normalize_categories).
+        """
+        text = (jd or "").strip()
+        if not text:
+            return []
+
+        # Preferred: stop at the first colon right after the categories list
+        m = re.search(r"\b(?:this\s+job\s+description\s+)?categories?\s+are\s+(.+?)\s*:", text, re.IGNORECASE)
+        frag: str
+        if m:
+            frag = m.group(1)
+        else:
+            # Fallback: generic "category/categories is|are|:" on a single line,
+            # but still cut at the first colon to avoid eating the whole JD.
+            m2 = re.search(r"\bcategories?\b\s*(?:is|are|:)\s*(.+)", text, re.IGNORECASE)
+            if not m2:
+                return []
+            frag = m2.group(1).splitlines()[0]
+            frag = frag.split(":", 1)[0]  # hard stop before the JD body
+
+        # Split the category list by common delimiters
+        parts = re.split(r"\s*(?:,|/|;|\band\b|&|\+)\s*", frag, flags=re.IGNORECASE)
+        parts = [p for p in parts if p]
+        return self._normalize_categories(parts)
+
+
     def _categorize_job_description(self, job_description: str) -> JobCategory:
-        """Use AI to automatically categorize the job description."""
+        """Use explicit categories if provided; otherwise ask the LLM (and allow multi)."""
         try:
+            # 1) Explicit categories (fast path)
+            explicit = self._extract_explicit_categories(job_description)
+            if explicit:
+                primary = explicit[0]
+                return JobCategory(
+                    role_category=primary,
+                    all_categories=explicit,
+                    confidence_score=0.99,
+                    reasoning="User explicitly provided the category/categories in the job description.",
+                    key_indicators=[f"explicit:{c}" for c in explicit]
+                )
+
+            # 2) LLM-based categorization (allowing multiple)
             prompt = f"""
-            You are an expert HR professional and technical recruiter. Your task is to analyze a job description and determine the primary role category.
+                You are an expert recruiter. Read the job description and output a JSON object with:
+                - role_category: the single best primary category (one of: data_science, data_engineering, full_stack,
+                  platform_engineering, consulting, software_engineering, product_management, ui_ux_design)
+                - all_categories: array of zero or more categories (same canonical set) that also reasonably apply
+                - confidence_score: 0.0–1.0
+                - reasoning: short explanation
+                - key_indicators: array of brief phrases from the JD that hint at these categories
 
-            JOB DESCRIPTION:
-            {job_description}
-
-            Please classify this job into one of these categories:
-            - data_science: Machine learning, data analysis, statistical modeling, AI/ML
-            - data_engineering: Data pipelines, ETL/ELT, big data technologies, data infrastructure
-            - full_stack: Front-end and back-end development, web applications, full software stack
-            - platform_engineering: Infrastructure, DevOps, cloud platforms, system architecture
-            - consulting: Business consulting, strategy, advisory services, client-facing roles
-            - software_engineering: General software development, programming, software architecture
-            - product_management: Product strategy, roadmap, stakeholder management, market analysis
-            - ui_ux_design: User interface design, user experience, visual design, prototyping
-
-            Provide your classification with confidence and reasoning.
+                JOB DESCRIPTION:
+                {job_description}
             """
-            
-            # Create output parser
             parser = PydanticOutputParser(pydantic_object=JobCategory)
-            format_instructions = parser.get_format_instructions()
-            full_prompt = f"{prompt}\n\n{format_instructions}"
-            
-            # Get AI response - use only HumanMessage
-            messages = [
-                HumanMessage(content=full_prompt)
-            ]
-            
+            fmt = parser.get_format_instructions()
+            messages = [HumanMessage(content=f"{prompt}\n\n{fmt}")]
             response = self.llm.invoke(messages)
-            
-            # Parse the response
-            response_text = response.content
-            if '```json' in response_text:
-                json_start = response_text.find('```json') + 7
-                json_end = response_text.find('```', json_start)
-                json_text = response_text[json_start:json_end].strip()
-            else:
-                json_text = response_text
-            
-            return parser.parse(json_text)
-            
+            text = response.content or ""
+
+            # unwrap ```json fences if present
+            if "```json" in text:
+                s = text.find("```json") + 7
+                e = text.find("```", s)
+                text = text[s:e].strip()
+
+            jc = parser.parse(text)
+
+            # Ensure canonicalization just in case the LLM drifts
+            all_canon = self._normalize_categories(jc.all_categories or [jc.role_category])
+            jc.all_categories = all_canon
+            jc.role_category = all_canon[0] if all_canon else jc.role_category
+
+            return jc
+
         except Exception as e:
             logger.error(f"Error categorizing job description: {e}")
-            return self._fallback_categorization(job_description)
+            # fallback can also produce multi when keywords hit multiple buckets
+            fb = self._fallback_categorization(job_description)
+            # make sure all_categories at least contains primary
+            if not getattr(fb, "all_categories", None):
+                fb.all_categories = [fb.role_category]
+            return fb
+        
+    def _filter_resumes_by_categories(self, df: pd.DataFrame, categories: List[str]) -> pd.DataFrame:
+        """Union of candidates matching ANY of the given categories (case-insensitive)."""
+        import numpy as np
+
+        if df is None or df.empty:
+            return df
+
+        raw = [str(c).strip().lower() for c in (categories or []) if str(c).strip()]
+        if not raw:
+            return df
+
+        SYN = {
+            "data_science":         {"data science","data scientist","ml","machine learning","ml engineer","ai","ai engineer"},
+            "data_engineering":     {"data engineering","data engineer","etl","big data","spark","hadoop"},
+            "full_stack":           {"full stack","fullstack"},
+            "platform_engineering": {"platform engineering","platform","devops","sre","infrastructure","cloud"},
+            "software_engineering": {"software engineering","software engineer","backend","frontend"},
+            "product_management":   {"product management","product manager","pm"},
+            "consulting":           {"consulting","consultant","advisory"},
+            "ui_ux_design":         {"ui/ux","ui","ux","design","designer"},
+        }
+
+        def _expand(c: str) -> set:
+            al = {c, c.replace("_", " ")}
+            al |= SYN.get(c, set())
+            return {a.strip().lower() for a in al if a and a.strip()}
+
+        ALL_ALIASES = set()
+        for c in raw:
+            ALL_ALIASES |= _expand(c)
+
+        def _as_list(v):
+            if v is None:
+                return []
+            if isinstance(v, (list, tuple, set)):
+                return list(v)
+            if isinstance(v, (np.ndarray, pd.Series)):
+                return list(v)
+            return [v]
+
+        kept = []
+        for i, row in df.iterrows():
+            cat_text = str(row.get("category_text") or "").lower()
+            types_raw = _as_list(row.get("category_types"))
+            cat_types = {str(x).strip().lower() for x in types_raw if str(x).strip()}
+
+            if any(a in cat_text for a in ALL_ALIASES) or (ALL_ALIASES & cat_types):
+                kept.append(i)
+
+        if not kept:
+            return df.iloc[0:0].copy()
+        unique_idx = list(dict.fromkeys(kept))  # order-preserving de-dupe of row indices
+        return df.loc[unique_idx].reset_index(drop=True)
+
+
+
+
     
     def _fallback_categorization(self, job_description: str) -> JobCategory:
         """Fallback categorization using keyword matching."""
@@ -672,41 +1112,59 @@ class ResumeProcessor:
         )
     
     def _filter_resumes_by_category(self, df: pd.DataFrame, category: str) -> pd.DataFrame:
-        """Filter resumes by the identified job category."""
-        # Look for category column in various possible names
-        category_columns = ['category', 'role_category', 'job_category', 'position_type']
-        category_col = None
-        
-        for col in category_columns:
-            if col in df.columns:
-                category_col = col
-                break
-        
-        if not category_col:
-            logger.warning("No category column found in resume data, processing all resumes")
+        """Return resumes whose category_text or category_types match the given category (case-insensitive)."""
+        import numpy as np
+
+        if df is None or df.empty:
             return df
-        
-        # Map internal categories to resume categories
-        category_mapping = {
-            'data_science': ['data science', 'data scientist', 'ml engineer', 'ai engineer'],
-            'data_engineering': ['data engineer', 'data engineering', 'etl developer'],
-            'full_stack': ['full stack', 'fullstack', 'web developer', 'software developer'],
-            'platform_engineering': ['platform engineer', 'devops engineer', 'infrastructure engineer'],
-            'consulting': ['consultant', 'consulting', 'advisor', 'strategist'],
-            'software_engineering': ['software engineer', 'developer', 'programmer'],
-            'product_management': ['product manager', 'product owner', 'program manager'],
-            'ui_ux_design': ['ui designer', 'ux designer', 'designer', 'visual designer']
+
+        cat = (category or "").strip().lower()
+        if not cat:
+            return df
+
+        SYN = {
+            "data_science":         {"data science","data scientist","ml","machine learning","ml engineer","ai","ai engineer"},
+            "data_engineering":     {"data engineering","data engineer","etl","big data","spark","hadoop"},
+            "full_stack":           {"full stack","fullstack"},
+            "platform_engineering": {"platform engineering","platform","devops","sre","infrastructure","cloud"},
+            "software_engineering": {"software engineering","software engineer","backend","frontend"},
+            "product_management":   {"product management","product manager","pm"},
+            "consulting":           {"consulting","consultant","advisory"},
+            "ui_ux_design":         {"ui/ux","ui","ux","design","designer"},
         }
-        
-        target_categories = category_mapping.get(category, [category])
-        
-        # Filter resumes
-        filtered_df = df[df[category_col].str.lower().str.contains(
-            '|'.join(target_categories), na=False, case=False
-        )]
-        
-        logger.info(f"Found {len(filtered_df)} candidates in category '{category}'")
-        return filtered_df
+
+        def _as_list(v):
+            if v is None:
+                return []
+            if isinstance(v, (list, tuple, set)):
+                return list(v)
+            if isinstance(v, (np.ndarray, pd.Series)):
+                return list(v)
+            return [v]
+
+        aliases = {cat, cat.replace("_", " ")}
+        aliases |= SYN.get(cat, set())
+        aliases = {a.strip().lower() for a in aliases if a and a.strip()}
+
+        kept = []
+        for i, row in df.iterrows():
+            cat_text = str(row.get("category_text") or "").lower()
+            types_raw = _as_list(row.get("category_types"))
+            cat_types = {str(x).strip().lower() for x in types_raw if str(x).strip()}
+
+            if any(a in cat_text for a in aliases) or (aliases & cat_types):
+                kept.append(i)
+
+        # Deduplicate indices (order preserving) to avoid drop_duplicates hashing list columns
+        if not kept:
+            return df.iloc[0:0].copy()
+        unique_idx = list(dict.fromkeys(kept))
+        return df.loc[unique_idx].reset_index(drop=True)
+
+
+
+
+
     
     def _fallback_scoring(self, category_df: pd.DataFrame, job_description: str) -> List[InitialScore]:
         """Fallback scoring method when AI scoring fails."""
@@ -949,107 +1407,198 @@ class ResumeProcessor:
 
         return final_scores
 
-    
+
     def process_job_and_rank_candidates(
-        self, 
+        self,
         job_description: str,
-        top_n: int = DEFAULT_TOP_N
+        top_n: int = DEFAULT_TOP_N,
     ) -> Dict[str, Any]:
-        """Main method to process a job description and rank candidates."""
+        """
+        Main method to process a job description and rank candidates.
+        Pipeline:
+          1) Load + prepare resumes
+          2) Categorize JD
+          3) Filter resumes by category(ies)
+          4) Initial AI scoring
+          5) Final LLM evaluation (top N)
+          6) Persist JobDescription + CandidateScore rows
+
+        Returns a dict with counts, preview lists, stored_in_db flag and job_id.
+        """
+        diagnostics: list[str] = []
+        job_id: Optional[int] = None
+
         try:
             logger.info("🚀 Starting comprehensive resume processing and ranking...")
-            
-            # Step 1: Load and prepare resumes from PostgreSQL
+
+            # -------------------------
+            # Step 1: Load + prepare
+            # -------------------------
             logger.info("Step 1: Loading resumes from database...")
             df = self._load_resumes_from_db()
+            if df is None:
+                diagnostics.append("load_resumes: returned None")
+                logger.warning("No resumes dataframe returned from DB")
+                return {
+                    "job_category": None,
+                    "filtered_candidates": 0,
+                    "initial_scores": [],
+                    "final_scores": [],
+                    "stored_in_db": False,
+                    "job_id": None,
+                    "error": "No resumes found in database",
+                    "diagnostics": diagnostics,
+                }
+
             logger.info("Step 1a: Preparing resume text...")
             df = self._prepare_resume_text(df)
-            
-            # Step 2: Categorize the job description
-            logger.info("Step 2: Analyzing job description to determine category...")
+            total_resumes = len(df)
+            diagnostics.append(f"resumes_total={total_resumes}")
+            if total_resumes == 0:
+                logger.warning("No resumes available after preparation")
+                return {
+                    "job_category": None,
+                    "filtered_candidates": 0,
+                    "initial_scores": [],
+                    "final_scores": [],
+                    "stored_in_db": False,
+                    "job_id": None,
+                    "error": "No resumes available",
+                    "diagnostics": diagnostics,
+                }
+
+            # -------------------------
+            # Step 2: Categorize JD
+            # -------------------------
             job_category = self._categorize_job_description(job_description)
-            logger.info(f"✅ Job categorized as: {job_category.role_category} (Confidence: {job_category.confidence_score:.2f})")
-            
-            # Step 3: Filter resumes by category
-            logger.info(f"Step 3: Filtering resumes for category: {job_category.role_category}")
-            filtered_df = self._filter_resumes_by_category(df, job_category.role_category)
-            
-            if filtered_df.empty:
-                logger.warning(f"No resumes found for category: {job_category.role_category}")
+            cats = job_category.all_categories or [job_category.role_category]
+            logger.info(
+                "✅ Job categorized as: %s (also: %s) Conf: %.2f",
+                job_category.role_category,
+                ", ".join(job_category.all_categories) if job_category.all_categories else "none",
+                job_category.confidence_score,
+            )
+            diagnostics.append(
+                f"role_category={job_category.role_category}, "
+                f"all={cats}, conf={job_category.confidence_score:.2f}"
+            )
+
+            # -------------------------
+            # Step 3: Filter by category(ies)
+            # -------------------------
+            logger.info("Step 3: Filtering resumes for categories: %s", cats)
+            filtered_df = self._filter_resumes_by_categories(df, cats)
+            filtered_count = len(filtered_df)
+            diagnostics.append(f"filtered_candidates={filtered_count}")
+
+            if filtered_count == 0:
+                msg = f"No resumes found for categories: {cats}"
+                logger.warning(msg)
                 return {
-                    'job_category': job_category,
-                    'filtered_candidates': 0,
-                    'initial_scores': [],
-                    'final_scores': [],
-                    'stored_in_db': False,
-                    'error': f"No resumes found for category: {job_category.role_category}"
+                    "job_category": job_category,
+                    "filtered_candidates": 0,
+                    "initial_scores": [],
+                    "final_scores": [],
+                    "stored_in_db": False,
+                    "job_id": None,
+                    "error": msg,
+                    "diagnostics": diagnostics,
                 }
-            
+
+            # -------------------------
             # Step 4: Initial AI scoring
+            # -------------------------
             logger.info("Step 4: Performing initial AI scoring...")
-            initial_scores = self._initial_ai_scoring(filtered_df, job_description)
-            
-            if not initial_scores:
-                logger.warning("No candidates were successfully scored in initial phase")
+            initial_scores = self._initial_ai_scoring(filtered_df, job_description) or []
+            initial_count = len(initial_scores)
+            diagnostics.append(f"initial_scored={initial_count}")
+
+            if initial_count == 0:
+                msg = "Initial scoring returned 0 candidates"
+                logger.warning(msg)
                 return {
-                    'job_category': job_category,
-                    'filtered_candidates': len(filtered_df),
-                    'initial_scores': [],
-                    'final_scores': [],
-                    'stored_in_db': False,
-                    'error': "AI scoring failed for all candidates"
+                    "job_category": job_category,
+                    "filtered_candidates": filtered_count,
+                    "initial_scores": [],
+                    "final_scores": [],
+                    "stored_in_db": False,
+                    "job_id": None,
+                    "error": msg,
+                    "diagnostics": diagnostics,
                 }
-            
-            # Step 5: Final LLM evaluation and ranking
-            logger.info("Step 5: Performing final LLM evaluation and perfect ranking...")
-            final_scores = self._final_llm_evaluation(initial_scores, job_description, top_n)
-            
-            if not final_scores:
-                logger.warning("Final LLM evaluation failed for all candidates")
+
+            # -------------------------
+            # Step 5: Final LLM evaluation / ranking
+            # -------------------------
+            logger.info("Step 5: Performing final LLM evaluation and ranking (top_n=%d)...", int(top_n))
+            final_scores = self._final_llm_evaluation(initial_scores, job_description, int(top_n)) or []
+            final_count = len(final_scores)
+            diagnostics.append(f"final_ranked={final_count}")
+
+            if final_count == 0:
+                msg = "Final LLM evaluation returned 0 candidates"
+                logger.warning(msg)
                 return {
-                    'job_category': job_category,
-                    'filtered_candidates': len(filtered_df),
-                    'initial_scores': initial_scores,
-                    'final_scores': [],
-                    'stored_in_db': False,
-                    'error': "Final LLM evaluation failed for all candidates"
+                    "job_category": job_category,
+                    "filtered_candidates": filtered_count,
+                    "initial_scores": initial_scores,
+                    "final_scores": [],
+                    "stored_in_db": False,
+                    "job_id": None,
+                    "error": msg,
+                    "diagnostics": diagnostics,
                 }
-            
-            # Step 6: Store results in SQLite
-            logger.info("Step 6: Storing results in SQLite database...")
-            stored_successfully = self.db_manager.store_job_results(job_description, job_category, final_scores)
-            
+
+            # -------------------------
+            # Step 6: Persist to DB
+            # -------------------------
+            logger.info("Step 6: Storing results in PostgreSQL database...")
+            stored_successfully, job_id = self.db_manager.store_job_results(
+                job_description=job_description,
+                job_category=job_category,
+                final_scores=final_scores,
+            )
+            diagnostics.append(f"stored_in_db={bool(stored_successfully)}")
             if stored_successfully:
-                logger.info(f"✅ Processing complete! Results stored in database successfully")
+                logger.info("✅ Processing complete! Results stored (job_id=%s)", job_id)
             else:
                 logger.warning("⚠️ Processing complete but failed to store results in database")
-            
+
+            # Summary log
+            logger.info(
+                "Pipeline summary → total=%d, filtered=%d, initial=%d, final=%d",
+                total_resumes, filtered_count, initial_count, final_count
+            )
+
             return {
-                'job_category': job_category,
-                'filtered_candidates': len(filtered_df),
-                'initial_scores': initial_scores,
-                'final_scores': final_scores,
-                'stored_in_db': stored_successfully,
-                'error': None if stored_successfully else "Failed to store results in database"
+                "job_category": job_category,
+                "filtered_candidates": filtered_count,
+                "initial_scores": initial_scores,
+                "final_scores": final_scores,
+                "stored_in_db": bool(stored_successfully),
+                "job_id": job_id,
+                "error": None if stored_successfully else "Failed to store results in database",
+                "diagnostics": diagnostics,
             }
-            
+
         except Exception as e:
-            logger.error(f"Error during processing: {e}")
-            logger.error(f"Error type: {type(e)}")
-            logger.error(f"Error details: {str(e)}")
-            import traceback
-            logger.error(f"Traceback: {traceback.format_exc()}")
+            logger.error("Error during processing: %s", e)
+            logger.error("Error type: %s", type(e))
+            logger.error("Traceback:\n%s", __import__("traceback").format_exc())
+            diagnostics.append(f"exception={e}")
             return {
-                'job_category': None,
-                'filtered_candidates': 0,
-                'initial_scores': [],
-                'final_scores': [],
-                'stored_in_db': False,
-                'error': str(e)
+                "job_category": None,
+                "filtered_candidates": 0,
+                "initial_scores": [],
+                "final_scores": [],
+                "stored_in_db": False,
+                "job_id": None,
+                "error": str(e),
+                "diagnostics": diagnostics,
             }
         finally:
-            # Close database connection
+            # If your DatabaseManager uses pooled connections, consider removing this close().
             try:
                 self.db_manager.close()
             except Exception as e:
-                logger.error(f"Error closing database connection: {e}")
+                logger.error("Error closing database connection: %s", e)
