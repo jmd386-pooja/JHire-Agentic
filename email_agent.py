@@ -34,67 +34,6 @@ def _fmt_exam_dt(val: Any) -> str:
         return str(val)
 
 
-def _invite_html(candidate_id: int,
-                 candidatename: str,
-                 candidateEmail: str,
-                 candidatetempPassword: Optional[str],
-                 candidateExam_URL: Optional[str],
-                 exam_dt: Any) -> str:
-    formattedExamDate = _fmt_exam_dt(exam_dt)
-    accept_url  = f"{APP_BASE_URL}/{candidate_id}/accept"
-    decline_url = f"{APP_BASE_URL}/{candidate_id}/decline"
-
-    return f"""
-      <p>Dear {candidatename},</p>
-
-      <p>Greetings from JMAN Group!</p>
-
-      <p>We would like to block your calendar for the <strong>Level 1 Technical Interview</strong>. Kindly ensure your availability for the session. Please find your interview details below:</p>
-
-      <h4>Interview Details</h4>
-      <div style="margin-left: 20px;">
-        <p><strong>Date and Time:</strong> {formattedExamDate}</p>
-        <p><strong>Position:</strong> Software Engineer</p>
-      </div>
-
-      <h4>Login Credentials</h4>
-      <div style="margin-left: 20px;">
-        <p><strong>Username:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidateEmail}</span></p>
-        <p><strong>Password:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidatetempPassword or "—"}</span></p>
-      </div>
-
-      <p>Use the link below to log in and access your interview details:</p>
-      <p><a href="{candidateExam_URL or APP_BASE_URL}" style="color: #2a6cb5; text-decoration: underline;">Interview Link</a></p>
-
-      <p>We kindly request you to confirm your attendance by selecting one of the options below:</p>
-
-      <div style="margin: 20px 0;">
-        <a href="{accept_url}"
-          style="color: #4CAF50; font-weight: bold; text-decoration: none; font-size: 16px; margin-right: 30px; display: inline-block;">
-          ✔ Accept Invitation
-        </a>
-        <a href="{decline_url}"
-          style="color: #F44336; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">
-          ✖ Decline Invitation
-        </a>
-      </div>
-
-      <p>To ensure a smooth interview experience, please follow these guidelines:</p>
-      <ul style="margin-left: 20px;">
-        <li>Join at least five minutes prior to the scheduled time.</li>
-        <li>Make sure you have stable internet connectivity, at least 5mbps.</li>
-        <li>Check your microphone and camera settings before the start of the interview.</li>
-        <li>Join the interview using a laptop/desktop only.</li>
-        <li>Please join the link via web if you do not have Microsoft Teams installed.</li>
-      </ul>
-
-      <p>If you have any questions or need assistance, feel free to reach out to us.</p>
-
-      <p>Regards,</p>
-      <p>JMAN Group</p>
-    """
-
-
 class ResumeDBClient:
     def __init__(self, server_script_path: str = "mcp_server.py") -> None:
         self.server_params = StdioServerParameters(command="python", args=[server_script_path])
@@ -315,24 +254,12 @@ class ResumeDBClient:
                 emails[nm] = em
         return emails
 
-
-# email_agent.py
-# Complete replacement module
-
-import asyncio
-import json
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
-
-from mcp_client import MCPClient
-from gmail_mcp_client import GmailMCPClient
-
-
 def _invite_html(
     *,
     candidate_id: int,
     candidatename: str,
     candidateEmail: str,
+    candidateUsername: str,
     candidatetempPassword: str,
     candidateExam_URL: str,
     exam_dt: Optional[str],
@@ -343,30 +270,57 @@ def _invite_html(
         if isinstance(exam_dt, str) and exam_dt
         else "TBD"
     )
+    formattedExamDate = _fmt_exam_dt(exam_dt)
+    accept_url  = f"{APP_BASE_URL}/{candidate_id}/accept"
+    decline_url = f"{APP_BASE_URL}/{candidate_id}/decline"
     return f"""
-    <html>
-      <body style="font-family: Arial, Helvetica, sans-serif; line-height:1.5;">
-        <h2 style="margin-bottom:0">Interview Invitation - JMAN</h2>
-        <p>Hi <b>{candidatename}</b>,</p>
-        <p>
-          You are invited to complete the online assessment for the next step of your interview process.
-        </p>
-        <table cellpadding="6" cellspacing="0" border="0" style="border:1px solid #ddd;">
-          <tr><td><b>Candidate</b></td><td>{candidatename}</td></tr>
-          <tr><td><b>Email</b></td><td>{candidateEmail}</td></tr>
-          <tr><td><b>Exam Link</b></td><td><a href="{candidateExam_URL}">{candidateExam_URL}</a></td></tr>
-          <tr><td><b>Temp Username</b></td><td>{candidateEmail}</td></tr>
-          <tr><td><b>Temp Password</b></td><td>{candidatetempPassword}</td></tr>
-          <tr><td><b>Exam Date</b></td><td>{exam_dt_str}</td></tr>
-          <tr><td><b>Candidate ID</b></td><td>{candidate_id}</td></tr>
-        </table>
-        <p>
-          Please complete the assessment by the scheduled date. If you have any questions,
-          reply to this email.
-        </p>
-        <p>Best,<br/>Recruiting Team</p>
-      </body>
-    </html>
+      <p>Dear {candidatename},</p>
+
+      <p>Greetings from JMAN Group!</p>
+
+      <p>We would like to block your calendar for the <strong>Level 1 Technical Interview</strong>. Kindly ensure your availability for the session. Please find your interview details below:</p>
+
+      <h4>Interview Details</h4>
+      <div style="margin-left: 20px;">
+        <p><strong>Date and Time:</strong> {formattedExamDate}</p>
+        <p><strong>Position:</strong> Software Engineer</p>
+      </div>
+
+      <h4>Login Credentials</h4>
+      <div style="margin-left: 20px;">
+        <p><strong>Username:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidateUsername}</span></p>
+        <p><strong>Password:</strong> <span style="font-weight: bold; color: #2a6cb5;">{candidatetempPassword or "—"}</span></p>
+      </div>
+
+      <p>Use the link below to log in and access your interview details:</p>
+      <p><a href="{candidateExam_URL or APP_BASE_URL}" style="color: #2a6cb5; text-decoration: underline;">Interview Link</a></p>
+
+      <p>We kindly request you to confirm your attendance by selecting one of the options below:</p>
+
+      <div style="margin: 20px 0;">
+        <a href="{accept_url}"
+          style="color: #4CAF50; font-weight: bold; text-decoration: none; font-size: 16px; margin-right: 30px; display: inline-block;">
+          ✔ Accept Invitation
+        </a>
+        <a href="{decline_url}"
+          style="color: #F44336; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">
+          ✖ Decline Invitation
+        </a>
+      </div>
+
+      <p>To ensure a smooth interview experience, please follow these guidelines:</p>
+      <ul style="margin-left: 20px;">
+        <li>Join at least five minutes prior to the scheduled time.</li>
+        <li>Make sure you have stable internet connectivity, at least 5mbps.</li>
+        <li>Check your microphone and camera settings before the start of the interview.</li>
+        <li>Join the interview using a laptop/desktop only.</li>
+        <li>Please join the link via web if you do not have Microsoft Teams installed.</li>
+      </ul>
+
+      <p>If you have any questions or need assistance, feel free to reach out to us.</p>
+
+      <p>Regards,</p>
+      <p>JMAN Group</p>
     """.strip()
 
 
@@ -398,186 +352,192 @@ class EmailOrchestrator:
         return await self._call_tool("execute_database_query", {"query": sql, "params": params or {}})
 
     # ---------- Public API ----------
-
     async def send_interview_invites(
         self,
         *,
-        job_id: Optional[int] = None,
-        explicit_recipients: Optional[Dict[str, str]] = None,
-        top_n: int = 5,
+        job_id: int,
+        top_n: Optional[int] = None,
         send_all: bool = False,
+        explicit_recipients: Optional[Dict[str, str]] = None,
+        concurrency: Optional[int] = None,  # override at call-site; else ENV or default 6
     ) -> Dict[str, Any]:
         """
-        Sends interview invitation emails and audits every attempt.
+        FAST version:
+          • One SQL to fetch ALL recipients + extras.
+          • Concurrent Gmail sends (bounded).
+          • Concurrent audits after sends.
 
-        Selection:
-          - If explicit_recipients is provided, use exactly that mapping {name -> email}
-          - Else read top candidates for job_id from CandidateScore ⟷ resumes view.
-
-        Returns:
-          {
-            "status": "success" | "partial" | "error",
-            "sent": <int>,               # number actually sent
-            "attempted": <int>,          # recipients iterated
-            "failures": [ {name, email, reason, raw_result} ... ],
-            "details":  [ {name, email, subject, type, ok} ... ]
-          }
+        Returns: {"status","sent","attempted","failures":[...],"details":[...]}
         """
-        # 1) Determine recipients
+        import json
+        import asyncio
+
+        # ---------- config ----------
+        # You can tune with env EMAIL_SEND_CONCURRENCY=8
+        try:
+            default_c = int(os.getenv("EMAIL_SEND_CONCURRENCY", "6"))
+        except Exception:
+            default_c = 6
+        CONC = int(concurrency or default_c)
+        CONC = max(1, min(CONC, 16))  # keep it sane
+
+        # ---------- 1) resolve recipients in one shot ----------
         if explicit_recipients:
-            recipients = [
-                {"candidate_name": name.strip(), "email": (email or "").strip()}
-                for name, email in explicit_recipients.items()
+            rows = [
+                {
+                    "candidate_name": n.strip(),
+                    "email": (e or "").strip(),
+                    "exam_url": "",
+                    "temp_pwd": "",
+                    "temp_user": (e or "").strip(),
+                    "exam_dt": None,
+                }
+                for n, e in explicit_recipients.items()
+                if str(n).strip()
             ]
         else:
-            if not job_id:
-                # Last ranked job is auto-detected elsewhere; return a clear error here
-                return {"status": "error", "error": "No job_id to pick recipients from."}
-
-            limit_clause = "" if send_all else f"LIMIT {int(top_n or 5)}"
-            query = f"""
+            lim = "" if send_all else f"LIMIT {int(top_n or 5)}"
+            # Use CandidateScore.resume_email (populated at store time) and
+            # LEFT JOIN twice to fetch extras by email first, then by name as a fallback.
+            q = f"""
                 SELECT
-                    cs.candidate_name,
-                    COALESCE(r.email, cs.resume_email, '') AS email
+                  cs.candidate_name,
+                  COALESCE(NULLIF(cs.resume_email,''), r1.email, r2.email, r1.candidate_email, r2.candidate_email, '') AS email,
+                  COALESCE(r1.candidate_exam_url, r2.candidate_exam_url, '')      AS exam_url,
+                  COALESCE(r1.candidate_temp_password, r2.candidate_temp_password, '') AS temp_pwd,
+                  COALESCE(r1.candidate_temp_name, r2.candidate_temp_name, NULL)  AS temp_user,
+                  COALESCE(r1.candidate_exam_date, r2.candidate_exam_date, NULL)  AS exam_dt
                 FROM public."CandidateScore" cs
-                LEFT JOIN public.resumes r
-                  ON LOWER(r.full_name) = LOWER(cs.candidate_name)
+                LEFT JOIN public.resumes r1
+                  ON NULLIF(cs.resume_email,'') IS NOT NULL
+                 AND LOWER(r1.email) = LOWER(cs.resume_email)
+                LEFT JOIN public.resumes r2
+                  ON NULLIF(cs.resume_email,'') IS NULL
+                 AND LOWER(r2.full_name) = LOWER(cs.candidate_name)
                 WHERE cs.job_id = %(job_id)s
                 ORDER BY cs.final_rank ASC
-                {limit_clause}
+                {lim}
             """
-            r = await self._select(query, params={"job_id": int(job_id)})
-            if r.get("status") != "success" or not r.get("data"):
-                return {"status": "error", "error": "No ranked candidates found for the given job_id."}
-            recipients = r["data"]
+            r = await self._select(q, params={"job_id": int(job_id)})
+            if r.get("status") != "success":
+                return {"status": "error", "error": r.get("error") or r}
+            rows = r.get("data") or []
 
-        sent = 0
+        # Separate out missing emails immediately (fast fail)
         attempted = 0
-        details: List[Dict[str, Any]] = []
-        failures: List[Dict[str, Any]] = []
-
-        # 2) Iterate recipients
-        for rec in recipients:
+        failures: list[dict] = []
+        to_send: list[dict] = []
+        for rec in rows:
             name = (rec.get("candidate_name") or "").strip()
             email = (rec.get("email") or "").strip()
             if not email:
                 failures.append({"name": name, "email": "", "reason": "missing_email"})
-                # Audit as error with minimal context
-                try:
-                    await self._call_tool("log_email_audit", {
-                        "job_id": int(job_id) if job_id else None,
-                        "candidate_name": name,
-                        "candidate_email": "",
-                        "email_type": "invite",
-                        "subject": "Interview Invitation - JMAN",
-                        "username": None,
-                        "password": None,
-                        "exam_link": None,
-                        "send_status": "error",
-                        "raw_result": {"error": "missing_email"}
-                    })
-                except Exception:
-                    pass
                 continue
-
             attempted += 1
-
-            # 2a) Per-candidate extras from resumes view
-            r2 = await self._select(
-                """
-                SELECT
-                    COALESCE(candidate_exam_url, '')       AS candidate_exam_url,
-                    COALESCE(candidate_temp_password, '')  AS candidate_temp_password,
-                    COALESCE(candidate_temp_name, '')      AS candidate_temp_name,
-                    candidate_exam_date,
-                    candidate_expiry,
-                    COALESCE(candidate_id, 0)              AS candidate_id
-                FROM public.resumes
-                WHERE LOWER(full_name) = LOWER(%(full_name)s)
-                LIMIT 1
-                """,
-                params={"full_name": name},
-            )
-            row = (r2.get("data") or [{}])[0] if r2.get("status") == "success" and r2.get("data") else {}
-            exam_url = row.get("candidate_exam_url", "") or ""
-            temp_pwd = row.get("candidate_temp_password", "") or ""
-            temp_user = row.get("candidate_temp_name") or email
-            exam_date = row.get("candidate_exam_date")
-            candidate_id = int(row.get("candidate_id") or 0)
-
-            # 2b) Render HTML
-            html = _invite_html(
-                candidate_id=candidate_id,
-                candidatename=name,
-                candidateEmail=email,
-                candidatetempPassword=temp_pwd,
-                candidateExam_URL=exam_url,
-                exam_dt=exam_date,
-            )
-
-            # 2c) Send email via Gmail MCP
-            try:
-                send_result = await self.gmail.send_email(
-                    to=[email],
-                    subject="Interview Invitation - JMAN",
-                    body="",  # keep plain body empty; we send HTML
-                    html=html,
-                )
-            except Exception as e:
-                send_result = {"status": "error", "error": str(e)}
-
-            # Robust success detection across servers
-            ok = False
-            if isinstance(send_result, dict):
-                status = str(send_result.get("status", "")).lower()
-                ok = (
-                    send_result.get("ok") is True
-                    or status in {"ok", "success", "sent"}
-                    or any(send_result.get(k) for k in ("id", "messageId", "threadId"))
-                )
-
-            # 2d) Audit
-            send_status = "ok" if ok else "error"
-            try:
-                await self._call_tool("log_email_audit", {
-                    "job_id": int(job_id) if job_id else None,
-                    "candidate_name": name,
-                    "candidate_email": email,
-                    "email_type": "invite",
-                    "subject": "Interview Invitation - JMAN",
-                    "username": temp_user,
-                    "password": temp_pwd,
-                    "exam_link": exam_url,
-                    "send_status": send_status,
-                    "raw_result": send_result,
-                })
-            except Exception:
-                # Non-fatal: continue even if audit fails
-                pass
-
-            details.append({
+            to_send.append({
                 "name": name,
                 "email": email,
-                "type": "invite",
-                "subject": "Interview Invitation - JMAN",
-                "ok": bool(ok),
-                "send_result": send_result,
+                "exam_url": rec.get("exam_url") or "",
+                "temp_pwd": rec.get("temp_pwd") or "",
+                "temp_user": (rec.get("temp_user") or "") or email,
+                "exam_dt": rec.get("exam_dt"),
             })
 
-            if ok:
-                sent += 1
-            else:
-                reason = send_result.get("error") or send_result.get("message") or send_result
-                failures.append({"name": name, "email": email, "reason": str(reason), "raw_result": send_result})
+        if not attempted and not explicit_recipients:
+            return {"status": "error", "error": "No ranked candidates with emails for this job_id."}
 
-        status = "success" if sent == attempted and attempted > 0 else ("partial" if sent > 0 else "error")
-        return {
-            "status": status,
-            "sent": sent,
-            "attempted": attempted,
-            "failures": failures,
-            "details": details,
-        }
+        # ---------- 2) concurrent send ----------
+        sem = asyncio.Semaphore(CONC)
+
+        def _looks_ok(res: dict) -> bool:
+            try:
+                blob = json.dumps(res, ensure_ascii=False).lower()
+            except Exception:
+                blob = str(res).lower()
+            if "invalid_grant" in blob:
+                return False
+            if "error" in blob and ("invalid" in blob or "failed" in blob or "denied" in blob):
+                return False
+            status = str(res.get("status", "")).lower()
+            return (
+                res.get("ok") is True
+                or status in {"ok", "success", "sent", "delivered"}
+                or any(res.get(k) for k in ("id", "messageId", "threadId"))
+            )
+
+        async def _send_one(rec: dict) -> dict:
+            async with sem:
+                name = rec["name"]
+                email = rec["email"]
+                html = _invite_html(
+                    candidate_id=None,
+                    candidatename=name,
+                    candidateEmail=email,
+                    candidateUsername=rec["temp_user"],
+                    candidatetempPassword=rec["temp_pwd"],
+                    candidateExam_URL=rec["exam_url"],
+                    exam_dt=rec["exam_dt"],
+                )
+                try:
+                    res = await self.gmail.send_email(
+                        to=[email],
+                        subject="Interview Invitation - JMAN",
+                        body="",
+                        html=html,
+                    )
+                except Exception as e:
+                    res = {"status": "error", "error": str(e)}
+                ok = bool(isinstance(res, dict) and _looks_ok(res))
+                return {
+                    "name": name, "email": email, "ok": ok, "raw": res,
+                    "temp_user": rec["temp_user"], "temp_pwd": rec["temp_pwd"], "exam_url": rec["exam_url"]
+                }
+
+        send_results = await asyncio.gather(*[ _send_one(r) for r in to_send ], return_exceptions=False)
+
+        # ---------- 3) build audits & run them concurrently ----------
+        audit_payloads = []
+        details = []
+        sent = 0
+        for it in send_results:
+            ok = it["ok"]
+            details.append({
+                "name": it["name"], "email": it["email"], "type": "invite",
+                "subject": "Interview Invitation - JMAN",
+                "ok": ok, "send_result": it["raw"],
+            })
+            if not ok:
+                reason = it["raw"].get("error") if isinstance(it["raw"], dict) else str(it["raw"])
+                failures.append({"name": it["name"], "email": it["email"], "reason": reason, "raw_result": it["raw"]})
+            else:
+                sent += 1
+
+            audit_payloads.append({
+                "job_id": int(job_id),
+                "candidate_name": it["name"],
+                "candidate_email": it["email"],
+                "email_type": "invite",
+                "subject": "Interview Invitation - JMAN",
+                "username": it["temp_user"],
+                "password": it["temp_pwd"],
+                "exam_link": it["exam_url"],
+                "send_status": "ok" if ok else "error",
+                "raw_result": it["raw"],
+            })
+
+        # Fire all audits concurrently to minimize round-trips
+        async def _audit_one(p):
+            try:
+                return await self._call_tool("log_email_audit", p)
+            except Exception as e:
+                return {"status": "error", "error": str(e)}
+
+        await asyncio.gather(*[ _audit_one(p) for p in audit_payloads ], return_exceptions=True)
+
+        # ---------- 4) final status ----------
+        status = "success" if attempted and sent == attempted else ("partial" if sent > 0 else "error")
+        return {"status": status, "sent": sent, "attempted": attempted, "failures": failures, "details": details}
+
 
     
     async def act_on_instruction(
@@ -635,168 +595,3 @@ class EmailOrchestrator:
 
         result["job_id"] = job_id
         return result
-
-    
-    
-# --------- Convenience wrapper for quick calls from scripts ----------
-
-async def send_interview_invites(
-    self,
-    *,
-    job_id: int,
-    top_n: Optional[int] = None,
-    send_all: bool = False,
-    explicit_recipients: Optional[Dict[str, str]] = None,
-) -> Dict[str, Any]:
-    """
-    Sends interview emails and audits each attempt.
-    Selection:
-      - explicit_recipients: {name -> email}
-      - else: read from CandidateScore for the given job_id
-              (top_n unless send_all=True)
-
-    Returns: status, sent, attempted, failures[], details[]
-    """
-    # 1) Resolve recipients
-    if explicit_recipients:
-        recipients = [
-            {"candidate_name": n.strip(), "email": (e or "").strip()}
-            for n, e in explicit_recipients.items()
-            if str(n).strip()
-        ]
-    else:
-        lim = "" if send_all else f"LIMIT {int(top_n or 5)}"
-        # We now trust CandidateScore.resume_email (populated at store time),
-        # but still left-join resumes for a fallback.
-        q = f"""
-            SELECT
-              cs.candidate_name,
-              COALESCE(NULLIF(cs.resume_email,''), r.email, r.candidate_email, '') AS email
-            FROM public."CandidateScore" cs
-            LEFT JOIN public.resumes r
-              ON LOWER(r.full_name) = LOWER(cs.candidate_name)
-            WHERE cs.job_id = %(job_id)s
-            ORDER BY cs.final_rank ASC
-            {lim}
-        """
-        r = await self._select(q, params={"job_id": int(job_id)})
-        if r.get("status") != "success":
-            return {"status": "error", "error": r.get("error") or r}
-        recipients = r.get("data") or []
-
-    sent = 0
-    attempted = 0
-    details: List[Dict[str, Any]] = []
-    failures: List[Dict[str, Any]] = []
-
-    # 2) Per recipient
-    for rec in recipients:
-        name = (rec.get("candidate_name") or "").strip()
-        email = (rec.get("email") or "").strip()
-        if not email:
-            failures.append({"name": name, "email": "", "reason": "missing_email"})
-            # Audit as failure
-            try:
-                await self._call_tool("log_email_audit", {
-                    "job_id": int(job_id),
-                    "candidate_name": name,
-                    "candidate_email": "",
-                    "email_type": "invite",
-                    "subject": "Interview Invitation - JMAN",
-                    "username": None,
-                    "password": None,
-                    "exam_link": None,
-                    "send_status": "error",
-                    "raw_result": {"error": "missing_email"},
-                })
-            except Exception:
-                pass
-            continue
-
-        attempted += 1
-
-        # Fetch extras from resumes (credentials / link)
-        extras = await self._select(
-            """
-            SELECT
-              COALESCE(candidate_exam_url,'')      AS exam_url,
-              COALESCE(candidate_temp_password,'') AS temp_pwd,
-              COALESCE(candidate_temp_name,'')     AS temp_user,
-              candidate_exam_date
-            FROM public.resumes
-            WHERE LOWER(email) = LOWER(%(email)s) OR LOWER(full_name) = LOWER(%(name)s)
-            LIMIT 1
-            """,
-            params={"email": email, "name": name},
-        )
-        row = (extras.get("data") or [{}])[0] if extras.get("status") == "success" else {}
-        exam_url = row.get("exam_url", "") or ""
-        temp_pwd = row.get("temp_pwd", "") or ""
-        temp_user = (row.get("temp_user") or "") or email
-        exam_dt = row.get("candidate_exam_date")
-
-        html = _invite_html(
-            candidate_id=None,
-            candidatename=name,
-            candidateEmail=email,
-            candidatetempPassword=temp_pwd,
-            candidateExam_URL=exam_url,
-            exam_dt=exam_dt,
-        )
-
-        try:
-            send_result = await self.gmail.send_email(
-                to=[email],
-                subject="Interview Invitation - JMAN",
-                body="",
-                html=html,
-            )
-        except Exception as e:
-            send_result = {"status": "error", "error": str(e)}
-
-        ok = False
-        if isinstance(send_result, dict):
-            status = str(send_result.get("status", "")).lower()
-            ok = (
-                send_result.get("ok") is True
-                or status in {"ok", "success", "sent"}
-                or any(send_result.get(k) for k in ("id", "messageId", "threadId"))
-            )
-
-        send_status = "ok" if ok else "error"
-
-        # Audit
-        try:
-            await self._call_tool("log_email_audit", {
-                "job_id": int(job_id),
-                "candidate_name": name,
-                "candidate_email": email,
-                "email_type": "invite",
-                "subject": "Interview Invitation - JMAN",
-                "username": temp_user,
-                "password": temp_pwd,
-                "exam_link": exam_url,
-                "send_status": send_status,
-                "raw_result": send_result,
-            })
-        except Exception:
-            pass
-
-        details.append({
-            "name": name, "email": email, "type": "invite",
-            "subject": "Interview Invitation - JMAN",
-            "ok": bool(ok), "send_result": send_result,
-        })
-
-        if ok:
-            sent += 1
-        else:
-            failures.append({
-                "name": name, "email": email,
-                "reason": send_result.get("error") or send_result.get("message") or send_result,
-                "raw_result": send_result,
-            })
-
-    status = "success" if attempted and sent == attempted else ("partial" if sent > 0 else "error")
-    return {"status": status, "sent": sent, "attempted": attempted, "failures": failures, "details": details}
-

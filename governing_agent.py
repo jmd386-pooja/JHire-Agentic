@@ -16,9 +16,6 @@ from typing import Any, Dict, List, Optional, Iterable
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# MCP stdio client
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
 
 # Project modules
 from email_agent import EmailOrchestrator
@@ -433,26 +430,26 @@ class GoverningAgent:
             job_id_override=self.mem.last_job_id,
             explicit_recipients=None,
         )
-    
+
         if result.get("status") not in {"success", "partial"}:
             return f"Email action failed: {result.get('error') or result}"
-    
+
         # cache for 'how many' questions
         self.mem.last_sent = result.get("details", [])
         sent = int(result.get("sent") or 0)
         attempted = int(result.get("attempted") or 0)
         failures = result.get("failures") or []
-    
+
         if not attempted:
             return "No recipients were selected for emailing."
-    
+
         if failures:
             # show top 3 failures inline
             head = failures[:3]
             lines = [f"- {f.get('name','?')} <{f.get('email','')}> — {f.get('reason','unknown')}" for f in head]
             more = f" (+{len(failures)-len(head)} more)" if len(failures) > len(head) else ""
             return f"Email action {result.get('status')}. Sent: {sent}/{attempted}. Some failed:\n" + "\n".join(lines) + more
-    
+
         return f"Email action success. Sent: {sent}/{attempted}."
 
 
