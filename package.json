@@ -1,0 +1,17 @@
+{
+  "name": "jhire-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "scripts": {
+    "dev:web": "cd apps/web && next dev -p 3000",
+    "dev:ai": "PYTHONPATH=apps/ai uvicorn apps.ai.bridge_http:app --reload --port 8000",
+    "dev": "concurrently -k -n WEB,AI \"npm:dev:web\" \"npm:dev:ai\"",
+    "build": "cd apps/web && next build",
+    "start": "bash -lc \"python3 apps/ai/bridge_http.py & cd apps/web && next start -p 3000\""
+  }
+}

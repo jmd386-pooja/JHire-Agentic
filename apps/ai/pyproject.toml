@@ -1,0 +1,92 @@
+[project]
+name = "jhire-agentic"
+version = "0.1.1"
+description = "AI-powered resume ranking system with MCP server integration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # Core
+    "asyncio-mqtt>=0.16.0",
+    "pandas>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "tqdm>=4.65.0",
+    "pydantic>=2.0.0",
+    "typing-extensions>=4.5.0",
+    "jsonschema>=4.17.0",
+
+    # Database
+    "psycopg[binary]>=3.1",
+
+    # AI / LangChain
+    "google-generativeai==0.3.2",
+    "langchain>=0.1.20",
+    "langchain-google-genai==0.0.6",
+    "langchain-community>=0.0.20",
+    "langgraph>=0.0.24",
+
+    # MCP
+    "mcp>=1.0.0",
+    "fastmcp>=0.0.1",
+
+    # HTTP / async utils
+    "httpx>=0.24.0",
+    "aiofiles>=23.0.0",
+
+    # Bridge API 
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.29.0"
+]
+
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+ignore-vcs = true
+
+[tool.hatch.build.targets.wheel]
+include = [
+  "bridge_http.py",
+  "email_agent.py",
+  "gmail_mcp_client.py",
+  "governing_agent.py",
+  "mcp_client.py",
+  "mcp_server.py",
+  "mcp_tools.py",
+  "nl2sql.py",
+  "run_agent.py",
+  "run_conversational_agent.py",
+  "requirements.txt",
+  "README.md",
+  # optional extras that are safe to ship:
+  "gcp-oauth.keys.json"
+]
+exclude = [".venv/**", "__pycache__/**", ".vscode/**", "*.db", "*.sqlite*"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "bridge_http.py",
+  "email_agent.py",
+  "gmail_mcp_client.py",
+  "governing_agent.py",
+  "mcp_client.py",
+  "mcp_server.py",
+  "mcp_tools.py",
+  "nl2sql.py",
+  "run_agent.py",
+  "run_conversational_agent.py",
+  "requirements.txt",
+  "README.md",
+  "gcp-oauth.keys.json"
+]
+exclude = [".venv/**", "__pycache__/**", ".vscode/**", "*.db", "*.sqlite*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0"
+]
