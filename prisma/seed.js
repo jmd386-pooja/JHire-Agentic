@@ -91,6 +91,17 @@ function main() {
                                 weaknesses: "Limited ML exposure",
                                 recommendation: "Recommend with reservations",
                             },
+                            {
+                                job_id: 2,
+                                candidate_name: "sai",
+                                resume_email: "john@mail.com",
+                                final_score: 77,
+                                final_rank: 2,
+                                detailed_reasoning: "Solid fundamentals but less confident in system design.",
+                                strengths: "SQL, ETL, teamwork",
+                                weaknesses: "Limited ML exposure",
+                                recommendation: "Recommend with reservations",
+                            },
                         ],
                     })];
                 case 1:
