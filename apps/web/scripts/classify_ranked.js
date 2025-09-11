@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 
 
 dotenv.config();
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;

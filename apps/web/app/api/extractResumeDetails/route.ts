@@ -5,7 +5,7 @@ import crypto from "crypto";
 import path from "path";
 import fs from "fs/promises";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const config = {
   api: { bodyParser: false },

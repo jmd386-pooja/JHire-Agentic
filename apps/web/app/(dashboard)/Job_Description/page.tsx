@@ -242,7 +242,7 @@ export default function ResumeInputs() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-3xl font-bold mb-6">Job Descriptions</h2>
 

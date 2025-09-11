@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
  
 dotenv.config();
  
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 const mistralApiKey = process.env.MISTRAL_API_KEY!;
 const mistralApiEndpoint = "https://api.mistral.ai/v1/chat/completions";
  

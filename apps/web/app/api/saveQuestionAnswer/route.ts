@@ -2,7 +2,7 @@ import {NextRequest, NextResponse } from "next/server";
 import { spawn } from "child_process";
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 interface Answer {
   text: string; 
 }
