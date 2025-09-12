@@ -6,8 +6,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-white">
+    <main className="min-h-dvh w-full bg-white">
       <PageTransition>{children}</PageTransition>
-    </div>
+    </main>
   );
 }

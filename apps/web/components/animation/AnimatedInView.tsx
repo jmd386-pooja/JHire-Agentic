@@ -1,11 +1,9 @@
-// apps/web/components/animation/AnimatedInView.tsx
 "use client";
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import React, { useRef, PropsWithChildren } from "react";
 import clsx from "clsx";
 
-// Slower, smoother defaults everywhere this wrapper is used.
 type Props = PropsWithChildren<{
   as?: keyof JSX.IntrinsicElements;
   className?: string;
@@ -16,7 +14,7 @@ type Props = PropsWithChildren<{
 }>;
 
 export function AnimatedInView({
-  as: Tag = "div",
+  as: _Tag = "div", // kept for compatibility; we render motion.div
   className,
   children,
   amount = 0.25,
@@ -30,12 +28,12 @@ export function AnimatedInView({
 
   const transition = prefersReduced
     ? { duration: Math.min(0.4, duration) }
-    : { duration, delay, ease: [0.25, 0.8, 0.25, 1] };
+    : { duration, delay, ease: [0.25, 0.8, 0.25, 1] as any };
 
   return (
     <motion.div
       ref={ref}
-      className={clsx(className)}
+      className={clsx("w-full min-w-0 max-w-full overflow-x-hidden", className)}
       initial={{ opacity: 0, y: offsetY }}
       animate={
         inView

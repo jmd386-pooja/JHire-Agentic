@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +17,11 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Bot } from "lucide-react";
 import Image from "next/image";
 import images from "@/images/Interview.jpg";
-import Jman_img from "@/images/JmanLogo.png"
+import Jman_img from "@/images/JmanLogo.png";
 import { AnimatedInView } from "@/components/animation/AnimatedInView";
- 
- 
+
 const loginSchema = z.object({
   email: z
     .string()
@@ -34,12 +32,12 @@ const loginSchema = z.object({
     ),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
- 
+
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
- 
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -47,35 +45,26 @@ export default function LoginPage() {
       password: "",
     },
   });
- 
+
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       setIsLoading(true);
- 
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-
- 
       const data = await response.json();
-      console.log("responseeee ",data);
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
-//  console.log("datttttaaaa",response);
- 
+
       router.push(data.redirect);
-      toast({
-        title: "Success",
-        description: "Logged in successfully",
-      });
+      toast({ title: "Success", description: "Logged in successfully" });
     } catch (error) {
-      console.log("error",error);
-      
       toast({
         variant: "destructive",
         title: "Error",
@@ -85,28 +74,27 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
- 
+
   return (
-    <AnimatedInView className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="min-h-screen flex">
-        {/* Left Side: Login Form */}
-        <div className="flex-1 flex items-center justify-center bg-card">
+    <AnimatedInView className="min-h-dvh bg-gray-50">
+      {/* 2-column responsive layout */}
+      <div className="mx-auto grid min-h-dvh w-full grid-cols-1 md:grid-cols-2">
+        {/* Left: form */}
+        <div className="relative flex items-center justify-center bg-card px-6 py-10">
           <div className="absolute top-4 left-4 flex items-center space-x-2">
             <Image
-              src={Jman_img} // Company logo
+              src={Jman_img}
               alt="Company Logo"
-              width={25} // Adjust width as needed
-              height={14} // Adjust height as needed
+              width={25}
+              height={14}
               className="object-contain"
             />
-            <span className="text-md font-bold text-primary">JMAN Group</span>{" "}
-            {/* Company name */}
+            <span className="text-md font-bold text-primary">JMAN Group</span>
           </div>
-          <div className="w-full max-w-sm p-6 space-y-6 bg-white rounded-lg pt-17">
+
+          <div className="w-full max-w-sm rounded-lg bg-white p-6 space-y-6">
             <div className="flex flex-col items-center space-y-2">
-              {/* <Bot className="h-12 w-12 text-primary" /> */}
-              {/* <Image alt="Login" src={Jman_img} className="h-10 w-8"></Image> */}
-              <h2 className="text-xl font-semibold">Welcomeee to JHire</h2>
+              <h2 className="text-xl font-semibold">Welcome to JHire</h2>
               <p className="text-xs text-muted-foreground">
                 Sign in to your account
               </p>
@@ -123,7 +111,7 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email addressss</FormLabel>
+                      <FormLabel>Email address</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Your Email"
@@ -162,25 +150,16 @@ export default function LoginPage() {
                 </Button>
               </form>
             </Form>
-
-            {/* <div className="text-center text-xs">
-            <span className="text-muted-foreground">
-              Don't have an account?{" "}
-            </span>
-            <Link href="/register" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </div> */}
           </div>
         </div>
 
-        {/* Right Side: Image */}
-        <div className="flex-1 relative hidden md:block">
+        {/* Right: hero image */}
+        <div className="relative hidden md:block">
           <Image
             src={images}
             alt="Login Illustration"
-            layout="fill"
-            objectFit="cover"
+            fill
+            className="object-cover"
             priority
           />
         </div>
@@ -188,5 +167,3 @@ export default function LoginPage() {
     </AnimatedInView>
   );
 }
- 
-

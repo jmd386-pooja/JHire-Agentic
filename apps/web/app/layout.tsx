@@ -1,18 +1,14 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'JHire - AI-Powered Interview Platform',
-  description: 'Digital human experience-based interviewer chatbot for conducting live video interviews',
-  icons:{
-    icon:"https://example.com/icon.png",
-    apple: "https://example.com/apple-icon.png",
-  }
+  title: "JHire",
+  description: "AI-Powered Interview Platform",
 };
 
 export default function RootLayout({
@@ -21,20 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Prevent UA auto-dark styling of form controls */}
-        <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#ffffff" />
-      </head>
-      <body className={inter.className}>
+    <html lang="en" className="h-dvh">
+      <body className={`${inter.className} h-dvh overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
-          enableSystem={false}
+          enableSystem
           disableTransitionOnChange
         >
-            {children}
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

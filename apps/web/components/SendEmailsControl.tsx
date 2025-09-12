@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   jobId: number;
@@ -12,37 +15,48 @@ export default function SendEmailsControl({ jobId, total }: Props) {
   const max = Math.max(0, total);
   const min = max > 0 ? 1 : 0;
 
-  // default to "all"
   const [n, setN] = useState<number>(max);
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<
+    "idle" | "running" | "complete" | "error"
+  >("idle");
+  const [progress, setProgress] = useState(0);
+  const { toast } = useToast();
 
-  // keep input value clamped
+  // Clamp input
   useEffect(() => {
     setN((prev) => clamp(prev, min, max));
   }, [min, max]);
+
+  // Indeterminate progress animation until server responds
+  useEffect(() => {
+    if (status === "running") {
+      setProgress(10);
+      const id = setInterval(() => {
+        setProgress((p) => (p >= 90 ? 90 : p + 2));
+      }, 200);
+      return () => clearInterval(id);
+    }
+    if (status === "complete") setProgress(100);
+    if (status === "idle" || status === "error") setProgress(0);
+  }, [status]);
 
   const isAll = useMemo(() => n >= max && max > 0, [n, max]);
   const disabled = max === 0;
 
   const onSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Number(e.target.value);
-    setN(clamp(val, min, max));
+    setN(clamp(Number(e.target.value), min, max));
   };
-
   const onNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const val = raw === "" ? NaN : Number(raw);
-    if (Number.isNaN(val)) {
-      setN(min);
-    } else {
-      setN(clamp(val, min, max));
-    }
+    setN(clamp(Number(e.target.value), min, max));
   };
 
-  const send = async () => {
-    if (disabled) {
-      alert("No candidates available for this job.");
-      return;
-    }
+  const sendEmails = async () => {
+    if (disabled) return;
+    setOpen(true);
+    setStatus("running");
+
+    // Uses the existing /api/chat → agent → email flow
     const message = isAll
       ? `send email to everyone in jd_id:${jobId}`
       : `send email to the top ${n} in jd_id:${jobId}`;
@@ -54,21 +68,32 @@ export default function SendEmailsControl({ jobId, total }: Props) {
         body: JSON.stringify({ message }),
       });
       const data = await res.json();
+
       if (res.ok && data?.status === "success") {
-        alert(
-          typeof data.reply === "string"
-            ? data.reply
-            : "Email command sent successfully."
-        );
+        setStatus("complete");
+        toast({
+          title: "Emails sent",
+          description: isAll
+            ? `Invitations sent to all (${max}) candidates.`
+            : `Invitations sent to top ${n}.`,
+        });
+        setTimeout(() => setOpen(false), 800);
       } else {
         const err = data?.error || data?.reply || "Unknown error";
-        alert(`Failed: ${err}`);
-        // (optional) console for deeper details
-        // eslint-disable-next-line no-console
-        console.error("Email send response", data);
+        setStatus("error");
+        toast({
+          variant: "destructive",
+          title: "Failed to send emails",
+          description: err,
+        });
       }
     } catch (e: any) {
-      alert(`Request failed: ${e?.message || e}`);
+      setStatus("error");
+      toast({
+        variant: "destructive",
+        title: "Failed to send emails",
+        description: e?.message || String(e),
+      });
     }
   };
 
@@ -84,42 +109,63 @@ export default function SendEmailsControl({ jobId, total }: Props) {
           </span>
         </div>
 
-        {/* Range slider */}
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={1}
-          value={n}
-          onChange={onSlider}
-          disabled={disabled}
-          className="w-full"
-        />
-
-        {/* Number input (kept in sync) */}
         <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={min}
+            max={max || 1}
+            step={1}
+            value={n}
+            onChange={onSlider}
+            className="flex-1"
+            disabled={disabled}
+          />
           <input
             type="number"
             min={min}
             max={max}
             step={1}
-            value={Number.isFinite(n) ? n : ""}
+            value={n}
             onChange={onNumber}
+            className="w-20 rounded border px-2 py-1"
             disabled={disabled}
-            className="w-28 border rounded px-3 py-2"
           />
-          <Button onClick={send} disabled={disabled}>
-            {isAll ? "Send to Everyone" : `Send Top ${n}`}
+          <Button
+            onClick={sendEmails}
+            disabled={disabled}
+            className="whitespace-nowrap"
+          >
+            Send Mails
           </Button>
         </div>
 
-        {/* Helper hint */}
         <p className="text-xs text-gray-500">
           {isAll
             ? `Will send: "send email to everyone in jd_id:${jobId}"`
             : `Will send: "send email to the top ${n} in jd_id:${jobId}"`}
         </p>
       </div>
+
+      {/* Modal with progress */}
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <div className="p-6 w-[360px] sm:w-[480px]">
+          <h2 className="text-xl font-bold mb-3">Sending invitations</h2>
+          <div className="space-y-2">
+            <div className="text-sm text-muted-foreground">
+              {status === "running" && "Sending emails…"}
+              {status === "complete" && "Completed ✔"}
+              {status === "error" && "An error occurred."}
+            </div>
+            <Progress value={progress} />
+            <div className="text-xs text-muted-foreground">{progress}%</div>
+          </div>
+          <div className="mt-6 flex justify-end">
+            {status !== "running" && (
+              <Button onClick={() => setOpen(false)}>Close</Button>
+            )}
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
