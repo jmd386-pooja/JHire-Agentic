@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration constants
-DEFAULT_MODEL_NAME = "gemini-2.5-flash-lite"
+DEFAULT_MODEL_NAME = "gemini-2.0-flash-thinking-exp"
 DEFAULT_TEMPERATURE = 0.1
 DEFAULT_TOP_N = 10
 
@@ -136,6 +136,18 @@ class DatabaseManager:
               updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now()
             );
             """)
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS public."AgentTrajectory" (
+                    id BIGSERIAL PRIMARY KEY,
+                    start_ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    user_goal TEXT NOT NULL,
+                    steps JSONB NOT NULL,
+                    final_answer TEXT,
+                    confidence DOUBLE PRECISION
+                );
+                """
+            )
             # backfill columns/defaults if table existed with older shape
             cur.execute("""ALTER TABLE public."JobDescription"
                 ADD COLUMN IF NOT EXISTS job_description            TEXT;""")

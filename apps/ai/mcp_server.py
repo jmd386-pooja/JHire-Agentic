@@ -84,6 +84,13 @@ def run_select_params(sql: str, params: tuple):
     with pg_conn() as cx, cx.cursor(row_factory=psycopg.rows.dict_row) as cur:
         cur.execute(sql, params)
         return list(cur.fetchall())
+    
+
+async def _fetch_all(self, sql: str) -> list[dict]:
+    async with self._pool.acquire() as conn:
+        rows = await conn.fetch(sql)
+        # Convert asyncpg Record -> dict
+        return [dict(r) for r in rows]
 
 # ------------ Lazy tool helpers ------------
 _resume_processor = None
@@ -415,6 +422,47 @@ async def bootstrap_schema() -> Dict[str, Any]:
         return {"status":"success","resumes_view":ok_view,"resumes_search":ok_mv,"timestamp":datetime.now().isoformat()}
     except Exception as e:
         return {"status":"error","error":str(e),"timestamp":datetime.now().isoformat()}
+
+@mcp.tool()
+async def db_diagnostics() -> dict:
+    """
+    Quick visibility into which DB the MCP server is attached to,
+    and whether core relations have rows.
+    """
+    try:
+        db = get_database_manager()
+        db.ensure_schema_once()
+        db.refresh_resumes_search_if_dirty()
+        conn = db.get_connection()
+
+        with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute("SELECT current_database() AS db, current_schema() AS schema")
+            meta = cur.fetchone() or {}
+            result = {"status": "success", "meta": meta, "timestamp": datetime.now().isoformat()}
+
+            # Check a few relations if present (ignore missing-table errors)
+            checks = {}
+            for name, sql in {
+                "resumes_count":       'SELECT COUNT(*)::int AS count FROM public."resumes"',
+                "resumes_search_count":'SELECT COUNT(*)::int AS count FROM public."resumes_search"',
+                "email_audit_count":   'SELECT COUNT(*)::int AS count FROM public."EmailAudit"',
+            }.items():
+                try:
+                    cur.execute(sql)
+                    row = cur.fetchone()
+                    checks[name] = int((row or {}).get("count", 0))
+                except Exception as e:
+                    checks[name] = f"error:{type(e).__name__}"
+
+            result["checks"] = checks
+            # Show where the DSN came from (masked)
+            dsn = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_DSN") or os.getenv("PG_DSN") or ""
+            if dsn:
+                # mask password in DSN if present
+                result["dsn_hint"] = dsn.replace(dsn.split("@")[0], "***") if "@" in dsn else "***"
+            return result
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
     
 @mcp.tool()
@@ -1172,68 +1220,132 @@ async def log_email_audit(
 
 # ---- Core DB utilities exposed to clients ----
 @mcp.tool()
-async def execute_database_query(query: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+async def execute_database_query(
+    query: str,
+    params: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """
-    SELECT-only DB query. For INSERT/UPDATE/DDL, use dedicated write tools
-    like `store_job_results`, `upsert_exam_credentials`, `log_email_audit`.
+    SELECT-only DB query (async-safe).
+    - Enforces SELECT-only and prevents DDL/DML.
+    - Auto-adds a LIMIT if missing to avoid large scans.
+    - Runs blocking psycopg calls off the event loop (to_thread).
+    
+    Returns BOTH:
+      - Backcompat shape: {"status": "success"|"error", "data": [...], "columns": [...], ...}
+      - ReAct shape: {"ok": true|false, "rows": [...], "sql": "..."}
     """
+    from datetime import datetime
+    import re
+    from typing import Any, Dict, Optional
+    import psycopg
+    import anyio  # preferred; if you don't have anyio, use asyncio.run_in_executor instead
+
     db = get_database_manager()
     db.ensure_schema_once()
     db.refresh_resumes_search_if_dirty()
-    conn = db.get_connection()
+    conn = db.get_connection()  # psycopg (sync) connection
 
+    # ---------- Safety helpers ----------
+    # Prefer your existing regex if present; otherwise compile one locally.
+    try:
+        _allowed = ALLOWED_SELECT  # type: ignore[name-defined]
+    except NameError:
+        _allowed = re.compile(r"^\s*SELECT\b", re.IGNORECASE | re.DOTALL)
+
+    def _is_safe_select(sql: str) -> bool:
+        if not isinstance(sql, str) or not _allowed.match(sql or ""):
+            return False
+        lo = f" {sql.lower()} "
+        # Disallow obvious mutation/DDL and semicolons
+        bad = [" insert ", " update ", " delete ", " drop ", " alter ", " create ", " grant ", " revoke ", ";"]
+        return not any(tok in lo for tok in bad)
+
+    def _ensure_limit(sql: str, default_limit: int = 100) -> str:
+        if not isinstance(sql, str):
+            return ""
+        lo = sql.lower()
+        return sql if " limit " in lo else (sql.rstrip() + f" LIMIT {default_limit}")
+
+    # ---------- Validate & normalize SQL ----------
     sql = (query or "").strip()
-    # Reuse the compiled regex already in this file: ALLOWED_SELECT = r"^\s*SELECT\b"
-    if not ALLOWED_SELECT.match(sql):
+    if not _is_safe_select(sql):
+        # Backcompat + ReAct friendly
         return {
             "status": "error",
             "error": "Only SELECT queries are allowed via execute_database_query. Use dedicated write tools.",
             "query_preview": sql[:120],
             "timestamp": datetime.now().isoformat(),
+            "ok": False,
         }
 
+    safe_sql = _ensure_limit(sql, default_limit=100)
+
+    # ---------- Blocking DB work (run off the event loop) ----------
     def _run_once() -> Dict[str, Any]:
         with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
             if params:
-                cur.execute(sql, params)
+                cur.execute(safe_sql, params)
             else:
-                cur.execute(sql)
+                cur.execute(safe_sql)
             rows = cur.fetchall()
             cols = [d.name for d in cur.description]
             data = [dict(r) for r in rows]
-            return {
-                "query": sql,
+
+            # Backcompat payload
+            base = {
+                "query": safe_sql,
                 "results_count": len(data),
-                "data": data[:100],
+                "data": data[:100],  # hard cap to avoid overfetch
                 "columns": cols,
                 "status": "success",
                 "timestamp": datetime.now().isoformat(),
             }
+            # ReAct-friendly fields
+            base["ok"] = True
+            base["rows"] = base["data"]
+            base["sql"] = safe_sql
+            return base
+
+    async def _retry_once_on_schema_error() -> Dict[str, Any]:
+        try:
+            return await anyio.to_thread.run_sync(_run_once)
+        except (psycopg.errors.UndefinedTable,
+                psycopg.errors.UndefinedObject,
+                psycopg.errors.InvalidSchemaName,
+                psycopg.errors.InFailedSqlTransaction) as e:
+            # rollback + refresh schema then retry once (your existing pattern)
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            try:
+                db.ensure_schema_once()
+                db.refresh_resumes_search_if_dirty()
+            except Exception:
+                pass
+            try:
+                return await anyio.to_thread.run_sync(_run_once)
+            except Exception as e2:
+                return {
+                    "status": "error",
+                    "error": str(e2),
+                    "query": safe_sql,
+                    "timestamp": datetime.now().isoformat(),
+                    "ok": False,
+                    "sql": safe_sql,
+                }
 
     try:
-        return _run_once()
-
-    except (psycopg.errors.UndefinedTable,
-            psycopg.errors.UndefinedObject,
-            psycopg.errors.InvalidSchemaName,
-            psycopg.errors.InFailedSqlTransaction) as e:
-        # Clear aborted tx, (re)create schema, retry once (matches your current pattern)
-        try:
-            conn.rollback()
-        except Exception:
-            pass
-        try:
-            db.ensure_schema_once()
-            db.refresh_resumes_search_if_dirty()
-        except Exception:
-            pass
-        try:
-            return _run_once()
-        except Exception as e2:
-            return {"status": "error", "error": str(e2), "query": sql, "timestamp": datetime.now().isoformat()}
-
+        return await _retry_once_on_schema_error()
     except Exception as e:
-        return {"status": "error", "error": str(e), "query": sql, "timestamp": datetime.now().isoformat()}
+        return {
+            "status": "error",
+            "error": str(e),
+            "query": safe_sql,
+            "timestamp": datetime.now().isoformat(),
+            "ok": False,
+            "sql": safe_sql,
+        }
 
 @mcp.tool()
 async def db_info() -> Dict[str, Any]:
@@ -1378,6 +1490,79 @@ async def get_candidate_rankings(job_id: int) -> Dict[str, Any]:
         }
     except Exception as e:
         return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
+
+@mcp.tool()
+async def log_agent_trajectory(
+    user_goal: str,
+    steps: dict | list,
+    final_answer: str | None = None,
+    confidence: float | None = None,
+    start_ts: str | None = None,
+) -> dict:
+    """
+    Insert one AgentTrajectory row.
+    Arguments:
+      - user_goal: the original goal passed into react_agent.run(...)
+      - steps: the *entire* trajectory (list of {thought, action, observation}) or a dict with "trajectory"
+      - final_answer: final answer string (if any)
+      - confidence: optional scalar from AgentState.confidence
+      - start_ts: optional ISO string; if omitted, defaults to NOW() in DB
+    Returns:
+      {ok: bool, id?: int}
+    """
+    from datetime import datetime
+    import json
+    import anyio
+
+    db = get_database_manager()
+    db.ensure_schema_once()
+
+    # Normalize steps to a JSON-serializable object
+    payload_steps = steps
+    try:
+        # if the caller passed a dict like {"trajectory":[...]}
+        if isinstance(steps, dict) and "trajectory" in steps and isinstance(steps["trajectory"], list):
+            payload_steps = steps["trajectory"]
+        # sanity check: ensure serializable
+        json.dumps(payload_steps)
+    except Exception:
+        return {"ok": False, "error": "steps_not_json_serializable"}
+
+    sql = """
+        INSERT INTO public."AgentTrajectory"
+          (start_ts, user_goal, steps, final_answer, confidence)
+        VALUES
+          (COALESCE(%s::timestamptz, NOW()), %s, %s::jsonb, %s, %s)
+        RETURNING id
+    """
+
+    params = (
+        start_ts,
+        user_goal,
+        json.dumps(payload_steps),
+        final_answer,
+        confidence,
+    )
+
+    conn = db.get_connection()  # psycopg sync connection
+
+    def _run_once():
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            new_id = cur.fetchone()[0]
+            conn.commit()
+            return new_id
+
+    try:
+        new_id = await anyio.to_thread.run_sync(_run_once)
+        return {"ok": True, "id": int(new_id)}
+    except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return {"ok": False, "error": f"log_insert_failed:{e}"}
+
 
 # --- CLI entry point for packaging ---
 def main() -> None:

@@ -11,10 +11,11 @@ import logging
 from typing import Dict, Any, Optional, List
 from contextlib import asynccontextmanager
 import os
-
+import sys, subprocess, shutil
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
@@ -24,13 +25,37 @@ logger = logging.getLogger(__name__)
 class MCPClient:
     """
     Minimal, stable MCP stdio client used by agents to call tools on the MCP server.
-    Provides both async and convenient sync wrappers.
+    This __init__ only prepares StdioServerParameters; your higher-level code
+    should use these params to start/connect to the MCP server.
     """
 
-    def __init__(self, server_script_path: str = "mcp_server.py") -> None:
+    def __init__(
+        self,
+        server_script_path: str = "ai/mcp_server.py",
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+    ) -> None:
+        # Resolve paths
+        self.server_script_path = str(Path(server_script_path).resolve())
+        self.cwd = str(Path(cwd).resolve()) if cwd else str(Path(self.server_script_path).parent)
+
+        # Compose environment (inherit + overrides)
+        base_env = os.environ.copy()
+        if env:
+            base_env.update(env)
+
+        # Ensure PYTHONPATH contains project root so `ai/*` imports work inside the server
+        base_env["PYTHONPATH"] = os.pathsep.join(
+            p for p in [self.cwd, base_env.get("PYTHONPATH", "")] if p
+        )
+        self.env = base_env
+
+        # Prepare stdio server params (let the MCP client library spawn the process)
         self.server_params = StdioServerParameters(
-            command="python",
-            args=[server_script_path],
+            command=sys.executable,          # use the current interpreter
+            args=[self.server_script_path],  # script to run
+            env=self.env,                    # pass through env (contains DB creds, API keys, etc.)
+            cwd=self.cwd,                    # run from project dir so relative imports/files work
         )
 
     # ---------- core async API ----------

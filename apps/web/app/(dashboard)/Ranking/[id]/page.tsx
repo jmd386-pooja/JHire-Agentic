@@ -103,10 +103,10 @@ export default async function RankingPage({ params }: PageProps) {
               const weaknesses = toList(c.weaknesses as unknown);
               const score =
                 typeof c.final_score === "number"
-                  ? c.final_score.toFixed(2)
-                  : String(c.final_score);
-
-              return (
+                ? c.final_score.toFixed(2)
+                : String(c.final_score);
+                
+                return (
                 <AccordionItem
                   key={`${c.resume_email ?? c.candidate_name}-${idx}`}
                   value={`candidate-${idx + 1}`}

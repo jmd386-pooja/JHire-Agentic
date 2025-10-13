@@ -1,6 +1,10 @@
+"use client";
+
+import type React from "react";
+
 import Sidebar from "@/components/layout/sidebar";
 import PageTransition from "@/components/animation/PageTransition";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import JmanLogo from "@/images/JMANLogoBlue.png";
 
@@ -9,14 +13,42 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex min-h-dvh overflow-hidden">
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
-      {/* main column; never allow x-overflow */}
-      <main className="flex flex-1 min-w-0 flex-col overflow-x-hidden bg-gradient-to-b from-slate-50 to-zinc-100">
-        {/* only this area scrolls */}
-        <Sidebar />
-        <div className="flex-1 min-h-0 overflow-y-auto">
+  // Listen for sidebar state changes
+  useEffect(() => {
+    const handleSidebarToggle = (event: CustomEvent) => {
+      setSidebarExpanded(event.detail.expanded);
+    };
+
+    window.addEventListener(
+      "sidebarToggle",
+      handleSidebarToggle as EventListener
+    );
+    return () => {
+      window.removeEventListener(
+        "sidebarToggle",
+        handleSidebarToggle as EventListener
+      );
+    };
+  }, []);
+
+  return (
+    <div className="flex min-h-screen relative">
+      {/* Fixed sidebar that stays in place */}
+      <Sidebar onToggle={setSidebarExpanded} />
+
+      {/* Content column with proper margin to account for fixed sidebar */}
+      <main
+        className={`flex flex-1 min-w-0 flex-col bg-gradient-to-b from-slate-50 to-zinc-100 transition-[margin-left] duration-300 ${
+          sidebarExpanded ? "ml-64" : "ml-16"
+        }`}
+      >
+        {/* Scrollable content area */}
+        <div
+          className="flex-1 min-h-screen overflow-y-auto"
+          data-scroll-root="true"
+        >
           <Suspense
             fallback={
               <div className="p-6">
@@ -29,7 +61,7 @@ export default function DashboardLayout({
           </Suspense>
         </div>
 
-        <footer className="mt-auto shrink-0 w-full bg-gray-200 py-2 px-2">
+        <footer className="mt-auto shrink-0 w-full bg-gray-200 py-2 px-2 sticky bottom-0">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <p className="text-sm text-gray-600 m-0">
               © 2024 JMAN, All Rights Reserved
