@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_MODEL_NAME = "gemini-2.5-flash-lite"
 DEFAULT_TEMPERATURE = 0.1
 DEFAULT_TOP_N = 10
+MAX_RESUME_TEXT_CHARS = int(os.getenv("MAX_RESUME_TEXT_CHARS", "4000"))
 
 # Database configuration
 PG_DSN = os.getenv('DATABASE_URL')
@@ -71,6 +72,12 @@ class FinalScore(BaseModel):
     strengths: List[str] = Field(description="Candidate's key strengths for this role")
     weaknesses: List[str] = Field(description="Candidate's areas for improvement")
     recommendation: str = Field(description="Final recommendation")
+    
+class InitialScoresBatch(BaseModel):
+    scores: List[InitialScore]
+
+class FinalScoresBatch(BaseModel):
+    scores: List[FinalScore]
 
 
 class DatabaseManager:
@@ -443,15 +450,27 @@ class DatabaseManager:
             cur.execute('DROP TRIGGER IF EXISTS trg_category_dirty ON "Category";')
             cur.execute('CREATE TRIGGER trg_category_dirty AFTER INSERT OR UPDATE OR DELETE ON "Category" FOR EACH STATEMENT EXECUTE FUNCTION public.mark_resumes_dirty();')
 
-            # ---------------- initial refresh ----------------
             try:
-                cur.execute("REFRESH MATERIALIZED VIEW CONCURRENTLY public.resumes_search;")
+                cur.execute("""
+                    SELECT ispopulated
+                    FROM pg_matviews
+                    WHERE schemaname='public' AND matviewname='resumes_search';
+                """)
+                row = cur.fetchone()
+                is_populated = bool(row["ispopulated"]) if row and "ispopulated" in row else bool(row[0]) if row else False
             except Exception:
+                is_populated = False
+
+            # Only refresh if the matview exists but is NOT populated yet (first-time create)
+            if not is_populated:
                 try:
-                    conn.rollback()
+                    cur.execute("REFRESH MATERIALIZED VIEW public.resumes_search;")
                 except Exception:
-                    pass
-                cur.execute("REFRESH MATERIALIZED VIEW public.resumes_search;")
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
+
 
         try:
             conn.autocommit = prev_ac
@@ -618,6 +637,32 @@ class DatabaseManager:
         if self.connection:
             self.connection.close()
             logger.info("Database connection closed")
+            
+    def get_resumes_for_categories(self, categories: List[str], limit: int = 500) -> pd.DataFrame:
+        """
+        Fetch only resumes matching categories from SQL (fast) instead of loading everything into pandas.
+        """
+        self.ensure_schema_once()
+        self.refresh_resumes_search_if_dirty()
+
+        cats = [c.replace("_", " ") for c in (categories or []) if c]
+        if not cats:
+            return self.get_all_resumes()
+
+        # category_text is a comma-joined text; use ILIKE ANY for matching
+        patterns = [f"%{c}%" for c in cats]
+
+        q = """
+            SELECT *
+            FROM public.resumes
+            WHERE category_text ILIKE ANY(%(patterns)s)
+            LIMIT %(limit)s
+        """
+        conn = self.get_connection()
+        with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(q, {"patterns": patterns, "limit": int(limit)})
+            return pd.DataFrame(cur.fetchall())
+
     
     def get_all_resumes(self) -> pd.DataFrame:
         self.ensure_schema_once()
@@ -795,6 +840,7 @@ class ResumeProcessor:
     def _initialize_llm(self) -> None:
         """Initialize the LangChain LLM with Gemini AI."""
         try:
+            self.model_name = os.getenv("GEMINI_MODEL", self.model_name or "gemini-2.0-flash")
             api_key = os.getenv('GOOGLE_API_KEY')
             if not api_key:
                 raise ValueError("GOOGLE_API_KEY environment variable not found.")
@@ -803,7 +849,8 @@ class ResumeProcessor:
                 model=self.model_name,
                 temperature=self.temperature,
                 google_api_key=api_key,
-                convert_system_message_to_human=True
+                convert_system_message_to_human=False,
+                max_output_tokens=int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "512"))
             )
             logger.info(f"Initialized Gemini AI model: {self.model_name}")
             
@@ -922,7 +969,10 @@ class ResumeProcessor:
                 if clean:
                     text_parts.append(f"{column.upper()}: {clean}")
 
-            combined_texts.append("\n".join(text_parts))
+            blob = "\n".join(text_parts)
+            if len(blob) > MAX_RESUME_TEXT_CHARS:
+                blob = blob[:MAX_RESUME_TEXT_CHARS] + "\n[TRUNCATED]"
+            combined_texts.append(blob)
 
         df["combined_text"] = combined_texts
         return df
@@ -1193,76 +1243,94 @@ class ResumeProcessor:
         return fallback_scores
     
     def _initial_ai_scoring(self, category_df: pd.DataFrame, job_description: str) -> List[InitialScore]:
-        """Perform initial AI scoring of candidates."""
+        """Batch initial AI scoring of candidates (chunked) to reduce LLM calls."""
         if category_df.empty:
             return []
-        
-        logger.info(f"Performing initial AI scoring for {len(category_df)} candidates...")
-        
-        scored_candidates = []
-        
-        for idx, row in category_df.iterrows():
+
+        logger.info(f"Performing initial AI scoring for {len(category_df)} candidates (BATCH MODE)...")
+
+        # Tune chunk size via env; default 8 is a good start
+        chunk_size = int(os.getenv("INITIAL_SCORE_CHUNK_SIZE", "8"))
+        max_resume_chars = int(os.getenv("MAX_RESUME_CHARS_FOR_SCORING", "2500"))
+
+        parser = PydanticOutputParser(pydantic_object=InitialScoresBatch)
+        format_instructions = parser.get_format_instructions()
+
+        def _chunker(rows: List[Dict[str, Any]], n: int):
+            for i in range(0, len(rows), n):
+                yield rows[i:i+n]
+
+        # Prepare compact input per candidate (truncate resume text)
+        candidates: List[Dict[str, Any]] = []
+        for _, row in category_df.iterrows():
+            name = row.get("full_name", "Unknown")
+            txt = row.get("combined_text", "") or ""
+            if len(txt) > max_resume_chars:
+                txt = txt[:max_resume_chars] + "\n[TRUNCATED]"
+            candidates.append({"candidate_name": name, "resume_text": txt})
+
+        all_scores: List[InitialScore] = []
+
+        for batch_idx, batch in enumerate(_chunker(candidates, chunk_size), start=1):
             try:
-                logger.info(f"Processing candidate: {row.get('full_name', 'Unknown')}")
-                
                 prompt = f"""
-                You are an expert HR professional evaluating a candidate for a position.
-                
-                JOB DESCRIPTION:
-                {job_description}
-                
-                CANDIDATE RESUME:
-                {row['combined_text']}
-                
-                Please provide an initial compatibility score and analysis.
-                """
-                
-                # Create output parser
-                parser = PydanticOutputParser(pydantic_object=InitialScore)
-                format_instructions = parser.get_format_instructions()
-                full_prompt = f"{prompt}\n\n{format_instructions}"
-                
-                logger.info(f"Sending request to Gemini AI for candidate: {row.get('full_name', 'Unknown')}")
-                
-                # Get AI response
-                messages = [
-                    HumanMessage(content=full_prompt)
-                ]
-                
-                response = self.llm.invoke(messages)
-                logger.info(f"Received response from Gemini AI for candidate: {row.get('full_name', 'Unknown')}")
-                
-                # Parse the response
-                response_text = response.content
-                logger.info(f"Response content length: {len(response_text)}")
-                
-                if '```json' in response_text:
-                    json_start = response_text.find('```json') + 7
-                    json_end = response_text.find('```', json_start)
-                    json_text = response_text[json_start:json_end].strip()
-                else:
-                    json_text = response_text
-                
-                logger.info(f"Parsed JSON text: {json_text[:200]}...")
-                
-                score_result = parser.parse(json_text)
-                scored_candidates.append(score_result)
-                
-                logger.info(f"Initial score for {score_result.candidate_name}: {score_result.initial_score:.3f}")
-                
+    You are an expert HR professional evaluating multiple candidates for a position.
+
+    JOB DESCRIPTION:
+    {job_description}
+
+    You will receive a list of candidates. For EACH candidate, return an item with:
+    - candidate_name
+    - initial_score (0.0 to 1.0)
+    - key_matches (list)
+    - areas_of_concern (list)
+
+    IMPORTANT RULES:
+    - Output MUST be a single JSON object that matches the schema.
+    - The output MUST include scores for EVERY input candidate.
+    - Do NOT add extra keys.
+
+    CANDIDATES (batch {batch_idx}):
+    {json.dumps(batch, ensure_ascii=False)}
+
+    {format_instructions}
+    """.strip()
+
+                response = self.llm.invoke([HumanMessage(content=prompt)])
+                text = (response.content or "").strip()
+
+                # unwrap ```json fences if present
+                if "```json" in text:
+                    s = text.find("```json") + 7
+                    e = text.find("```", s)
+                    text = text[s:e].strip()
+
+                batch_obj = parser.parse(text)
+                batch_scores = batch_obj.scores or []
+                all_scores.extend(batch_scores)
+
+                logger.info(f"Batch {batch_idx}: scored {len(batch_scores)} candidates")
+
             except Exception as e:
-                logger.error(f"Error scoring candidate {row.get('full_name', 'Unknown')}: {e}")
-                logger.error(f"Full error details: {str(e)}")
-                continue
-        
-        logger.info(f"Successfully scored {len(scored_candidates)} out of {len(category_df)} candidates")
-        
-        # If no candidates were scored by AI, use fallback scoring
-        if not scored_candidates:
+                logger.error(f"Batch {batch_idx}: error scoring candidates: {e}")
+                # fallback: score this batch with your existing fallback logic
+                # convert batch back into a mini dataframe for fallback
+                try:
+                    tmp_df = pd.DataFrame([{
+                        "full_name": c["candidate_name"],
+                        "combined_text": c["resume_text"]
+                    } for c in batch])
+                    all_scores.extend(self._fallback_scoring(tmp_df, job_description))
+                except Exception as e2:
+                    logger.error(f"Batch {batch_idx}: fallback scoring also failed: {e2}")
+
+        logger.info(f"Successfully scored {len(all_scores)} candidates out of {len(category_df)}")
+        if not all_scores:
             logger.warning("AI scoring failed for all candidates, using fallback scoring")
-            scored_candidates = self._fallback_scoring(category_df, job_description)
-        
-        return scored_candidates
+            all_scores = self._fallback_scoring(category_df, job_description)
+
+        return all_scores
+
     
     def _fallback_final_evaluation(
         self, 
@@ -1299,103 +1367,87 @@ class ResumeProcessor:
         return fallback_scores
     
     def _final_llm_evaluation(
-        self, 
-        scored_candidates: List[InitialScore], 
+        self,
+        scored_candidates: List[InitialScore],
         job_description: str,
         top_n: int
     ) -> List[FinalScore]:
-        """Use LLM for final perfect scoring and ranking with detailed reasoning."""
+        """Final evaluation in ONE LLM call (top_n batch)."""
         if not scored_candidates:
             logger.warning("No scored candidates provided for final evaluation")
             return []
-        
-        # Sort by initial score and take top N
+
         top_candidates = sorted(scored_candidates, key=lambda x: x.initial_score, reverse=True)[:top_n]
-        
-        logger.info(f"Performing final LLM evaluation for top {len(top_candidates)} candidates...")
-        
-        final_scores = []
-        
-        for candidate in top_candidates:
-            try:
-                logger.info(f"Final evaluation for candidate: {candidate.candidate_name}")
-                
-                # Individual candidate evaluation
-                individual_prompt = f"""
-                You are a senior HR director and technical hiring expert. Your task is to provide the FINAL perfect scoring and ranking for a candidate.
+        logger.info(f"Performing final LLM evaluation for top {len(top_candidates)} candidates (ONE CALL)...")
 
-                JOB DESCRIPTION:
-                {job_description}
+        parser = PydanticOutputParser(pydantic_object=FinalScoresBatch)
+        format_instructions = parser.get_format_instructions()
 
-                CANDIDATE ANALYSIS:
-                Name: {candidate.candidate_name}
-                Initial Score: {candidate.initial_score:.3f}
-                Key Matches: {', '.join(candidate.key_matches)}
-                Areas of Concern: {', '.join(candidate.areas_of_concern)}
+        payload = [{
+            "candidate_name": c.candidate_name,
+            "initial_score": float(c.initial_score),
+            "key_matches": c.key_matches,
+            "areas_of_concern": c.areas_of_concern,
+        } for c in top_candidates]
 
-                Provide your final evaluation with:
-                1. FINAL PERFECT SCORE (0.0 to 1.0) - your expert assessment
-                2. FINAL RANKING (1 = best, {len(top_candidates)} = lowest)
-                3. Detailed reasoning for score and rank
-                4. Specific strengths and weaknesses
-                5. Final recommendation
-                """
-                
-                # Create output parser
-                parser = PydanticOutputParser(pydantic_object=FinalScore)
-                format_instructions = parser.get_format_instructions()
-                full_prompt = f"{individual_prompt}\n\n{format_instructions}"
-                
-                logger.info(f"Sending final evaluation request to Gemini AI for: {candidate.candidate_name}")
-                
-                messages = [
-                    HumanMessage(content=full_prompt)
-                ]
-                
-                response = self.llm.invoke(messages)
-                logger.info(f"Received final evaluation response for: {candidate.candidate_name}")
-                
-                # Parse the response
-                response_text = response.content
-                logger.info(f"Final evaluation response length: {len(response_text)}")
-                
-                if '```json' in response_text:
-                    json_start = response_text.find('```json') + 7
-                    json_end = response_text.find('```', json_start)
-                    json_text = response_text[json_start:json_end].strip()
-                else:
-                    json_text = response_text
-                
-                logger.info(f"Final evaluation parsed JSON: {json_text[:200]}...")
-                
-                final_score = parser.parse(json_text)
-                final_scores.append(final_score)
-                
-                logger.info(f"Final evaluation for {final_score.candidate_name}: Score {final_score.final_score:.3f}, Rank {final_score.final_rank}")
-                
-            except Exception as e:
-                logger.error(f"Error in final evaluation for {candidate.candidate_name}: {e}")
-                logger.error(f"Full error details: {str(e)}")
-                continue
-        
-        logger.info(f"Successfully completed final evaluation for {len(final_scores)} out of {len(top_candidates)} candidates")
-        
-        # If no candidates were evaluated by LLM, use fallback evaluation
-        if not final_scores:
-            logger.warning("LLM evaluation failed for all candidates, using fallback evaluation")
+        try:
+            prompt = f"""
+    You are a senior HR director and technical hiring expert.
+
+    JOB DESCRIPTION:
+    {job_description}
+
+    You will receive a list of candidate analyses (already initially scored).
+    Return FINAL scores and rankings for ALL candidates in the list.
+
+    REQUIREMENTS:
+    - final_score: 0.0 to 1.0
+    - final_rank: 1 is best, {len(top_candidates)} is lowest (MUST be a strict ordering, no ties)
+    - detailed_reasoning: concise but clear
+    - strengths: list
+    - weaknesses: list
+    - recommendation: short label
+
+    IMPORTANT:
+    - Output MUST be a single JSON object that matches the schema.
+    - Include EVERY candidate from the input exactly once.
+    - Do NOT add extra keys.
+
+    CANDIDATES:
+    {json.dumps(payload, ensure_ascii=False)}
+
+    {format_instructions}
+    """.strip()
+
+            response = self.llm.invoke([HumanMessage(content=prompt)])
+            text = (response.content or "").strip()
+
+            if "```json" in text:
+                s = text.find("```json") + 7
+                e = text.find("```", s)
+                text = text[s:e].strip()
+
+            batch_obj = parser.parse(text)
+            final_scores = batch_obj.scores or []
+
+            if not final_scores:
+                raise ValueError("Final evaluation returned empty scores")
+
+        except Exception as e:
+            logger.error(f"Final evaluation failed (batch). Using fallback. Error: {e}")
             final_scores = self._fallback_final_evaluation(scored_candidates, top_n)
-        
-        # Sort by final rank
+
+        # Normalize ranking order (trust model but enforce deterministically)
         init_lookup = {c.candidate_name: c.initial_score for c in scored_candidates}
         final_scores.sort(
-            key=lambda s: (s.final_score, init_lookup.get(s.candidate_name, 0.0)),
+            key=lambda s: (float(s.final_score or 0.0), float(init_lookup.get(s.candidate_name, 0.0))),
             reverse=True
         )
-
         for i, fs in enumerate(final_scores, start=1):
             fs.final_rank = i
 
         return final_scores
+
 
 
     def process_job_and_rank_candidates(
@@ -1420,11 +1472,27 @@ class ResumeProcessor:
 
         try:
             logger.info("🚀 Starting comprehensive resume processing and ranking...")
+            
+            # -------------------------
+            # Step 1: Categorize JD
+            # -------------------------
+            job_category = self._categorize_job_description(job_description)
+            cats = job_category.all_categories or [job_category.role_category]
+            logger.info(
+                "✅ Job categorized as: %s (also: %s) Conf: %.2f",
+                job_category.role_category,
+                ", ".join(job_category.all_categories) if job_category.all_categories else "none",
+                job_category.confidence_score,
+            )
+            diagnostics.append(
+                f"role_category={job_category.role_category}, "
+                f"all={cats}, conf={job_category.confidence_score:.2f}"
+            )
 
             # -------------------------
-            # Step 1: Load + prepare
+            # Step 2: Load + prepare
             # -------------------------
-            logger.info("Step 1: Loading resumes from database...")
+            logger.info("Step 2: Loading resumes from database...")
             df = self._load_resumes_from_db()
             if df is None:
                 diagnostics.append("load_resumes: returned None")
@@ -1441,7 +1509,7 @@ class ResumeProcessor:
                 }
 
             logger.info("Step 1a: Preparing resume text...")
-            df = self._prepare_resume_text(df)
+            df = self.db_manager.get_resumes_for_categories(cats, limit=int(os.getenv("RESUME_POOL_LIMIT", "800")))
             total_resumes = len(df)
             diagnostics.append(f"resumes_total={total_resumes}")
             if total_resumes == 0:
@@ -1457,21 +1525,7 @@ class ResumeProcessor:
                     "diagnostics": diagnostics,
                 }
 
-            # -------------------------
-            # Step 2: Categorize JD
-            # -------------------------
-            job_category = self._categorize_job_description(job_description)
-            cats = job_category.all_categories or [job_category.role_category]
-            logger.info(
-                "✅ Job categorized as: %s (also: %s) Conf: %.2f",
-                job_category.role_category,
-                ", ".join(job_category.all_categories) if job_category.all_categories else "none",
-                job_category.confidence_score,
-            )
-            diagnostics.append(
-                f"role_category={job_category.role_category}, "
-                f"all={cats}, conf={job_category.confidence_score:.2f}"
-            )
+            
 
             # -------------------------
             # Step 3: Filter by category(ies)
@@ -1587,8 +1641,4 @@ class ResumeProcessor:
                 "diagnostics": diagnostics,
             }
         finally:
-            # If your DatabaseManager uses pooled connections, consider removing this close().
-            try:
-                self.db_manager.close()
-            except Exception as e:
-                logger.error("Error closing database connection: %s", e)
+            pass

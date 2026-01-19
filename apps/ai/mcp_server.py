@@ -33,6 +33,9 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 import psycopg, psycopg.rows
 from mcp_tools import DatabaseManager
+import time
+_LAST_MV_CHECK = 0.0
+MV_CHECK_TTL_SECONDS = int(os.getenv("MV_CHECK_TTL_SECONDS", "15"))
 
 # ------------ Env & Logging ------------
 load_dotenv()
@@ -53,6 +56,14 @@ if sys.platform.startswith("win"):
 
 # ------------ SQLite helpers ------------
 ALLOWED_SELECT = re.compile(r"^\s*SELECT\b", re.IGNORECASE | re.DOTALL)
+
+def refresh_mv_throttled(db: DatabaseManager) -> None:
+    global _LAST_MV_CHECK
+    now = time.time()
+    if (now - _LAST_MV_CHECK) < MV_CHECK_TTL_SECONDS:
+        return
+    _LAST_MV_CHECK = now
+    db.refresh_resumes_search_if_dirty()
 
 def _pg_params():
     dsn = os.getenv("DATABASE_URL")
@@ -112,17 +123,10 @@ def get_database_manager():
 try:
     db0 = get_database_manager()
     db0.ensure_schema_once()
-    db0.refresh_resumes_search_if_dirty()
+    refresh_mv_throttled(db0)
 except Exception as e:
     logger.error("Bootstrap warning: %s", e)
     
-_dbm = None
-def _dbmgr() -> DatabaseManager:
-    global _dbm
-    if _dbm is None:
-        _dbm = DatabaseManager()
-    return _dbm
-
 
 _BOOTSTRAPPED = False
 
@@ -297,7 +301,7 @@ def _create_refresh_state_and_triggers(cur) -> None:
       AFTER INSERT OR UPDATE OR DELETE ON "Category"
       FOR EACH STATEMENT EXECUTE FUNCTION public.mark_resumes_dirty();
     """)
-    
+
 def ensure_schema_once() -> None:
     global _BOOTSTRAPPED
     if _BOOTSTRAPPED:
@@ -332,7 +336,7 @@ async def health_check() -> Dict[str, Any]:
     try:
         db = get_database_manager()
         db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
+        refresh_mv_throttled(db)
         exists_view = db.object_exists("view", "resumes")
         exists_mv   = db.object_exists("matview", "resumes_search")
         return {
@@ -346,24 +350,44 @@ async def health_check() -> Dict[str, Any]:
 @mcp.tool()
 async def get_database_stats() -> Dict[str, Any]:
     try:
-        db = _dbmgr()
+        db = get_database_manager()
         db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
-        df = db.get_all_resumes()
+        refresh_mv_throttled(db)
+        conn = db.get_connection()
+
+        with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            # 1) fast count
+            cur.execute("SELECT COUNT(*)::bigint AS total FROM public.resumes;")
+            total = int(cur.fetchone()["total"])
+
+            # 2) fast sample names
+            cur.execute("""
+                SELECT COALESCE(full_name, candidate_name, resume_name, '') AS name
+                FROM public.resumes
+                WHERE COALESCE(full_name, candidate_name, resume_name) IS NOT NULL
+                LIMIT 3
+            """)
+            sample_names = [r["name"] for r in cur.fetchall()]
+
+            # 3) columns list (optional but cheap)
+            cur.execute("""
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_schema='public' AND table_name='resumes'
+                ORDER BY ordinal_position
+            """)
+            cols = [r["column_name"] for r in cur.fetchall()]
+
         stats = {
             "status": "success",
             "timestamp": datetime.now().isoformat(),
-            "total_resumes": 0 if df is None or df.empty else int(len(df)),
+            "total_resumes": total,
             "db_path": DB_PATH,
+            "columns": cols,
+            "sample_candidate_names": sample_names,
         }
-        if df is not None and not df.empty:
-            stats.update({
-                "columns": df.columns.tolist(),
-                "sample_candidate_names": df.get("full_name", df.get("name", pd.Series(dtype=str))).head(3).tolist(),
-                "database_shape": list(df.shape),
-                "memory_usage_mb": round(df.memory_usage(deep=True).sum() / 1024 / 1024, 2),
-            })
         return stats
+
     except Exception as e:
         return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
@@ -409,7 +433,7 @@ async def bootstrap_schema() -> Dict[str, Any]:
     try:
         db = get_database_manager()
         db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
+        refresh_mv_throttled(db)
         ok_view = db.object_exists("view", "resumes")
         ok_mv   = db.object_exists("matview", "resumes_search")
         return {"status":"success","resumes_view":ok_view,"resumes_search":ok_mv,"timestamp":datetime.now().isoformat()}
@@ -435,54 +459,160 @@ async def analyze_job_description(job_description: str) -> Dict[str, Any]:
 
 @mcp.tool()
 async def filter_resumes_by_category(category: str, limit: int = 50) -> Dict[str, Any]:
+    """
+    FAST version:
+      - Do NOT load all resumes into Pandas.
+      - Filter + limit in Postgres (public.resumes view).
+      - Returns: candidates (name, id) + total_matches.
+    """
     try:
-        db = _dbmgr()
-        db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
-        processor = get_resume_processor()
         db = get_database_manager()
-        df = db.get_all_resumes()
-        if df is None or df.empty:
-            return {"status": "error", "error": "No resumes found in database"}
-        filtered_df = processor._filter_resumes_by_category(df, category)
-        cands = []
-        for idx, row in filtered_df.head(limit).iterrows():
-            name = row.get("full_name", row.get("name", row.get("candidate_name", "Unknown")))
-            cands.append({"name": name, "category": category, "id": int(row.get("id", idx))})
+        db.ensure_schema_once()
+        refresh_mv_throttled(db)
+
+        cat = (category or "").strip().lower()
+        lim = max(1, int(limit))
+
+        conn = db.get_connection()
+
+        with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            # 1) total matches (cheap)
+            cur.execute(
+                """
+                SELECT COUNT(*)::bigint AS total
+                FROM public.resumes
+                WHERE category_text IS NOT NULL
+                  AND category_text <> ''
+                  AND LOWER(category_text) LIKE ('%' || %(category)s || '%')
+                """,
+                {"category": cat},
+            )
+            total_matches = int((cur.fetchone() or {}).get("total", 0))
+
+            # 2) fetch limited rows only
+            cur.execute(
+                """
+                SELECT
+                  candidate_id,
+                  COALESCE(full_name, candidate_name, resume_name, '') AS name
+                FROM public.resumes
+                WHERE category_text IS NOT NULL
+                  AND category_text <> ''
+                  AND LOWER(category_text) LIKE ('%' || %(category)s || '%')
+                ORDER BY candidate_id ASC
+                LIMIT %(limit)s
+                """,
+                {"category": cat, "limit": lim},
+            )
+            rows = cur.fetchall() or []
+
+        candidates = [
+            {"name": (r.get("name") or "Unknown"), "category": category, "id": int(r.get("candidate_id") or 0)}
+            for r in rows
+        ]
+
         return {
             "status": "success",
             "timestamp": datetime.now().isoformat(),
             "category": category,
-            "total_matches": int(len(filtered_df)),
-            "returned_candidates": len(cands),
-            "limit": limit,
-            "candidates": cands,
+            "total_matches": total_matches,
+            "returned_candidates": len(candidates),
+            "limit": lim,
+            "candidates": candidates,
         }
+
     except Exception as e:
         return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 @mcp.tool()
 async def initial_score_candidates(job_description: str, category: str, limit: int = 20) -> Dict[str, Any]:
+    """
+    FAST version:
+      - Do NOT load all resumes into Pandas.
+      - Pull only the top `limit` candidates for the category from Postgres.
+      - Build per-candidate combined_text locally (same as _prepare_resume_text intent).
+      - Run scoring in a bounded threadpool so the async server stays responsive.
+
+    Notes:
+      - This preserves existing functionality: category filter + AI scoring output format.
+      - It will still be slow if you score 20 candidates sequentially (LLM calls).
+        For speed, also implement LLM batching/concurrency inside ResumeProcessor
+        (recommended separately).
+    """
     try:
-        
         processor = get_resume_processor()
-        db = _dbmgr()
+        db = get_database_manager()
         db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
-        df = db.get_all_resumes()
-        if df is None or df.empty:
-            return {"status": "error", "error": "No resumes found in database"}
-        df = processor._prepare_resume_text(df)
-        filtered_df = processor._filter_resumes_by_category(df, category)
-        if filtered_df.empty:
+        refresh_mv_throttled(db)
+
+        cat = (category or "").strip().lower()
+        lim = max(1, int(limit))
+
+        # 1) Fetch ONLY needed rows from Postgres (no get_all_resumes())
+        conn = db.get_connection()
+        with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(
+                """
+                SELECT
+                  candidate_id,
+                  COALESCE(full_name, candidate_name, resume_name, '') AS full_name,
+                  COALESCE(email, candidate_email, resume_email, '')   AS email,
+                  COALESCE(category_text, '')                          AS category_text,
+                  COALESCE(technical_skills, '')                       AS technical_skills,
+                  COALESCE(work_experience, '')                        AS work_experience,
+                  COALESCE(projects_flat, '')                          AS projects_flat,
+                  COALESCE(certifications_flat, '')                    AS certifications_flat,
+                  COALESCE(education, '')                              AS education
+                FROM public.resumes
+                WHERE category_text IS NOT NULL
+                  AND category_text <> ''
+                  AND LOWER(category_text) LIKE ('%' || %(category)s || '%')
+                ORDER BY candidate_id ASC
+                LIMIT %(limit)s
+                """,
+                {"category": cat, "limit": lim},
+            )
+            rows = cur.fetchall() or []
+
+        if not rows:
             return {"status": "error", "error": f"No candidates found for category: {category}"}
-        initial_scores = processor._initial_ai_scoring(filtered_df.head(limit), job_description)
-        payload = [{
-            "candidate_name": s.candidate_name,
-            "initial_score": s.initial_score,
-            "key_matches": s.key_matches,
-            "areas_of_concern": s.areas_of_concern,
-        } for s in initial_scores]
+
+        # 2) Build a tiny DataFrame only for the limited rows (keeps downstream code unchanged)
+        #    combined_text approximates what _prepare_resume_text builds (skills+exp+projects+edu...)
+        import pandas as pd
+
+        df = pd.DataFrame([dict(r) for r in rows])
+        df["combined_text"] = (
+            "NAME: " + df["full_name"].fillna("").astype(str) + "\n"
+            "EMAIL: " + df["email"].fillna("").astype(str) + "\n"
+            "CATEGORY: " + df["category_text"].fillna("").astype(str) + "\n\n"
+            "SKILLS:\n" + df["technical_skills"].fillna("").astype(str) + "\n\n"
+            "EXPERIENCE:\n" + df["work_experience"].fillna("").astype(str) + "\n\n"
+            "PROJECTS:\n" + df["projects_flat"].fillna("").astype(str) + "\n\n"
+            "CERTIFICATIONS:\n" + df["certifications_flat"].fillna("").astype(str) + "\n\n"
+            "EDUCATION:\n" + df["education"].fillna("").astype(str)
+        )
+
+        # 3) Run LLM scoring without blocking the event loop
+        #    (ResumeProcessor._initial_ai_scoring is sync in your code)
+        import asyncio
+
+        initial_scores = await asyncio.to_thread(
+            processor._initial_ai_scoring,
+            df,
+            job_description,
+        )
+
+        payload = [
+            {
+                "candidate_name": s.candidate_name,
+                "initial_score": s.initial_score,
+                "key_matches": s.key_matches,
+                "areas_of_concern": s.areas_of_concern,
+            }
+            for s in (initial_scores or [])
+        ]
+
         return {
             "status": "success",
             "timestamp": datetime.now().isoformat(),
@@ -491,6 +621,7 @@ async def initial_score_candidates(job_description: str, category: str, limit: i
             "candidates_scored": len(payload),
             "initial_scores": payload,
         }
+
     except Exception as e:
         return {"status": "error", "error": str(e), "timestamp": datetime.now().isoformat()}
 
@@ -529,27 +660,36 @@ async def final_rank_candidates(job_description: str, initial_scores_data: List[
 @mcp.tool()
 async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[str, Any]:
     """
-    End-to-end pipeline:
-      JD (must include explicit categories before the first ':') ->
-      extract categories -> fetch resumes -> filter -> initial score ->
-      final rank -> store in DB
+    End-to-end pipeline (FAST + FULL modes):
+
+    FULL (default):
+      explicit categories -> fetch resumes -> filter -> initial LLM score -> final LLM rank -> store
+
+    FAST_MODE=1:
+      skips per-candidate LLM loops and uses DB trigram ranking (very low latency)
+      via rank_and_store_candidates().
 
     Returns detailed diagnostics and always sets 'status'.
     """
     from datetime import datetime
     import traceback
+    import os
+    import psycopg, psycopg.rows
 
     try:
-        # --- setup / preconditions ---
-        db = _dbmgr()
+        # ---------- FAST MODE short-circuit ----------
+        # export FAST_MODE=1 to make this endpoint fast without removing functionality
+        if os.getenv("FAST_MODE", "0") == "1":
+            # uses DB trigram similarity + stores results (super fast)
+            return await rank_and_store_candidates(job_description_text=job_description, top_n=int(top_n))
+
+        # ---------- FULL MODE ----------
+        db = get_database_manager()
         db.ensure_schema_once()
-        db.refresh_resumes_search_if_dirty()
+        refresh_mv_throttled(db)
         processor = get_resume_processor()
 
-        # --- 1) categories must be explicit in the JD header ---
-        # Expected formats:
-        #   "This Job Description categories are Data Science: <JD body...>"
-        #   "This Job Description categories are Data Science, Full Stack: <JD body...>"
+        # 1) categories must be explicit in the JD header
         explicit_categories = processor._extract_explicit_categories(job_description)
         if not explicit_categories:
             return {
@@ -569,8 +709,7 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
                 "timestamp": datetime.now().isoformat(),
             }
 
-        # Build JobCategory (from mcp_tools, not from the processor object)
-        from mcp_tools import JobCategory  # <-- correct import
+        from mcp_tools import JobCategory
         job_cat = JobCategory(
             role_category=explicit_categories[0],
             confidence_score=0.99,
@@ -582,7 +721,7 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
             f"explicit_categories={explicit_categories}",
         ]
 
-        # --- 2) load resumes (as DataFrame) ---
+        # 2) load resumes (CURRENT code path uses Pandas; still slower than SQL)
         df_all = db.get_all_resumes()
         total = 0 if df_all is None else len(df_all)
         if df_all is None or df_all.empty:
@@ -600,7 +739,7 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
                 "timestamp": datetime.now().isoformat(),
             }
 
-        # --- 3) prepare text & filter by ANY of the explicit categories ---
+        # 3) prepare text & filter by ANY explicit category
         df_all = processor._prepare_resume_text(df_all)
         df_filtered = processor._filter_resumes_by_categories(df_all, explicit_categories)
         filtered = len(df_filtered)
@@ -620,9 +759,9 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
                 "timestamp": datetime.now().isoformat(),
             }
 
-        # --- 4) initial scoring (widen input a bit to allow the model to choose) ---
+        # 4) initial scoring (reduce seed pool to cut latency)
         safe_top_n = max(1, int(top_n))
-        seed_pool = max(safe_top_n * 3, 20)
+        seed_pool = max(safe_top_n * 2, 12)  # <-- reduced from *3 / 20 to cut calls
         init_scores = processor._initial_ai_scoring(df_filtered.head(seed_pool), job_description)
         initial_scored = len(init_scores)
         if initial_scored == 0:
@@ -641,7 +780,7 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
                 "timestamp": datetime.now().isoformat(),
             }
 
-        # --- 5) final ranking ---
+        # 5) final ranking
         final_scores = processor._final_llm_evaluation(init_scores, job_description, safe_top_n)
         final_ranked = len(final_scores)
         if final_ranked == 0:
@@ -660,19 +799,21 @@ async def process_complete_job(job_description: str, top_n: int = 10) -> Dict[st
                 "timestamp": datetime.now().isoformat(),
             }
 
-        # --- 6) persist results ---
+        # 6) persist results
         stored_ok, job_id = db.store_job_results(job_description, job_cat, final_scores)
 
-        # Minimal payload back to client
-        payload = [{
-            "candidate_name": s.candidate_name,
-            "final_score": s.final_score,
-            "final_rank": s.final_rank,
-            "detailed_reasoning": s.detailed_reasoning,
-            "strengths": s.strengths,
-            "weaknesses": s.weaknesses,
-            "recommendation": s.recommendation,
-        } for s in final_scores]
+        payload = [
+            {
+                "candidate_name": s.candidate_name,
+                "final_score": s.final_score,
+                "final_rank": s.final_rank,
+                "detailed_reasoning": s.detailed_reasoning,
+                "strengths": s.strengths,
+                "weaknesses": s.weaknesses,
+                "recommendation": s.recommendation,
+            }
+            for s in final_scores
+        ]
 
         return {
             "status": "success",
@@ -1179,7 +1320,7 @@ async def execute_database_query(query: str, params: Optional[Dict[str, Any]] = 
     """
     db = get_database_manager()
     db.ensure_schema_once()
-    db.refresh_resumes_search_if_dirty()
+    refresh_mv_throttled(db)
     conn = db.get_connection()
 
     sql = (query or "").strip()
@@ -1224,7 +1365,7 @@ async def execute_database_query(query: str, params: Optional[Dict[str, Any]] = 
             pass
         try:
             db.ensure_schema_once()
-            db.refresh_resumes_search_if_dirty()
+            refresh_mv_throttled(db)
         except Exception:
             pass
         try:

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import asyncio
 import os
 from typing import Dict, Any, List, Optional
 from contextlib import asynccontextmanager
@@ -31,13 +32,59 @@ class GmailMCPClient:
         else:
             self.args = ["@gongrzhe/server-gmail-autoauth-mcp"]
         self.server_params = StdioServerParameters(command=cmd, args=self.args)
+        self.pool_size = int(os.getenv("GMAIL_MCP_POOL_SIZE", "4"))
+        self._lock = asyncio.Lock()
+        self._pool: List[ClientSession] = []
+        self._pool_stdio: List[Any] = []
+        self._rr = 0 
+        
+    async def connect(self) -> None:
+        """Start (pool_size) Gmail MCP sessions and keep them alive."""
+        async with self._lock:
+            if self._pool:
+                return  # already connected
 
-    @asynccontextmanager
-    async def session(self):
-        async with stdio_client(self.server_params) as (read, write):
-            async with ClientSession(read, write) as sess:
+            for _ in range(self.pool_size):
+                cm = stdio_client(self.server_params)
+                read, write = await cm.__aenter__()
+                sess = ClientSession(read, write)
+                await sess.__aenter__()
                 await sess.initialize()
-                yield sess
+
+                self._pool.append(sess)
+                self._pool_stdio.append(cm)
+
+    async def aclose(self) -> None:
+        """Close all persistent Gmail MCP sessions."""
+        async with self._lock:
+            # Close sessions
+            for sess in self._pool:
+                try:
+                    await sess.__aexit__(None, None, None)
+                except Exception:
+                    pass
+
+            # Close stdio managers (kills underlying processes)
+            for cm in self._pool_stdio:
+                try:
+                    await cm.__aexit__(None, None, None)
+                except Exception:
+                    pass
+
+            self._pool.clear()
+            self._pool_stdio.clear()
+            self._rr = 0
+
+
+
+    async def _get_session(self) -> ClientSession:
+        """Get a warm session (round-robin)."""
+        await self.connect()
+        async with self._lock:
+            sess = self._pool[self._rr % len(self._pool)]
+            self._rr += 1
+            return sess
+
 
     async def send_email(
         self,
@@ -68,8 +115,8 @@ class GmailMCPClient:
             payload["attachments"] = attachments
 
         try:
-            async with self.session() as sess:
-                result = await sess.call_tool("send_email", payload)
+            sess = await self._get_session()
+            result = await sess.call_tool("send_email", payload)
             if hasattr(result, "content") and result.content:
                 item = result.content[0]
                 text = getattr(item, "text", str(item))
@@ -94,8 +141,8 @@ class GmailMCPClient:
         if html:
             payload["htmlBody"] = html
         try:
-            async with self.session() as sess:
-                result = await sess.call_tool("draft_email", payload)
+            sess = await self._get_session()
+            result = await sess.call_tool("draft_email", payload)
             if hasattr(result, "content") and result.content:
                 item = result.content[0]
                 text = getattr(item, "text", str(item))

@@ -9,7 +9,7 @@ Governing Conversational Agent
 
 from __future__ import annotations
 
-import re
+import re, os
 import json
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Iterable
@@ -22,6 +22,7 @@ from email_agent import EmailOrchestrator
 from nl2sql import NL2SQL
 from mcp_client import EnhancedResumeRankingAgent
 from mcp_client import MCPDB
+from sqlalchemy import text
 
 # ----------------------------
 # Ephemeral session memory
@@ -45,13 +46,23 @@ class GoverningAgent:
         resume_server_script: str = "mcp_server.py",
     ) -> None:
         import os
+        router_model = os.getenv("GOV_ROUTER_MODEL", "gemini-2.0-flash")
+        main_model   = os.getenv("GOV_MAIN_MODEL", model_name)
 
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise RuntimeError("GOOGLE_API_KEY not set")
 
+        self.router_llm = ChatGoogleGenerativeAI(
+            model=router_model,
+            temperature=0.0,
+            google_api_key=api_key,
+            convert_system_message_to_human=True,
+            max_output_tokens=8,
+        )
+
         self.llm = ChatGoogleGenerativeAI(
-            model=model_name,
+            model=main_model,
             temperature=0.2,
             google_api_key=api_key,
             convert_system_message_to_human=True,
@@ -77,68 +88,6 @@ class GoverningAgent:
         except TypeError:
             # Some versions may not accept model_name
             return EnhancedResumeRankingAgent()
-
-    async def _rank_and_persist(self, jd_text: str, top_n: int = 20) -> str:
-        """
-        Run the end-to-end server workflow (categorize → filter → initial score →
-        final rank → store). Surface diagnostics to the user.
-        """
-        try:
-            resp = await self.db.call_tool(
-                "process_complete_job",
-                {"job_description": jd_text, "top_n": int(top_n)}
-            )
-        except Exception as e:
-            return f"Ranking failed: MCP error: {e}"
-
-        # Hard error from server
-        if not isinstance(resp, dict) or resp.get("status") != "success":
-            reason = (resp or {}).get("error") or "unknown error"
-            diags = resp.get("diagnostics") or []
-            extra = ("\n  • " + "\n  • ".join(str(x) for x in diags)) if diags else ""
-            return f"Ranking failed: {reason}{extra}"
-
-        # Extract counts/diagnostics
-        counts = resp.get("counts") or {}
-        job_id = resp.get("job_id")
-        stored = resp.get("stored_in_db")
-        finals = resp.get("final_rankings") or []
-
-        # Pretty preview
-        lines = []
-        for r in finals[: min(5, len(finals))]:
-            name = r.get("candidate_name") or "Unknown"
-            rank = r.get("final_rank") or "-"
-            score = r.get("final_score")
-            lines.append(f"{rank}. {name}" + (f" (score {float(score):.3f})" if score is not None else ""))
-
-        # Counts / DB status
-        diag = []
-        if counts:
-            diag.append(
-                "Resumes(total={resumes_total}, filtered={filtered_candidates}, "
-                "initial_scored={initial_scored}, final_ranked={final_ranked})".format(**{
-                    "resumes_total": counts.get("resumes_total"),
-                    "filtered_candidates": counts.get("filtered_candidates"),
-                    "initial_scored": counts.get("initial_scored"),
-                    "final_ranked": counts.get("final_ranked"),
-                })
-            )
-        if stored is not None:
-            diag.append(f"DB store: {'ok' if stored else 'failed'} (job_id={job_id})")
-
-        lines_block = ("\n  • " + "\n  • ".join(lines)) if lines else ""
-        diag_block = ("\n  • " + "\n  • ".join(diag)) if diag else ""
-
-        if finals:
-            return f"Ranking saved: job_id={job_id}, rows={len(finals)}{lines_block}{diag_block}"
-
-        # No finals — explain why
-        reason = resp.get("error") or resp.get("warning") or "No candidates made it to the final ranking stage."
-        more = resp.get("diagnostics") or []
-        more_block = ("\n  • " + "\n  • ".join(str(x) for x in more)) if more else ""
-        return f"Ranking completed but no results.\nReason: {reason}{diag_block}{more_block}"
-
 
     # ------------- core routing -------------
     async def _llm_intent(self, text: str) -> str:
@@ -167,11 +116,37 @@ class GoverningAgent:
             f"User: {text}\n"
             "Label:"
         )
-        out = await self.llm.ainvoke(prompt)
+        out = await self.router_llm.ainvoke(prompt)
         label = (out.content or "").strip().split()[0].lower()
         return label if label in {"email_history", "email_action", "ranking", "db_query", "general"} else "general"
+    
+    def _fast_intent(self, text: str) -> Optional[str]:
+        t = (text or "").strip().lower()
+        if not t:
+            return "general"
+
+        # email history
+        if "email history" in t or "what emails" in t or "emails sent" in t:
+            return "email_history"
+
+        # email action
+        if any(k in t for k in ["send email", "send mails", "mail to", "email to", "draft email", "invite", "invitation"]):
+            return "email_action"
+
+        # ranking
+        if any(k in t for k in ["rank", "shortlist", "evaluate candidates", "job description", "jd:"]):
+            return "ranking"
+
+        # db query
+        if any(k in t for k in ["select ", "count", "how many", "list ", "show ", "fetch ", "query "]):
+            return "db_query"
+
+        return None
 
     async def route_intent(self, text: str) -> str:
+        fast = self._fast_intent(text)
+        if fast:
+            return fast
         try:
             return await self._llm_intent(text)
         except Exception:
@@ -368,6 +343,14 @@ class GoverningAgent:
             unique.sort(key=lambda x: str(x.get("candidate_name") or ""))
 
         return unique[: top_n]
+    
+    def _extract_job_id_from_text(self, text: str) -> Optional[int]:
+        t = text or ""
+        m = re.search(r"(?:jd_id|job_id)\s*[:=]\s*(\d+)", t, re.IGNORECASE)
+        if m:
+            return self._as_int(m.group(1))
+        return None
+
 
     # ------------- handlers -------------
     async def handle_general(self, text: str) -> str:
@@ -376,17 +359,40 @@ class GoverningAgent:
         return resp.content or ""
 
     async def handle_ranking(self, text: str) -> str:
+        # Extract "top N" / "first N"
         m = re.search(r"(?:top|first)\s+(\d+)", text, re.IGNORECASE)
         top_n = int(m.group(1)) if m else (self.mem.last_top_n or 5)
-        jd = text.strip()
+
+        jd = (text or "").strip()
         if not jd:
             return "Please provide a job description."
 
-        msg = await self._rank_and_persist(jd, top_n)
+        # ---- FAST mode toggle (low latency path) ----
+        # If user asks "fast/quick", we enable FAST_MODE=1 for this request only.
+        prev_fast = os.getenv("FAST_MODE")
+        try:
+            t = jd.lower()
+            if (" fast" in t) or ("quick" in t) or t.startswith("fast ") or t.startswith("quick "):
+                os.environ["FAST_MODE"] = "1"
+            else:
+                os.environ.pop("FAST_MODE", None)
+
+            # Run ranking
+            msg = await self._rank_and_persist(jd, top_n)
+
+        finally:
+            # Restore previous FAST_MODE exactly as it was
+            if prev_fast is None:
+                os.environ.pop("FAST_MODE", None)
+            else:
+                os.environ["FAST_MODE"] = prev_fast
+
         # Cache for follow-on email actions
         self.mem.last_job_desc = jd
         self.mem.last_top_n = top_n
+
         return msg
+
 
 
 
@@ -425,10 +431,30 @@ class GoverningAgent:
         return head + "\n" + body + suffix
 
     async def handle_email(self, text: str) -> str:
+        job_id_from_text = self._extract_job_id_from_text(text)
+        job_id = job_id_from_text or self.mem.last_job_id
+
+        explicit_recipients = None
+
+        # If user says "everyone/all" and we have job_id → fetch emails directly
+        t = (text or "").lower()
+        if job_id and any(k in t for k in ["everyone", "all candidates", "all", "to all"]):
+            q = f"""
+            SELECT resume_email
+            FROM public."CandidateScore"
+            WHERE job_id = {int(job_id)}
+            AND resume_email IS NOT NULL
+            AND resume_email <> ''
+            ORDER BY final_rank ASC
+            """
+            r = await self.db.execute_database_query(q)
+            if r.get("status") == "success":
+                explicit_recipients = [row.get("resume_email") for row in r.get("data", []) if row.get("resume_email")]
+
         result = await self.mailer.act_on_instruction(
             text,
-            job_id_override=self.mem.last_job_id,
-            explicit_recipients=None,
+            job_id_override=job_id,
+            explicit_recipients=explicit_recipients,
         )
 
         if result.get("status") not in {"success", "partial"}:

@@ -9,12 +9,9 @@ import string
 from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime
 
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
 
 from mcp_client import MCPClient 
 from gmail_mcp_client import GmailMCPClient
-from mcp_tools import DatabaseManager
 
 logger = logging.getLogger(__name__)
 
@@ -32,227 +29,6 @@ def _fmt_exam_dt(val: Any) -> str:
         return dt.strftime("%b %d, %Y %I:%M %p")
     except Exception:
         return str(val)
-
-
-class ResumeDBClient:
-    def __init__(self, server_script_path: str = "mcp_server.py") -> None:
-        self.server_params = StdioServerParameters(command="python", args=[server_script_path])
-
-    async def _call(self, tool: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        try:
-            async with stdio_client(self.server_params) as (read, write):
-                async with ClientSession(read, write) as sess:
-                    await sess.initialize()
-                    res = await sess.call_tool(tool, args or {})
-                    if hasattr(res, "content") and res.content:
-                        item = res.content[0]
-                        text = getattr(item, "text", str(item))
-                        try:
-                            return json.loads(text)
-                        except Exception:
-                            return {"status": "success", "result": text}
-                    return {"status": "success", "result": str(res)}
-        except Exception as e:
-            return {"status": "error", "error": str(e)}
-
-    async def sql(self, query: str) -> Dict[str, Any]:
-        return await self._call("execute_database_query", {"query": query})
-    
-
-    async def upsert_exam_credentials(self, records: List[Tuple[str, str, str, str]]) -> Dict[str, Any]:
-        """
-        records: list of (candidate_email, username, password, exam_link)
-        """
-        payload = [
-            {
-                "candidate_email": e,
-                "username": u,
-                "password": p,
-                "exam_link": l,
-            } for (e, u, p, l) in (records or [])
-        ]
-        return await self._call("upsert_exam_credentials", {"records": payload})
-
-    async def log_email_audit(
-        self,
-        *,
-        job_id: Optional[int],
-        candidate_name: str,
-        candidate_email: str,
-        email_type: str,
-        subject: str,
-        username: Optional[str],
-        password: Optional[str],
-        exam_link: Optional[str],
-        send_status: str,
-        raw_result: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        return await self._call("log_email_audit", {
-            "job_id": job_id,
-            "candidate_name": candidate_name,
-            "candidate_email": candidate_email,
-            "email_type": email_type,
-            "subject": subject,
-            "username": username,
-            "password": password,
-            "exam_link": exam_link,
-            "send_status": send_status,
-            "raw_result": raw_result,
-        })
-
-
-    async def latest_job_id(self) -> Optional[int]:
-        # created_at may not exist; prefer id DESC
-        r2 = await self.sql("SELECT id FROM JobDescription ORDER BY id DESC LIMIT 1")
-        if r2.get("status") == "success" and r2.get("data"):
-            return r2["data"][0]["id"]
-        return None
-
-    async def ensure_credentials_table(self) -> None:
-        q = """
-        CREATE TABLE IF NOT EXISTS exam_credentials (
-            candidate_email TEXT PRIMARY KEY,
-            username TEXT NOT NULL,
-            password TEXT NOT NULL,
-            exam_link TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """
-        await self.sql(q)
-
-    async def upsert_credentials(self, records: List[Tuple[str, str, str, str]]) -> None:
-        await self.upsert_exam_credentials(records)
-
-
-    async def ensure_email_audit_table(self) -> None:
-        q = """
-        CREATE TABLE IF NOT EXISTS EmailAudit (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            job_id INTEGER,
-            candidate_name TEXT,
-            candidate_email TEXT,
-            email_type TEXT,            -- 'congrats' | 'rejection'
-            subject TEXT,
-            username TEXT,
-            password TEXT,
-            exam_link TEXT,
-            send_status TEXT,           -- 'ok' | 'error'
-            raw_result TEXT
-        )
-        """
-        await self.sql(q)
-
-    async def insert_email_audit(
-        self,
-        job_id: Optional[int],
-        candidate_name: str,
-        candidate_email: str,
-        email_type: str,
-        subject: str,
-        username: Optional[str],
-        password: Optional[str],
-        exam_link: Optional[str],
-        send_status: str,
-        raw_result: Dict[str, Any],
-    ) -> None:
-        await self.log_email_audit(
-            job_id=job_id,
-            candidate_name=candidate_name,
-            candidate_email=candidate_email,
-            email_type=email_type,
-            subject=subject,
-            username=username,
-            password=password,
-            exam_link=exam_link,
-            send_status=send_status,
-            raw_result=raw_result,
-        )
-
-
-    async def emails_for_names(self, names: List[str]) -> Dict[str, str]:
-        if not names:
-            return {}
-        lowered = [n.lower().replace("'", "''") for n in names]
-        in_list = ",".join(f"'{v}'" for v in lowered)
-        q = f"""
-        SELECT full_name, email FROM resumes
-        WHERE email IS NOT NULL AND LOWER(full_name) IN ({in_list})
-        """
-        r = await self.sql(q)
-        emails: Dict[str, str] = {}
-        if r.get("status") == "success":
-            for row in r.get("data", []):
-                emails[row["full_name"]] = row["email"]
-        return emails
-
-    async def top_recipients_for_job(self, job_id: int, n: int) -> Dict[str, str]:
-        """
-        Return a mapping {candidate_name -> email} for the top N candidates of a job.
-        - Inspects public."CandidateScore" columns via information_schema (Postgres)
-        - Prefers: name col ∈ {candidate_name, name, full_name}
-                   rank col ∈ {final_rank, rank, id, created_at}
-                   email col ∈ {resume_email}
-        """
-        # 1) Discover available columns from information_schema (Postgres)
-        colq = """
-            SELECT LOWER(column_name) AS column_name
-            FROM information_schema.columns
-            WHERE table_schema='public' AND table_name='CandidateScore'
-        """
-        rcols = await self.sql(colq) if hasattr(self, "sql") else await self._select(colq)
-        cols = {row.get("column_name", "") for row in (rcols.get("data") or [])} if rcols.get("status") == "success" else set()
-
-        # 2) Choose best-fit columns
-        name_col = "candidate_name" if "candidate_name" in cols else ("name" if "name" in cols else "full_name")
-        email_col = "resume_email" if "resume_email" in cols else None
-        if "final_rank" in cols:
-            rank_col = "final_rank"
-        elif "rank" in cols:
-            rank_col = "rank"
-        elif "id" in cols:
-            rank_col = "id"
-        elif "created_at" in cols:
-            rank_col = "created_at"
-        else:
-            rank_col = None  # we'll omit ORDER BY in worst case
-
-        order_clause = f'ORDER BY cs."{rank_col}" ASC' if rank_col else ""
-
-        # 3) Build the SELECT (quoted identifier for case-sensitive table name)
-        if email_col:
-            q = f'''
-                SELECT cs."{name_col}" AS candidate_name, cs."{email_col}" AS email
-                FROM public."CandidateScore" cs
-                WHERE cs.job_id = %(job_id)s AND TRIM(COALESCE(cs."{email_col}", '')) <> ''
-                {order_clause}
-                LIMIT %(limit)s
-            '''
-        else:
-            q = f'''
-                SELECT cs."{name_col}" AS candidate_name,
-                       COALESCE(r.email, cs.resume_email, '') AS email
-                FROM public."CandidateScore" cs
-                LEFT JOIN public.resumes r
-                  ON LOWER(r.full_name) = LOWER(cs."{name_col}")
-                WHERE cs.job_id = %(job_id)s
-                {order_clause}
-                LIMIT %(limit)s
-            '''
-
-        r = await (self.sql(q) if hasattr(self, "sql") else self._select(q, params={"job_id": job_id, "limit": n}))
-        # If self.sql(...) doesn’t accept params, pass literal; if it does, prefer params. If using _select above, we passed params.
-
-        if r.get("status") != "success":
-            return {}
-
-        emails: Dict[str, str] = {}
-        for row in r.get("data", []):
-            nm = (row.get("candidate_name") or "").strip()
-            em = (row.get("email") or "").strip()
-            if nm and em:
-                emails[nm] = em
-        return emails
 
 def _invite_html(
     *,
@@ -332,11 +108,16 @@ class EmailOrchestrator:
       - Audits via MCP tool `log_email_audit` (recommended) if available
     """
 
-    def __init__(self, server_script_path: str = "mcp_server.py"):
-        # One MCP DB client (correct constructor arg name)
-        self.db = MCPClient(server_script_path=server_script_path)
-        # One Gmail MCP client for sending
-        self.gmail = GmailMCPClient()
+    def __init__(
+        self,
+        server_script_path: str = "mcp_server.py",
+        *,
+        db_client: Optional[MCPClient] = None,
+        gmail_client: Optional[GmailMCPClient] = None,
+    ):
+        # Reuse shared clients if passed in (best for FastAPI / long-running apps)
+        self.db = db_client or MCPClient(server_script_path=server_script_path, persistent=True)
+        self.gmail = gmail_client or GmailMCPClient()
 
     # ---------- Internal MCP helpers ----------
 
@@ -380,7 +161,8 @@ class EmailOrchestrator:
             default_c = 6
         CONC = int(concurrency or default_c)
         CONC = max(1, min(CONC, 16))  # keep it sane
-
+        if hasattr(self.gmail, "connect"):
+            await self.gmail.connect()
         # ---------- 1) resolve recipients in one shot ----------
         if explicit_recipients:
             rows = [
@@ -526,13 +308,19 @@ class EmailOrchestrator:
             })
 
         # Fire all audits concurrently to minimize round-trips
-        async def _audit_one(p):
-            try:
-                return await self._call_tool("log_email_audit", p)
-            except Exception as e:
-                return {"status": "error", "error": str(e)}
+        bulk_payload = {"items": audit_payloads}
 
-        await asyncio.gather(*[ _audit_one(p) for p in audit_payloads ], return_exceptions=True)
+        bulk_res = await self._call_tool("log_email_audit_bulk", bulk_payload)
+
+        # Fallback: if bulk tool not available, do per-row audits
+        if str(bulk_res.get("status", "")).lower() not in {"ok", "success"}:
+            async def _audit_one(p):
+                try:
+                    return await self._call_tool("log_email_audit", p)
+                except Exception as e:
+                    return {"status": "error", "error": str(e)}
+
+            await asyncio.gather(*[_audit_one(p) for p in audit_payloads], return_exceptions=True)
 
         # ---------- 4) final status ----------
         status = "success" if attempted and sent == attempted else ("partial" if sent > 0 else "error")
@@ -567,7 +355,10 @@ class EmailOrchestrator:
         top_n = int(m.group(1)) if m else None
 
         # job id?
-        jm = re.search(r"\bjob(?:_?id)?\s*[:=]?\s*(\d+)\b", t) or re.search(r"\bjob\s+(\d+)\b", t)
+        jm = (
+            re.search(r"\b(?:job|jd)(?:_?id)?\s*[:=]?\s*(\d+)\b", t)
+            or re.search(r"\b(?:job|jd)\s+(\d+)\b", t)
+        )
         job_id = int(jm.group(1)) if jm else None
         if job_id is None and job_id_override is not None:
             job_id = int(job_id_override)

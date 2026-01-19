@@ -27,30 +27,86 @@ class MCPClient:
     Provides both async and convenient sync wrappers.
     """
 
-    def __init__(self, server_script_path: str = "mcp_server.py") -> None:
+    def __init__(self, server_script_path: str = "mcp_server.py", persistent: bool = True) -> None:
         self.server_params = StdioServerParameters(
             command="python",
             args=[server_script_path],
         )
+        self._persistent = persistent
+        self._lock = asyncio.Lock()
+        self._stdio_cm = None
+        self._read = None
+        self._write = None
+        self._session: Optional[ClientSession] = None
 
     # ---------- core async API ----------
+    async def connect(self) -> None:
+        """Start the MCP server and initialize a persistent session (once)."""
+        if not self._persistent:
+            return
 
+        async with self._lock:
+            if self._session is not None:
+                return  # already connected
+
+            # Start the stdio server process once and keep it open
+            self._stdio_cm = stdio_client(self.server_params)
+            self._read, self._write = await self._stdio_cm.__aenter__()
+
+            # Create and initialize the MCP session once
+            self._session = ClientSession(self._read, self._write)
+            await self._session.__aenter__()
+            await self._session.initialize()
+
+
+    async def aclose(self) -> None:
+        """Close the persistent MCP session and server process."""
+        async with self._lock:
+            if self._session is not None:
+                await self._session.__aexit__(None, None, None)
+                self._session = None
+
+            if self._stdio_cm is not None:
+                await self._stdio_cm.__aexit__(None, None, None)
+                self._stdio_cm = None
+
+            self._read = None
+            self._write = None
+            
+    def _parse_tool_result(self, res: Any) -> Dict[str, Any]:
+        # Standard JSON payload comes back in the first content item as .text
+        if getattr(res, "content", None):
+            item = res.content[0]
+            text = getattr(item, "text", str(item))
+            try:
+                return json.loads(text)
+            except Exception:
+                return {"status": "success", "result": text}
+        return {"status": "success", "result": ""}
+            
     async def call_tool(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         arguments = arguments or {}
+
+        # Fast path: reuse one persistent session
+        if self._persistent:
+            await self.connect()
+            try:
+                res = await self._session.call_tool(name, arguments)  # type: ignore[union-attr]
+                return self._parse_tool_result(res)
+            except Exception:
+                # One reconnect retry in case the subprocess died / pipe broke
+                await self.aclose()
+                await self.connect()
+                res = await self._session.call_tool(name, arguments)  # type: ignore[union-attr]
+                return self._parse_tool_result(res)
+
+        # Slow path: old behavior (kept for compatibility)
         async with stdio_client(self.server_params) as (read, write):
             async with ClientSession(read, write) as sess:
                 await sess.initialize()
                 res = await sess.call_tool(name, arguments)
-                # Standard JSON payload comes back in the first content item as .text
-                if getattr(res, "content", None):
-                    item = res.content[0]
-                    text = getattr(item, "text", str(item))
-                    try:
-                        return json.loads(text)
-                    except Exception:
-                        # Fallback to raw text if tool returned plain text
-                        return {"status": "success", "result": text}
-                return {"status": "success", "result": ""}
+                return self._parse_tool_result(res)
+
 
     async def execute_database_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         args: Dict[str, Any] = {"query": query}
